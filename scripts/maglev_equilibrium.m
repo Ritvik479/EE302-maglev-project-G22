@@ -29,7 +29,7 @@ function eq = maglev_equilibrium(P, m, x10)
 % SIGNS     x1 = gap, increasing downward. a23 < 0, b3 > 0, so the plant gain
 %           a23*ki is NEGATIVE. Reduced plant: G(s) = -K/(s^2 - a21).
 %
-% CHECKED   by 01_verify_model.m against the manual's unit-test numbers.
+% CHECKED   by s01_verify_model.m against the manual's unit-test numbers.
 % =========================================================================
 
 assert(isstruct(P) && isfield(P, 'Fem'), 'maglev_equilibrium: P must come from maglev_params.');

@@ -14,7 +14,7 @@ Each run was saved from the scopes with *Print to Figure → Save* (`.fig`). Rea
 
 | Scope file | Channels (in order) |
 |---|---|
-| `*_main.fig` | Position [m], Velocity [m/s], Current [A], Control [V] (= command u sent to the rig, 0..0.9) |
+| `*_main.fig` | Position [m], Velocity [m/s], Current [A], Control (= command u sent to the rig, a PWM duty fraction; the scope labels it [V]; limited to 0..0.9) |
 | `*_iref.fig` (sweep-type models: steps, ramp, sweep) | Current [A], i_ref [A], x_ref [m], tau [s] (sweep clock: counts only while x < lift threshold) |
 | `sine_*_iref.fig` | Current [A], i_ref [A] (labelled "Cascade controller/2") |
 | `sine_*_sine.fig` | Position, Current, u_c (controller output before injection), Control (total u), d_inj, f_inj [Hz], A_inj |

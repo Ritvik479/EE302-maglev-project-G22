@@ -8,11 +8,20 @@
 %           e = x - x_ref (manual sign), v = (x[k]-x[k-1])/T0 (driver's own
 %           velocity output), z = clamped discrete integral of e.
 %
-% WHY       The coil lags the command by tau ~ 27 ms (coil step test). A loop
-%           that sees only the position cannot cancel that lag: the lab PD is
-%           predicted (and was observed) to oscillate at 7-9 Hz. Measuring the
-%           current and closing a fast loop around it makes the coil look like
-%           an ~4 ms lag, so an ordinary PID on position works.
+% WHY       The coil lags the command (tau ~ 22-25 ms measured; 27 ms is the design value,
+%           range 20-35 ms). A loop that sees only the position handles that lag badly.
+%           (Revised 2026-11-16, AUDIT.md 2.15. The earlier text said the lab PD was "predicted
+%           (and was observed) to oscillate at 7-9 Hz"; the linear model does not predict that.)
+%           On a linear model of the rig (fitted plant, T0 = 3 ms, measured delay), the lab PD
+%           as run on 12-Nov (Kp 45, Kd on the difference e[k]-e[k-1]) sits ON the stability
+%           boundary: unstable pole ~5.2-5.6 Hz, max|eig| 1.004-1.011 (Kp 40 without extra delay
+%           is even just stable). The 7-9 Hz seen in the lab was a large-amplitude cycle that hit
+%           the stand every period and drove u to 0, i.e. nonlinear, not a linear prediction.
+%           A full grid of position-only PD gains does contain stable points, but the best have
+%           Ms 5.7-13 (Ms = peak of |1/(1+L)|; ~2 is a usual target), i.e. very fragile.
+%           So the cascade is chosen for ROBUSTNESS: measuring the current and closing a fast
+%           loop around it makes the coil look like an ~4 ms lag, and an ordinary PID on
+%           position then has comfortable margins.
 %
 % PLANT     Lab-identified, NOT the manual's mask values:
 %   T0 = 3 ms, ZOH, current  i' = (ka*u + ci - i)/tau,  ka = 2.44 A/unit,

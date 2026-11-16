@@ -15,7 +15,7 @@ Status legend: `[ ]` open, `[x]` done, `[~]` decided but waiting.
 | 1 | Decisions | [x] 2026-11-16, all final (table below) |
 | 2 | Correct `group 28/PARAMETERS.md` (outward-facing) | [x] 2026-11-16 (zip rebuilt). **Student: send it if the old one was shared (D4)** |
 | 3 | One canonical stand-zone paragraph, pasted everywhere | [x] 2026-11-16 (text only; scripts parse-checked, not re-run) |
-| 4 | Text-only MAJOR fixes | [ ] |
+| 4 | Text-only MAJOR fixes | [x] 2026-11-16 (comments/strings only; P values unchanged; nothing to re-run) |
 | 5 | Code fixes in leaf scripts (s09, s14, s17, s18) | [ ] |
 | 6 | Re-run in dependency order, compare with expectations | [ ] |
 | 7 | README updates (robustness numbers, new counts) | [ ] |
@@ -120,7 +120,16 @@ Paste into: 16-Nov README (Main results), `group 28/PARAMETERS.md`, s18 header (
 (lines 162, 209), s07 line 96, s08 §6b, 13-Nov README (3 places), s10 unmodelled-effects table, `maglev_cases`
 U "tilt artifact" row.
 
-## Step 4 — Text-only MAJOR fixes (no re-run needed)
+## Step 4 — Text-only MAJOR fixes (no re-run needed) (DONE)
+
+Done 2026-11-16. `maglev_params.m`, `maglev_equilibrium.m`, s01, s02, s05: comment lines only (verified: 0
+non-comment lines changed), so P, `phase1/2_results.mat` and the s01/s02 consoles are unchanged. `maglev_cases`:
+kg row "[NOT in the robust set]" with the 33/243 evidence; gap range 9-11 mm (11.5 = stress case); tau evidence
+22-25 ms measured / 27 ms design; header "D tested on the hardware 16-Nov". Still 77 cases. Also done here:
+1.14 (57.1 g provenance), 1.16 (s02 PURPOSE (2) + SCOPE note), 1.18 (file names), 1.19 (Fig 45/46), 2.19 in the
+12-Nov and 16-Nov READMEs (u = PWM duty fraction; "1.35 s/m effective" instead of "V·s/m").
+
+Original plan for this step:
 
 - [ ] 1.12 `maglev_params.m` header: P.loop / P.act are "manual / pre-lab, used only by s01–s02"; drop "the ONE place".
 - [ ] 1.13 / 2.19: state everywhere that lab u is a **PWM duty fraction 0..1** (driver Gain 4095), not volts;

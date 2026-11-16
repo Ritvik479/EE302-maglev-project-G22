@@ -6,7 +6,7 @@ Ball: 39.288 g. Sensor table: `SensorData` from the 06-Nov-2026 calibration file
 ## discovery/
 Output of `scripts/s03_lab_discovery.m` for the three models.
 Findings: T0 = 3 ms (ode3, external mode), no driver filters, velocity = (x[k]-x[k-1])/T0,
-lab PD: Kp 35, Kd 450 on Δe (= 1.35 V·s/m), u0 0.282; lab PID: P 40, I 40, D 2, U0 0.344.
+lab PD: Kp 35, Kd 450 on Δe (= 1.35 s/m effective, in units of the command u per m/s; u is a PWM duty fraction 0..1, not volts), u0 0.282; lab PID: P 40, I 40, D 2, U0 0.344.
 
 ## runs/  (read with load(file,'-mat'); openfig fails on laptop)
 | File | What | Result |

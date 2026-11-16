@@ -1,16 +1,28 @@
 % maglev_params.m   [STANDALONE]
 % =========================================================================
-% PURPOSE   The ONE place where every number of the MagLev project lives.
-%           Creates the struct P. Every other script starts with
-%               maglev_params;
-%           and never retypes a number.
+% PURPOSE   Creates the struct P with
+%             (a) the MANUAL's model numbers (force law P.Fem, actuator P.act, limits P.lim,
+%                 digital loop P.loop, demo gains), used by s01-s02 only, and
+%             (b) shared settings used by every script (folders P.dir, balls, plotting P.plot).
+% SCOPE     (revised 2026-11-16, AUDIT.md 1.12) P.Fem, P.act, P.lim and P.loop hold the manual's
+%           PRE-LAB assumptions. The lab (12/13-Nov) found a different loop: sample time T0 = 3 ms
+%           (not 10 ms), no filter blocks in the Simulink driver (not three 5 ms filters), coil time
+%           constant ~22-25 ms (not 0.63 ms), coil gain 2.43 A per unit of the command, extra delay
+%           ~0.5 sample. Scripts s03-s18 do NOT read P.Fem / P.act / P.loop: they use the lab values
+%           (s05 struct L; fitted plant in scripts/maglev_cases.m). These fields are deliberately
+%           NOT updated: they define the s02 pre-lab prediction, which the report presents as such.
 % INPUTS    none
 % OUTPUTS   struct P in the caller's workspace (overwrites any existing P).
-% CHECKED   by 01_verify_model.m (reproduces the manual's numbers from P).
+% CHECKED   by s01_verify_model.m (reproduces the manual's numbers from P).
 %
 % UNITS     SI everywhere: m, m/s, A, V, s, kg.
+%           UNIT OF u (AUDIT.md 1.13, 2.19): in this file (the manual model) the command u is in
+%           VOLTS (ki = 0.543 A/V, u 0..5 V), and so are all gains derived from it in s01/s02
+%           (e.g. Kp_min 122.5 V/m). On the rig the command u is a PWM DUTY FRACTION 0..1 (driver
+%           Gain 4095, 12-bit), with ~2.43 A per unit. The two are NOT the same unit; the ratio
+%           (~4.5) is not verified from any file. Do not compare s01/s02 gains with lab gains.
 % SIGNS     x1 = gap from the magnet face [m]; INCREASING x1 = ball moves DOWN.
-%           x2 = x1' [m/s];  x3 = coil current [A];  u = command [V].
+%           x2 = x1' [m/s];  x3 = coil current [A];  u = command [V] (manual model, see UNITS).
 %           Plant gain is NEGATIVE: more voltage -> more current -> more pull
 %           -> SMALLER gap.   G_reduced(s) = a23*ki/(s^2 - a21) = -K/(s^2-a21)
 %           Controller convention (manual p.37):  e = x1 - x0 (measured minus
@@ -18,8 +30,8 @@
 %           In MATLAB standard form this loop is POSITIVE feedback, so use
 %           feedback(G*C, -1)  (or flip the sign of C). Each script says which.
 %
-% STATUS TAGS  Anything marked UNCONFIRMED is a guess until a lab experiment
-%           (Phase 6) measures it. Changing the value here changes it everywhere.
+% STATUS TAGS  "UNCONFIRMED" tags below are historical (written before the lab). They were
+%           answered on 12/13-Nov (see SCOPE); the values are kept as the manual's assumptions.
 % =========================================================================
 
 P = struct();
@@ -125,7 +137,8 @@ P.plot.apply  = @() set(groot, 'defaultFigureColor', 'w', 'defaultAxesColor', 'w
     'defaultAxesColorOrder', P.plot.colors);
 
 %% ---- expected numbers for self-checks (manual + briefing) -------------
-% 57.1 g ball at 9 mm (manual pp.35-36, briefing sec.3)
+% 57.1 g ball at 9 mm: x30 from manual p.35; the other values from the briefing (same formulas,
+% not printed in the manual), so 7 of these 8 checks are consistency checks (AUDIT.md 1.14)
 P.test.ref57 = struct('x30',0.9345, 'u0',1.65, 'a21',1684.7, 'p',41.05, ...
                       'a23',-21.0, 'a33',-1597, 'b3',867, 'K',11.41);
 P.test.tol57 = struct('x30',1e-3, 'u0',0.01, 'a21',0.1, 'p',0.01, ...
@@ -134,5 +147,6 @@ P.test.tol57 = struct('x30',1e-3, 'u0',0.01, 'a21',0.1, 'p',0.01, ...
 P.test.mine    = struct('x30_39',0.775, 'u0_39',1.36, 'Kpmin_39',122.5, ...
                         'x30_42',0.803, 'u0_42',1.41, 'Kpmin_42',126.9);
 P.test.minetol = struct('x30',2e-3, 'u0',0.01, 'Kpmin',0.2);
-% 36 g at 10 mm vs manual Fig. 46 (reading of a plot: ~0.8 A, ~1.4 V)
+% 36 g at 10 mm vs manual Fig. 46 (reading of a plot: ~0.8 A, ~1.4 V). Fig. 45 shows a desired-position
+% block of 0.009 m, but Fig. 46 settles at 0.010 m; the check uses the plotted 10 mm (AUDIT.md 1.19)
 P.test.fig46 = struct('x30',0.8, 'u0',1.4, 'tolx30',0.02, 'tolu0',0.03);

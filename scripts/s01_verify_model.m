@@ -13,6 +13,9 @@
 %
 % SIGNS     x1 = gap, increasing DOWN. e = x1 - x0, u = u0 + Kp*e (+Kd*de/dt),
 %           plant gain a23*ki < 0. Sign tests are in section 5.
+% UNITS     u is the MANUAL model's command in VOLTS (P.act.ki A/V), so u0, K and Kp_min are in
+%           volts (e.g. Kp_min 122.5 V/m). The lab command is a PWM duty fraction 0..1 (~2.43 A per
+%           unit): these numbers cannot be compared with lab gains (see maglev_params.m UNITS).
 % =========================================================================
 
 %% 0. Bootstrap (same 3 lines at the top of every script)

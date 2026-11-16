@@ -9,7 +9,15 @@
 %             (1) P-only control can NOT stabilize it (marginal at best on the
 %                 reduced plant, unstable on the third-order plant);
 %             (2) PD with Kp > a21/K and Kd > 0 stabilizes the REDUCED plant,
-%                 but the same PD fails once filter and delay are added.
+%                 but the demo PD (Kd = 0.5 V s/m) fails once filter and delay are added.
+%                 (Wording revised 2026-11-16, AUDIT.md 1.16: larger Kd, ~4-6 V s/m, restores
+%                 nominal stability in every scenario, at reduced margin. So it is the margin,
+%                 not the existence of a stabilizing PD, that the filter and delay take away.)
+% SCOPE     (AUDIT.md 1.12) This is a PRE-LAB prediction built on the manual's loop assumptions
+%           (P.loop: 10 ms, three 5 ms filters; P.act: fi 0.63 ms, u in volts). The rig turned out
+%           different (T0 3 ms, no filter blocks, coil tau ~22-25 ms, u = PWM duty fraction), so the
+%           quantitative results (fidelity ladder, p*tau, delays, sampled pole) describe the manual's
+%           loop, not this rig. Gains here are in V/m, V s/m (manual volts; see maglev_params.m).
 % INPUTS    maglev_params, maglev_equilibrium, maglev_plant
 % OUTPUTS   data/phase2_results.mat  (P, eq0, M, scenario models, tests)
 %           figs/p2_polemap.png, figs/p2_bode.png, figs/p2_nyquist.png
