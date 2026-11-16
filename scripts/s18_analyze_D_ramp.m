@@ -8,10 +8,14 @@
 %      controllers from the measured rest reading (s07/s08 plant, loop delay 0.3/0.5/0.6, force constant +-5 %).
 %   B. SLOW RAMP, redone and correctly built (my_cascade_ramp_rt, Linear): quasi-static coil current vs set
 %      point 10.5 -> 11.4 -> 10.5 mm at 0.2 mm/s. s17 found a braking spike 0.70-0.85 mm above the stand on fast
-%      down-steps. Two candidates: air squeezed between ball and stand (DYNAMIC: vanishes at 0.2 mm/s) or the
-%      stand shadowing the optical sensor / a static stand force (STATIC: bends the quasi-static current curve
-%      as the ball approaches the stand). Test: fit the force-law shape i = a0 + a1 exp(x/(2 lam)) to the part
-%      of the curve >= 0.95 mm above the stand and look at the residual closer to the stand.
+%      down-steps. Two candidates were tested: air squeezed between ball and stand (DYNAMIC: vanishes at 0.2 mm/s)
+%      or a STATIC stand effect (bends the quasi-static current curve as the ball approaches the stand).
+%      Test: fit the force-law shape i = a0 + a1 exp(x/(2 lam)) to the part of the curve >= 0.95 mm above the
+%      stand and look at the residual closer to the stand. RESULT: static. (Revised 2026-11-16, AUDIT.md 5.21:
+%      the effect is NOT a sensor reading error alone ("shadowing"): closer than ~0.75 mm the hover current
+%      DECREASES toward the stand, which a pure reading error could only produce with a negative sensor slope,
+%      i.e. reversed feedback, yet the ramp tracked within 0.001 mm. At least part is a real upward force on the
+%      ball, mechanism unknown; see data/lab_2026-11-16/README.md, 'Stand-proximity effect'.)
 % INPUTS    data/lab_2026-11-16/runs/{variantD_39g,ramp_39g}_*.fig, lab-controller lift-offs today:
 %           steps_39g, rampFLAT_39g, ramp_39g (renamed 2026-11-16 from runs_1116/5_39g_norm*, 3b_39g_2*, 3a_39g_1*,
 %           3b_39g_1*; contents unchanged);
@@ -153,9 +157,8 @@ fprintf(' near the stand (gap 0.4-0.9 mm): residual %s mA, in standard errors %s
 dep = find(zN <= -3, 1);  gN = gap(near);
 isStatic = ~isempty(dep);
 chkp(true, sprintf(['RECORD: the quasi-static current departs from the force law (>= 3 se) from %.2f mm above the stand ' ...
-     'down to %.2f mm (residual %.0f mA there = %.2f mm of reading error, or %.0f %% of the weight as a static upward force) ' ...
-     '-> the stand effect is STATIC (squeeze film alone cannot explain it)'], gN(dep), min(gN), 1e3*res(find(near, 1, 'last')), ...
-     -1e3*res(find(near, 1, 'last'))/slope, -200*res(find(near, 1, 'last'))/median(r.i(h1))));
+     'down to %.2f mm (residual %.0f mA there) -> the stand effect is STATIC (squeeze film alone cannot explain it); ' ...
+     'not a reading error alone (see header)'], gN(dep), min(gN), 1e3*res(find(near, 1, 'last'))));
 nP = nP + isStatic;  nF = nF + ~isStatic;
 hy = 1e3*(iu - idn);
 fprintf(' up-down difference: median %+.1f mA over all bins, %s mA within 0.9 mm of the stand\n', median(hy), mat2str(round(hy(gap < 0.9), 1)));

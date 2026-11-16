@@ -302,7 +302,8 @@ chk(HD(2,4) < 0.03, sprintf(['42 g barely rocks at 11.5 mm: the same %.2f Hz pea
     '(band rms %.3f mm), i.e. the mode exists for both balls; damped for 42 g, self-sustained for 39 g'], ...
     HD(2,5), HD(1,4)/HD(2,4), HD(2,4)));
 chk(HD(3,4) < 0.7*HD(1,4), sprintf('39 g rocking is smaller hole-down (%.3f vs %.3f mm rms)', HD(3,4), HD(1,4)));
-chk(all(fOsc > 4), 'the vertical model has no closed-loop mode below 4 Hz: the 2.4 Hz rocking is NOT a vertical-loop mode');
+chk(all(fOsc > 4), ['the vertical model with its NOMINAL sensor gain has no closed-loop mode below 4 Hz ' ...
+    '(2026-11-16: a sensor-gain loss near the stand can produce 2.4 Hz; AUDIT.md 4.12)']);
 
 % 6b. Newton test: is the measured x motion pure VERTICAL motion?
 % If the ball's centre really moves as the sensor says, Newton + the force law fix the current:
@@ -310,6 +311,8 @@ chk(all(fOsc > 4), 'the vertical model has no closed-loop mode below 4 Hz: the 2
 % x'' = stride-h second difference (h = 10 samples = 30 ms; it is a triangle-weighted average of the
 % true acceleration), so x and i_true get the same triangle filter. Regress i_true on i_need:
 % slope 1 = consistent with pure vertical motion. Control case: the 24 set-point steps.
+% (2026-11-16, AUDIT.md 4.12: a slope of 1.7 means the reading moves ~1/1.7 of what the current implies. That fits a
+%  tilt, OR a position-sensor gain of ~0.59 near the stand without any rotation. The test does not decide.)
 fprintf('6b. Newton test: slope of measured true current vs the current the measured motion needs\n');
 h = 10;  tri = [1:h, h-1:-1:1]'/h^2;
 nt = {};

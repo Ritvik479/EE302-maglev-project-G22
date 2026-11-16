@@ -13,8 +13,8 @@ Status legend: `[ ]` open, `[x]` done, `[~]` decided but waiting.
 |---|---|---|
 | 0 | Git snapshot of the audited state | [x] 2026-11-16 (baseline commit) |
 | 1 | Decisions | [x] 2026-11-16, all final (table below) |
-| 2 | Correct `group 28/PARAMETERS.md` (outward-facing) | [ ] on hold until the student says go |
-| 3 | One canonical stand-zone paragraph, pasted everywhere | [ ] |
+| 2 | Correct `group 28/PARAMETERS.md` (outward-facing) | [x] 2026-11-16 (zip rebuilt). **Student: send it if the old one was shared (D4)** |
+| 3 | One canonical stand-zone paragraph, pasted everywhere | [x] 2026-11-16 (text only; scripts parse-checked, not re-run) |
 | 4 | Text-only MAJOR fixes | [ ] |
 | 5 | Code fixes in leaf scripts (s09, s14, s17, s18) | [ ] |
 | 6 | Re-run in dependency order, compare with expectations | [ ] |
@@ -77,7 +77,7 @@ Leaves (output loaded by nothing): s09, s13, s14, s16, s17, s18
 
 ---
 
-## Step 2 — Outward-facing fix first: `group 28/PARAMETERS.md` (ON HOLD)
+## Step 2 — Outward-facing fix first: `group 28/PARAMETERS.md` (DONE)
 
 - [ ] 5.21: replace "likely cause is the stand shadowing the optical sensor" with the canonical stand-zone wording
       (Step 3); drop "≈ 0.8 mm reading error"; "≈ 14 % of the weight at 0.5 mm".
@@ -86,9 +86,23 @@ Leaves (output loaded by nothing): s09, s13, s14, s16, s17, s18
 - [ ] 6.2: current zero → "typically 0.03–0.06 A at the start of a session, falling by 0.3–1.2 mA per second of
       coil-on time; measure with u = 0 before and after each run". Never "−1.3 mA/s".
 - [ ] 5.28: `group 28/README.md` coil currents "0.67 / 0.92 A (0.93 A at lift-off)"; drop "each sample stored twice".
-- [ ] Rebuild `group 28.zip`; send if it was already shared (D4).
+- [x] Also: u labelled as a PWM duty fraction (2.19); `read_scope_fig.m` "stored twice" comment fixed in both
+      copies (2.17; copies still byte-identical).
+- [x] Rebuilt `group 28.zip` (same layout, verified byte-identical to the folder).
+- [ ] Send it, if the old version was already shared (D4) — the student's action.
 
-## Step 3 — Canonical stand-zone paragraph (fixes 5.21 + 4.12 together)
+## Step 3 — Canonical stand-zone paragraph (fixes 5.21 + 4.12 together) (DONE)
+
+Done 2026-11-16. The reference text is the "Stand-proximity effect" bullet in `data/lab_2026-11-16/README.md`
+(Main results); other files carry one corrected sentence and point there. The 13-Nov README keeps the old claims
+struck through with a dated "[Superseded 2026-11-16]" note. Edited: 16-Nov README, 13-Nov README (4 places),
+`group 28/PARAMETERS.md` (plain-language version), s18 header + RECORD message (no "reading error", no "% of
+weight"), s14 header §4 + §4 check message + §6 "nature", s07 line 96, s08 §6 check message + §6b comment, s10
+unmodelled table row, `maglev_cases` U row ("x artifact at 2.45 Hz (11.5 mm stress case)"). Case names in
+`maglev_cases`/s09 ('tilt artifact', 'lab-like') are NOT renamed yet: that is Step 5 (s09 looks them up by name).
+Console text of s07/s08/s10/s14/s18 changed in wording only; numbers untouched.
+
+Original plan for this step:
 
 These two must be written as ONE text: both describe the zone ~0.7–0.9 mm above the stand. Content (AUDIT 6D 1–2):
 - Within ~0.7–0.8 mm of the stand the hover current falls below the force law; closer than ~0.75 mm it even
@@ -138,6 +152,7 @@ U "tilt artifact" row.
 
 | # | Script | Expect |
 |---|---|---|
+| 0 | s07, s08 (optional) | wording-only changes; re-run only to refresh console logs; `.mat` must be identical |
 | 1 | s10 | 12/0; `LM` identical (`isequaln` vs git); only `U` changes |
 | 2 | s11 | 12/4; `robustness.mat` identical (sanity) |
 | 3 | s14 | 8 PASS + new scan checks |

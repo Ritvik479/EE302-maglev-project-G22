@@ -93,7 +93,8 @@ fFlip = zc_freq(r1.t, r1.x, r1.t(r1.kOn) + 1.8, r1.t(r1.kOn) + 3.8);
 pA = Rn.A39.pl;  k115 = find(abs([pA.lev] - 0.0115) < 1e-5 & [pA.hover], 1);
 f115 = zc_freq(Rn.A39.t, Rn.A39.x, pA(k115).ta + 0.3, pA(k115).tb);
 fprintf('  slow swing while turning over: %.1f Hz; Exp A 11.5 mm wobble: %.1f Hz; 1-D model modes: >= 6 Hz\n', fFlip, f115);
-fprintf('  -> both look like the same ~2.5 Hz motion of the ball (rocking/rotation) that the vertical model lacks.\n');
+fprintf('  -> both at a similar ~2.5 Hz that the vertical model (nominal sensor gain) lacks; cause open\n');
+fprintf('     (2026-11-16: the 11.5 mm wobble is tied to the stand, not shown to be a rotation; see data/lab_2026-11-16/README.md).\n');
 chk(abs(hv(r1, 0.010) - hv(r2, 0.010)) < 0.015, ...
     'after turning over, run 1 hovers like run 2 (same current within 15 mA): the ball ended in its usual orientation');
 

@@ -42,7 +42,7 @@ No log sheet was received; set points were rebuilt from the data.
 - Force law (18 drift-corrected hover visits; 39 g at 11.5 mm excluded: one 2 s rocking visit): **lambda = 5.81 mm (manual 5.82)**, c = 3.37 (39 g) / 3.16 (42 g) N/A^2 (manual P1/P2 = 3.01), residual 4.9 mA rms. True hover current, 39 g at 10 mm: 0.800 A (manual model 0.845 A, +5.6 %). The 42 g ball needs 6.9 % more current than the 39 g ball (mass alone: 3.6 %). (An earlier version of this analysis gave lambda = 6.24 mm: constant offset, 11.5 mm point included. Superseded.)
 - Sim vs lab, 16 steps of 0.5 mm: overshoot 0.25–0.71 mm (lab) vs 0.40–0.75 (sim), rms difference 0.16 mm; settling ~100 ms in both. Down-steps to 11 mm overshoot LESS in the lab (0.41, 0.25 mm) than in the sim (0.66, 0.75); the afternoon shows the same pattern (s08).
 - Hover jitter (0.05–0.09 mm) = sensor-noise floor: the noise-only simulation gives 0.067–0.076 mm, and 0.066 of it comes from the current-sensor noise (σ 0.021 A) through Kc. Lowering Kc does not help (simulated: same jitter, worst Ms 1.66 → 8.3 at Kc 1.0).
-- Unmodelled mode: a ~2.4 Hz swing (ball turning over, 11.5 mm wobble) that the vertical model (modes ≥ 6 Hz) does not contain. Likely rocking/rotation of the non-spherical ball (supported by the afternoon Newton test, s08 6b).
+- Unmodelled mode: a ~2.4 Hz swing (ball turning over, 11.5 mm wobble) that the vertical model (modes ≥ 6 Hz) does not contain. ~~Likely rocking/rotation of the non-spherical ball (supported by the afternoon Newton test, s08 6b).~~ **[Superseded 2026-11-16]** Rotation is not supported: the 11.5 mm rocking is tied to the stand (it vanished with the stand lowered), and a loss of sensor gain near the stand reproduces 2.4 Hz in the vertical loop; see data/lab_2026-11-16/README.md, 'Stand-proximity effect'.
 
 ## Afternoon: automatic set-point sweeps and 11.5 mm holds  (analysis: `scripts/s08_analyze_sweeps.m`, 21/21 PASS → `figs/p5_*.png`, `sweeps_holds_results.mat`)
 Model: `my_cascade_sweep_rt` (Save As from `my_cascade_rt`). The sweep clock τ integrates (Forward Euler, 0.003 s) only while
@@ -137,7 +137,10 @@ three cascade models: Kp 151.2, Ki 734, Kd 2.6, Kc 2.05, i0 0.75 A, 1/ka = 1/2.4
 - The 2.4 Hz current is the controller's response to the measured x (154 A/m vs the controller's 151-152 A/m, phase
   within 6 deg), and the coil is the only power source, so the oscillation is sustained THROUGH the loop.
 - Not a vertical-loop mode: the vertical model's slowest mode is >= 6.6 Hz (zeta >= 0.37) for a21 from 1661 down to
-  200 1/s^2 and d 0.3-0.6. Most likely a rotation of the ball (s08 Newton test); not observed directly.
+  200 1/s^2 and d 0.3-0.6. ~~Most likely a rotation of the ball (s08 Newton test); not observed directly.~~
+  **[Superseded 2026-11-16]** This scan changed a21 only. With a position-sensor gain of 0.45-0.6 near the stand (the
+  reading moving less than the ball), the vertical loop itself oscillates at 2.4-3.1 Hz, so a rotation is not needed;
+  see data/lab_2026-11-16/README.md, 'Stand-proximity effect' (AUDIT.md 4.12).
 - Robustness: a sustained oscillation at 11.5 mm needs a total relative loop error >= 1/|T| = 0.84 at 2.4 Hz; after
   the parametric spread (W ~ 0.55) the UNMODELLED part is >= 0.19, about the whole margin s11 leaves at 2.4 Hz
   (Wu 0.17-0.24). So the mode is not safely covered; 11.5 mm stays out of the claimed range, and its size at 9-11 mm
@@ -152,13 +155,15 @@ three cascade models: Kp 151.2, Ki 734, Kd 2.6, Kc 2.05, i0 0.75 A, 1/ka = 1/2.4
   the OTHER way (hole-up 11.92, hole-down 12.05–12.18). The reading depends on how the ball sits, not only on the hole.
 - **Rocking at 11.5 mm:** the same ~2.4 Hz mode shows in both balls: 39 g hole-up 0.253 mm rms (steady limit cycle), 39 g
   hole-down 0.136 mm, 42 g 0.013 mm (20× smaller). No sustained rocking at 9–11 mm in the sweeps (1.5–3.5 Hz band
-  0.011–0.065 mm). The linearized vertical loop has no mode below 6.5 Hz, so the 2.4 Hz motion is not a vertical-loop mode.
+  0.011–0.065 mm). The linearized vertical loop has no mode below 6.5 Hz **with the nominal sensor gain**~~, so the 2.4 Hz motion is not a vertical-loop mode~~ (superseded 2026-11-16, see the s14 section).
 - **Newton test (s08 6b): the 2.4 Hz rocking is NOT pure up-down motion.** If the ball's centre moves as the sensor says, the
   force law fixes the current it needs: i_need = √(m (g − ẍ) e^{x/λ} / c). Slope of measured true current vs i_need:
   24 set-point steps (control) 1.03 (middle half 0.91–1.07, correlation 0.98), so for real vertical motion the sensor, the
   current and the force law agree. During the 39 g rocking: 1.74 (hole-up) and 1.72 (hole-down), correlation 0.98–0.99, so
   the coil pushes 1.7× harder than up-down motion of the measured size needs. Either the reading includes a tilt of the ball,
-  or the force depends on the tilt. Both mean a rotation is involved. Model-based evidence, not a direct observation.
+  or the force depends on the tilt. ~~Both mean a rotation is involved.~~ **[Superseded 2026-11-16]** A third reading
+  needs no rotation: near the stand the sensor reading moves less than the ball (gain ≈ 1/1.7 ≈ 0.59), which gives the
+  same slope; see data/lab_2026-11-16/README.md, 'Stand-proximity effect'. Model-based evidence, not a direct observation.
   The 10.5 → 11 mm down-steps also have low slopes (0.64–0.88), the same steps the sim overshoots most: maybe related.
 
 ## Loop delay from the existing data (s12, 2026-11-15; `scripts/s12_delay_estimate.m` → `figs/p9_delay.png`, `data/delay_estimate.mat`)

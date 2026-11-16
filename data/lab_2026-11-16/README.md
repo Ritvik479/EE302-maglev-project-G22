@@ -40,13 +40,41 @@ Renamed on 2026-11-16 (contents unchanged) from `data/runs_1116/`: `3a_*` → `s
 Not done (no time): variant D from the lowered stand, sine at 11 mm, 42 g sine, the static sensor sweep (item 1, dropped).
 
 ## Main results (details and checks in the scripts)
-- **Stand-proximity effect.** A braking spike on fast down-steps appears 0.70–0.85 mm above the stand on BOTH stand
-  heights (s16, s17), and the slow ramp shows the quasi-static current falling below the force law from ~0.7 mm above
-  the stand (−65 mA at 0.48 mm, 10 standard errors; s18). So the effect is static. It is equivalent to ~0.8 mm of reading
-  error or ~15 % of the weight. Leading (unproven) explanation: the stand shadows the optical sensor.
-  The 13-Nov overshoot mismatch goes with this effect (down-steps with a spike: lab/model 0.33–0.56; without: median 0.99).
-- **11.5 mm hold with the stand lowered:** no 2.4 Hz rocking (x std 0.115 mm, peak 4.3 Hz) vs 0.253 mm at 2.43 Hz on
-  13-Nov with the normal stand (one run each).
+- **Stand-proximity effect** (revised 2026-11-16 after the audit, AUDIT.md 4.12, 5.21; this is the reference text,
+  other files point here). Within about 0.7–0.9 mm of the calibration stand the rig departs from the plant model;
+  further away it agrees (with the stand lowered, the 13-Nov force law predicts today's hover currents at 9–11.5 mm
+  within ~1 %). Three observations:
+  1. *Static* (slow ramp, s18): the drift-corrected hover current falls below the force law from ~0.7–0.8 mm above the
+     stand, to −58 … −65 mA at 0.48 mm (two methods; 10 standard errors), i.e. ≈ 13–14 % of the weight is carried by
+     something other than the magnet. Closer than ~0.75 mm the current even **decreases** as the set point moves
+     toward the stand (−35 mA over the last 0.35 mm, where the force law needs +27 mA).
+  2. *Fast approach* (s16, s17): a braking spike in the acceleration 0.67–0.89 mm above the stand (9 spikes, both balls,
+     13-Nov and 16-Nov, normal and lowered stand).
+  3. *Hover 0.4 mm above the stand* (13-Nov, 39 g at 11.5 mm): a 2.4 Hz limit cycle (1.5–3.5 Hz band rms 0.25 mm).
+
+  All three move with the stand or vanish when it is lowered (one lowered-stand session). What it is not, and what is
+  open:
+  - **Not a sensor reading error alone** ("the stand shadows the optical sensor", stated here before). To explain
+    observation 1 with an unchanged force, the true ball would have to rise ~0.45 mm while the reading moved down
+    0.35 mm: a negative sensor slope, which reverses the feedback sign. Yet the ramp tracked within 0.001 mm. So at least
+    part of the effect is a **real upward force** on the ball; its mechanism is unknown. ("~0.8 mm of reading error",
+    stated here before, is therefore not a physical equivalent.)
+  - **The 2.4 Hz mode is not shown to be a rotation of the ball.** In the linear model, a loss of position-sensor gain
+    near the stand (the reading moving only 0.45–0.6× the true motion) makes the vertical loop itself oscillate at
+    2.4–3.1 Hz, and it matches s08's Newton slope 1.7 and the limit-cycle character (the gain loss exists only near the
+    stand). But such a gain loss does not explain observation 1, nor why the 42 g ball barely rocks at the same height,
+    and it was not observed directly. So: two effects, or one mechanism not yet identified.
+  - Lift-offs that pass the same heights quickly show no extra force (s13 §5b; unresolved).
+  - Size: it changes steeply with distance (~200 mA/mm near the stand) and so between days (13-Nov hold at 0.43 mm:
+    −30 … −39 mA; this ramp at 0.48 mm: −58 … −65 mA). Quote the onset (~0.7–0.8 mm), not one size.
+
+  Consequence for the claimed range: set points 9–11 mm, both balls, with the stand reading at least ~0.85 mm below
+  the set point; 11.5 mm on the normal stand is excluded; transients that come within ~0.8 mm of the stand (e.g. the
+  10.5 → 11 mm overshoots) are outside the model. The overshoot mismatch goes with this effect: today's down-steps
+  with a spike have lab/model 0.33–0.48 (s16; 0.56 for the lowered-stand 10.5 → 11.6 jump, s17), those without
+  0.61–1.20 (median 0.99); the 13-Nov 10.5 → 11 mismatch (lab 0.25–0.32 vs model 0.64–0.73) is the same pattern.
+- **11.5 mm hold with the stand lowered:** no 2.4 Hz rocking: 1.5–3.5 Hz band rms 0.048 mm vs 0.25 mm on 13-Nov with
+  the normal stand (one run each). Its x std 0.115 mm is ordinary for that run (9–11 mm plateaus 0.055–0.120 mm).
 - **Loop gain by sine injection (39 g, 10 mm):** crossover ≈ 29 Hz (model 23.6), phase margin ≈ 47° (interpolated
   between 20 and 40 Hz), largest measured |S| 1.51 at 40 Hz (model 1.58); coil time constant fit 20.7 ms (model 27 ms);
   1.5–2.4 Hz points too noisy (> 20 % error).

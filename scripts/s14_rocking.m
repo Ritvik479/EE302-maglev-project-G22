@@ -8,7 +8,9 @@
 %             3. is it sustained through the feedback loop? (current vs position at the rocking frequency,
 %                compared with the controller's own i/x)
 %             4. can the VERTICAL model produce it? (closed-loop modes for a21 from nominal down to
-%                200 1/s^2, i.e. also with the "weaker force decay" hypothesis of s13)
+%                200 1/s^2, i.e. also with the "weaker force decay" hypothesis of s13). NOTE 2026-11-16
+%                (AUDIT.md 4.12): this scan does not vary the position-sensor gain; a gain of 0.45-0.6 near
+%                the stand makes the vertical loop itself oscillate at 2.4-3.1 Hz. "Rotation" is not supported.
 %             5. robustness: how large an UNMODELLED relative loop error at 2.4 Hz a sustained oscillation
 %                needs (from 1/|T| minus the parametric spread W), compared with what the s11 test still
 %                tolerates there on top of W (Wu)
@@ -159,7 +161,8 @@ for a21 = a21List
 end
 c = fMin > 5 && zMin > 0.3;
 chkp(c, sprintf(['the vertical loop has no mode below %.1f Hz (all zeta >= %.2f) even with a21 cut to 200: the 2.4 Hz ' ...
-     'rocking is an EXTRA mode (most likely a rotation of the ball: s08 Newton test), not the vertical loop'], fMin, zMin));
+     'rocking is not a mode of the vertical loop with its NOMINAL sensor gain (a sensor-gain loss near the stand can ' ...
+     'produce it; rotation not supported, see data/lab_2026-11-16/README.md)'], fMin, zMin));
 nP = nP + c;  nF = nF + ~c;
 
 %% ---- 5. robustness at 2.4 Hz ------------------------------------------------------
@@ -206,7 +209,8 @@ fprintf('  frequency           %.1f-%.1f Hz (all records)\n', min(HK(:,1)), max(
 fprintf('  amplitude, 9-11 mm  <= %.3f mm rms in the %.1f-%.1f Hz band (every plateau, both balls; an upper bound:\n                      the band also holds sensor noise and the tail of the 4-7 Hz wobble)\n', bMax911, fR);
 fprintf('  amplitude, 11.5 mm  39 g: %.3f (hole-up, limit cycle) / %.3f mm (hole-down); 42 g: %.3f mm\n', HK([1 3 2], 2));
 fprintf('  damping             42 g: zeta ~ %.2f; 39 g at 11.5 mm: none (self-sustained)\n', HK(2,4));
-fprintf('  nature              an extra mode (most likely rotational) sustained through the loop; not in the vertical model\n');
+fprintf('  nature              sustained through the loop; tied to the stand (gone with the stand lowered); mechanism open\n');
+fprintf('                      (candidate: position-sensor gain loss near the stand; not a demonstrated rotation)\n');
 fprintf(['  consequence         at 11.5 mm the mode needs >= %.2f unmodelled loop error at 2.4 Hz, about the whole\n' ...
          '                      margin left at 9-11 mm (%.2f-%.2f). At 9-11 mm it is damped (no sustained rocking seen),\n' ...
          '                      but its size there is unknown -> keep 11.5 mm out of the claimed range; measure L(jw).\n'], ...
