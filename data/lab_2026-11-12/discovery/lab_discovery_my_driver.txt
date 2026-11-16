@@ -1,0 +1,560 @@
+==== 1. MATLAB ====
+version : 24.1.0.2537033 (R2024a)
+computer: PCWIN64
+  5G Toolbox                                    24.1
+  AUTOSAR Blockset                              24.1
+  Aerospace Blockset                            24.1
+  Aerospace Toolbox                             24.1
+  Antenna Toolbox                               24.1
+  Audio Toolbox                                 24.1
+  Automated Driving Toolbox                     24.1
+  Bioinformatics Toolbox                        24.1
+  Bluetooth Toolbox                             24.1
+  C2000 Microcontroller Blockset                24.1
+  Communications Toolbox                        24.1
+  Computer Vision Toolbox                       24.1
+  Control System Toolbox                        24.1
+  Curve Fitting Toolbox                         24.1
+  DDS Blockset                                  24.1
+  DSP HDL Toolbox                               24.1
+  DSP System Toolbox                            24.1
+  Data Acquisition Toolbox                      24.1
+  Database Toolbox                              24.1
+  Datafeed Toolbox                              24.1
+  Deep Learning HDL Toolbox                     24.1
+  Deep Learning Toolbox                         24.1
+  Econometrics Toolbox                          24.1
+  Embedded Coder                                24.1
+  Filter Design HDL Coder                       24.1
+  Financial Instruments Toolbox                 24.1
+  Financial Toolbox                             24.1
+  Fixed-Point Designer                          24.1
+  Fuzzy Logic Toolbox                           24.1
+  GPU Coder                                     24.1
+  Global Optimization Toolbox                   24.1
+  HDL Coder                                     24.1
+  HDL Verifier                                  24.1
+  Image Acquisition Toolbox                     24.1
+  Image Processing Toolbox                      24.1
+  Industrial Communication Toolbox              24.1
+  Instrument Control Toolbox                    24.1
+  LTE Toolbox                                   24.1
+  Lidar Toolbox                                 24.1
+  MATLAB                                        24.1
+  MATLAB Coder                                  24.1
+  MATLAB Compiler                               24.1
+  MATLAB Compiler SDK                           24.1
+  MATLAB Report Generator                       24.1
+  MATLAB Test                                   24.1
+  Mapping Toolbox                               24.1
+  Medical Imaging Toolbox                       24.1
+  Mixed-Signal Blockset                         24.1
+  Model Predictive Control Toolbox              24.1
+  Model-Based Calibration Toolbox               24.1
+  Motor Control Blockset                        24.1
+  Navigation Toolbox                            24.1
+  Optimization Toolbox                          24.1
+  Parallel Computing Toolbox                    24.1
+  Partial Differential Equation Toolbox         24.1
+  Phased Array System Toolbox                   24.1
+  Powertrain Blockset                           24.1
+  Predictive Maintenance Toolbox                24.1
+  RF Blockset                                   24.1
+  RF PCB Toolbox                                24.1
+  RF Toolbox                                    24.1
+  ROS Toolbox                                   24.1
+  Radar Toolbox                                 24.1
+  Reinforcement Learning Toolbox                24.1
+  Requirements Toolbox                          24.1
+  Risk Management Toolbox                       24.1
+  Robotics System Toolbox                       24.1
+  Robust Control Toolbox                        24.1
+  Satellite Communications Toolbox              24.1
+  Sensor Fusion and Tracking Toolbox            24.1
+  SerDes Toolbox                                24.1
+  Signal Integrity Toolbox                      24.1
+  Signal Processing Toolbox                     24.1
+  SimBiology                                    24.1
+  SimEvents                                     24.1
+  Simscape                                      24.1
+  Simscape Battery                              24.1
+  Simscape Driveline                            24.1
+  Simscape Electrical                           24.1
+  Simscape Fluids                               24.1
+  Simscape Multibody                            24.1
+  Simulink                                      24.1
+  Simulink 3D Animation                         24.1
+  Simulink Check                                24.1
+  Simulink Code Inspector                       24.1
+  Simulink Coder                                24.1
+  Simulink Compiler                             24.1
+  Simulink Control Design                       24.1
+  Simulink Coverage                             24.1
+  Simulink Design Optimization                  24.1
+  Simulink Design Verifier                      24.1
+  Simulink Desktop Real-Time                    24.1
+  Simulink Fault Analyzer                       24.1
+  Simulink PLC Coder                            24.1
+  Simulink Real-Time                            24.1
+  Simulink Report Generator                     24.1
+  Simulink Test                                 24.1
+  SoC Blockset                                  24.1
+  Spreadsheet Link                              24.1
+  Stateflow                                     24.1
+  Statistics and Machine Learning Toolbox       24.1
+  Symbolic Math Toolbox                         24.1
+  System Composer                               24.1
+  System Identification Toolbox                 24.1
+  Text Analytics Toolbox                        24.1
+  UAV Toolbox                                   24.1
+  Vehicle Dynamics Blockset                     24.1
+  Vehicle Network Toolbox                       24.1
+  Vision HDL Toolbox                            24.1
+  WLAN Toolbox                                  24.1
+  Wavelet Toolbox                               24.1
+  Wireless HDL Toolbox                          24.1
+  Wireless Testbench                            24.1
+
+==== 2. MODEL FILE ====
+PASS: found C:\Users\hp\Desktop\group_22\my_driver.slx
+
+==== 3. SOLVER / TARGET ====
+  SolverType             = Fixed-step
+  Solver                 = ode3
+  FixedStep              = 0.003
+  StopTime               = 9999
+  SimulationMode         = external
+  SystemTargetFile       = mls1em_rtcon_usb2.tlc
+  ExtMode                = on
+  SampleTimeConstraint   = Unconstrained
+PASS: FixedStep "0.003" evaluates to 0.003 s
+
+==== 4. MODEL CALLBACKS ====
+
+==== 5. BLOCK COUNT BY TYPE ====
+  Assignment                   3
+  Constant                     39
+  DataTypeConversion           9
+  Demux                        2
+  Display                      30
+  Fcn                          4
+  ForIterator                  3
+  From                         33
+  Gain                         6
+  Goto                         33
+  Inport                       6
+  Lookup                       1
+  ManualSwitch                 111
+  Memory                       1
+  Mux                          10
+  Outport                      10
+  Product                      3
+  S-Function                   2
+  Saturate                     3
+  Scope                        1
+  Selector                     3
+  SubSystem                    17
+  Sum                          2
+  Terminator                   13
+
+==== 6. KEY BLOCK PARAMETERS ====
+[Constant] my_driver/EM1 Control
+     Value                  = 0
+[MASK:Magnetic Levitation MLS1EM - System] my_driver/Magnetic Levitation System 1EM  USB2
+     RTDACUSB2IDX           = -1
+     T0                     = 0.003
+[MASK:] my_driver/Magnetic Levitation System 1EM  USB2/A//D
+[Gain] my_driver/Magnetic Levitation System 1EM  USB2/A//D/Gain
+     Gain                   = 1/5
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/A//D/Gain: { 1, 2, 4, 8, 16 }
+     Value                  = [ 1 1 1 1   1 1 1 1   1 1 1 1   1 1 1 1 ]
+[MASK:] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O
+[MASK:] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem
+[Gain] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/For Subsystem/Gain
+     Gain                   = ones(1,26)
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Input
+     Value                  = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch1
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch10
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch11
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch12
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch13
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch14
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch15
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch16
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch17
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch18
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch19
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch2
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch20
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch21
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch22
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch23
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch24
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch25
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch3
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch4
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch5
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch6
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch7
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch8
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Manual Switch9
+     sw                     = 1
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem/Output
+     Value                  = 0
+[MASK:] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1
+[Gain] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/For Subsystem/Gain
+     Gain                   = ones(1,26)
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/High
+     Value                  = 1
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Low
+     Value                  = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch1
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch10
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch11
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch12
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch13
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch14
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch15
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch16
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch17
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch18
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch19
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch2
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch20
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch21
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch22
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch23
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch24
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch25
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch3
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch4
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch5
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch6
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch7
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch8
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem1/Manual Switch9
+     sw                     = 1
+[MASK:] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2
+[Gain] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/For Subsystem/Gain
+     Gain                   = ones(1,26)
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/GPIO
+     Value                  = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch1
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch10
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch11
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch12
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch13
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch14
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch15
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch16
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch17
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch18
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch19
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch2
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch20
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch21
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch22
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch23
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch24
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch25
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch3
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch4
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch5
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch6
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch7
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch8
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Manual Switch9
+     sw                     = 1
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/CN1 Digital I//O/Subsystem2/Special
+     Value                  = 1
+[MASK:] my_driver/Magnetic Levitation System 1EM  USB2/Configuration
+[MASK:] my_driver/Magnetic Levitation System 1EM  USB2/D//A
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/D//A/D//A 0
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/D//A/D//A 1
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/D//A/D//A 2
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/D//A/D//A 3
+     Value                  = 0
+[MASK:] my_driver/Magnetic Levitation System 1EM  USB2/EM1 Current scalling [V] to [A]
+[MASK:] my_driver/Magnetic Levitation System 1EM  USB2/Encoder
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/IdxOff
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/IdxOn
+     Value                  = 1
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/InvOff
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/InvOn
+     Value                  = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch1
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch10
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch11
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch12
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch13
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch14
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch15
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch16
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch17
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch19
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch2
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch20
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch21
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch22
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch23
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch24
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch25
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch3
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch4
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch5
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch6
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch7
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch8
+     sw                     = 0
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Manual Switch9
+     sw                     = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/Off
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/Encoder/On
+     Value                  = 1
+[Gain] my_driver/Magnetic Levitation System 1EM  USB2/Gain
+     Gain                   = 1/T0
+[MASK:] my_driver/Magnetic Levitation System 1EM  USB2/MLS1EM USB2 PWM  Read
+[MASK:] my_driver/Magnetic Levitation System 1EM  USB2/MLS1EM USB2 PWM  Write
+[Memory] my_driver/Magnetic Levitation System 1EM  USB2/Memory
+[MASK:] my_driver/Magnetic Levitation System 1EM  USB2/PWM
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/12-bit
+     Value                  = 1
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/8-bit
+     Value                  = 0
+[Gain] my_driver/Magnetic Levitation System 1EM  USB2/PWM/Gain
+     Gain                   = 4095
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/PWM/Manual Switch
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/PWM/Manual Switch1
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/PWM/Manual Switch2
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/PWM/Manual Switch3
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/PWM/Manual Switch4
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/PWM/Manual Switch5
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/PWM/Manual Switch6
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/PWM/Manual Switch7
+     sw                     = 1
+[ManualSwitch] my_driver/Magnetic Levitation System 1EM  USB2/PWM/Manual Switch8
+     sw                     = 1
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/PWM0Presc
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/PWM0Width
+     Value                  = 512*0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/PWM1Presc
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/PWM1Width
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/PWM2Presc
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/PWM2Width
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/PWM3Presc
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/PWM3Width
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/PWM4Presc
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/PWM4Width
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/PWM5Presc
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/PWM5Width
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/PWM6Presc
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/PWM6Width
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/PWM7Presc
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/PWM/PWM7Width
+     Value                  = 0
+[Saturate] my_driver/Magnetic Levitation System 1EM  USB2/Saturation Control
+     UpperLimit             = 5
+     LowerLimit             = 0
+[Saturate] my_driver/Magnetic Levitation System 1EM  USB2/Saturation Current
+     UpperLimit             = 3
+     LowerLimit             = 0
+[Saturate] my_driver/Magnetic Levitation System 1EM  USB2/Saturation Position
+     UpperLimit             = 0.02
+     LowerLimit             = 0
+[MASK:] my_driver/Magnetic Levitation System 1EM  USB2/Termination
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/Termination/CN1Termination
+     Value                  = 0
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/Termination/DA Termination
+     Value                  = [ 0 0 0 0 ]
+[Constant] my_driver/Magnetic Levitation System 1EM  USB2/Termination/PWMTermination
+     Value                  = [ 0 0 0 0 0 0 0 0 ]
+
+==== 7. NAMED SIGNAL LINES ====
+  0
+  1
+  10
+  11
+  12
+  13
+  14
+  15
+  16
+  17
+  18
+  19
+  2
+  20
+  21
+  22
+  23
+  24
+  25
+  26
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+  EM1 Control
+  EM1 Current [A]
+  GPIO0/ENC0A/Fr0G/Ch0G
+  GPIO1/ENC0B/Fr0St/Ch0St
+  GPIO10/ENC3B/Fr3St/Ch3St
+  GPIO11/ENC3I/Fr3I/Ch3StSt  /  PWM3/ENC3I/Fr3I/Ch3StSt
+  GPIO12/ENC4A/Fr4G/Ch4G
+  GPIO13/ENC4B/Fr4St/Ch4St
+  GPIO14/ENC4I/Fr4I/Ch4StSt  /  PWM4/ENC4I/Fr4I/Ch4StSt
+  GPIO15/ENC5A/Fr5G/Ch5G
+  GPIO16/ENC5B/Fr5St/Ch5St
+  GPIO17/ENC5I/Fr5I/Ch5StSt  /  PWM5/ENC5I/Fr5I/Ch5StSt
+  GPIO18/ENC6A/Fr6G/Ch6G
+  GPIO19/ENC6B/Fr6St/Ch6St
+  GPIO2/ENC0I/Fr0I/Ch0StSt  /  PWMO/ENC0I/Fr0I/Ch0StSt
+  GPIO20/ENC6I/Fr6I/Ch6StSt  /  PWM6/ENC6I/Fr6I/Ch6StSt
+  GPIO21/ENC7A/Fr7G/Ch7G
+  GPIO22/ENC7B/Fr7St/Ch7St
+  GPIO23/ENC7I/Fr7I/Ch7StSt  /  PWM7/ENC7I/Fr7I/Ch7StSt
+  GPIO24/CNT0
+  GPIO25/CNT1
+  GPIO3/ENC1A/Fr1G/Ch1G
+  GPIO4/ENC1B/Fr1St/Ch1St
+  GPIO5/ENC1I/Fr1I/Ch1StSt  /  PWM1/ENC1I/Fr1I/Ch1StSt
+  GPIO6/ENC2A/Fr2G/Ch2G
+  GPIO7/ENC2B/Fr2St/Ch2St
+  GPIO8/ENC2I/Fr2I/Ch2StSt  /  PWM2/ENC2I/Fr2I/Ch2StSt
+  GPIO9/ENC3A/Fr3G/Ch3G
+  Position [m]
+  Velocity [m/s]
+PASS: model closed without saving
+
+Summary: 3 PASS, 0 FAIL. Saved to C:\Users\hp\Desktop\group_22\lab_discovery_my_driver.txt
