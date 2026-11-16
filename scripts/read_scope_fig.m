@@ -6,7 +6,7 @@ function r = read_scope_fig(file)
 %         r.t      common time vector [s] (unique stamps of the first trace)
 %         r.y      one column per trace, sampled on r.t (zero-order hold)
 %         r.file   the file read
-% NOTE    The scope stores each sample twice (stairs); unique() removes that.
+% NOTE    unique() drops repeated time stamps, if any (the stored lab files have none).
 %         Harmless "tileGrid"/"proplistener" messages may print while loading.
 % =========================================================================
 w = warning('off', 'all');
