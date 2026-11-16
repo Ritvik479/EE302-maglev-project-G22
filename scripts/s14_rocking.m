@@ -14,7 +14,9 @@
 %             5. robustness: how large an UNMODELLED relative loop error at 2.4 Hz a sustained oscillation
 %                needs (from 1/|T| minus the parametric spread W), compared with what the s11 test still
 %                tolerates there on top of W (Wu)
-% INPUTS    data/lab_2026-11-13/runs/{hold115,sweep}_*.fig, data/linear_model.mat (LM),
+%             1b. (added 2026-11-16) the same 11.5 mm hold with the stand lowered (16-Nov run)
+% INPUTS    data/lab_2026-11-13/runs/{hold115,sweep}_*.fig, data/lab_2026-11-16/runs/sweep_39g_lowstand_*.fig,
+%           data/linear_model.mat (LM),
 %           data/robustness.mat (RB, incl. RB.opt2curves added 2026-11-15), maglev_cases.m
 % OUTPUTS   console PASS/FAIL, data/rocking.mat, figs/p11_rocking.png
 % DEFINITIONS
@@ -98,6 +100,22 @@ nP = nP + c;  nF = nF + ~c;
 c = max(b115) > 2*bMax911;
 chkp(c, sprintf('record: at 11.5 mm it is much larger for the 39 g ball (%s mm rms vs <= %.3f at 9-11 mm)', ...
      mat2str(round(b115', 3)), bMax911));  nP = nP + c;  nF = nF + ~c;
+% (added 2026-11-16, AUDIT.md 4.10/4.13) the same 39 g ball, same 11.5 mm set point, with the stand LOWERED to
+% ~13.2 mm (16-Nov, sweep_39g_lowstand, manual hold): is the rocking tied to the gap or to the stand?
+lr = fullfile(P.dir.data, 'lab_2026-11-16', 'runs');
+mm = read_scope_fig(fullfile(lr, 'sweep_39g_lowstand_main.fig'));  qq = read_scope_fig(fullfile(lr, 'sweep_39g_lowstand_iref.fig'));
+close all force;
+xLs = mm.y(:,1);  uLs = mm.y(:,4);  xrLs = qq.y(:,3);  tLs = mm.t;
+kOnL = find(uLs > 0.01, 1);  xRestL = median(xLs(tLs < tLs(kOnL) - 0.05));
+hk = find(abs(xrLs - 0.0115) < 1e-7 & uLs > 0.01);
+sL = tLs >= tLs(hk(1)) + 2 & tLs <= tLs(hk(end)) - 0.1 & uLs > 0.01;
+[xbL, ~, fpL] = band_env(xLs(sL), T0, fR);  bLow = 1e3*rms(xbL);
+b39u = PL(PL(:,1) == 1, 3);  b39u = b39u(1);                 % 13-Nov hold, 39 g hole-up, normal stand
+fprintf([' 39 g at 11.5 mm, stand LOWERED (rest %.2f mm, 16-Nov, %.1f s): band rms %.3f mm (peak %.1f Hz) vs %.3f mm ' ...
+         'with the normal stand (13-Nov, 0.43 mm above it)\n'], 1e3*xRestL, nnz(sL)*T0, bLow, fpL, b39u);
+c = bLow < 0.5*b39u && bLow <= 1.2*bMax911;
+chkp(c, sprintf(['record: with the stand lowered the 11.5 mm rocking is gone (%.3f mm, within the 9-11 mm range of ' ...
+     'normal plateaus, <= %.3f): it is tied to the STAND, not to the gap (one run each)'], bLow, bMax911));  nP = nP + c;  nF = nF + ~c;
 
 %% ---- 2. what kind: limit cycle or damped mode ------------------------------
 fprintf('\n==== 2. Limit cycle or noise-driven damped mode? (11.5 mm holds) ====\n');
@@ -164,6 +182,36 @@ chkp(c, sprintf(['the vertical loop has no mode below %.1f Hz (all zeta >= %.2f)
      'rocking is not a mode of the vertical loop with its NOMINAL sensor gain (a sensor-gain loss near the stand can ' ...
      'produce it; rotation not supported, see data/lab_2026-11-16/README.md)'], fMin, zMin));
 nP = nP + c;  nF = nF + ~c;
+% 4b (added 2026-11-16, AUDIT.md 4.12): two stand mechanisms the scan above did not cover.
+%  (i) a stand "spring": an upward stand force that grows as the ball approaches the stand lowers the effective
+%      a21, down to negative values (a restoring spring). (ii) a position-sensor gain s < 1 near the stand: the
+%      reading moves s times the true motion (outer loop only). Same loop and operating point as above.
+fprintf('\n 4b. Stand mechanisms at 11.5 mm (39 g, d = %.1f):\n', dN);
+lsm = @(p) least_damped(p, C, T0, kaC);                       % least-damped oscillatory mode below 10 Hz
+SPa = [g/lam 0 -1000 -3000 -10000];  SP = zeros(numel(SPa), 3);
+for q = 1:numel(SPa)
+    p = struct('a21', SPa(q), 'b', 2*g/ieqF(1, 0.0115), 'tau', tauN, 'ka', kaN, 'd', dN);
+    [~, Acl] = loop_u(C, T0, kaC, p, 1);
+    sc = log(eig(Acl))/T0;  sc = sc(imag(sc) > 1e-6);  [~, o] = min(abs(sc));
+    SP(q, :) = [SPa(q), abs(sc(o))/(2*pi), -real(sc(o))/abs(sc(o))];
+end
+fprintf('   stand spring, a21_eff [1/s^2]: %s -> slowest oscillatory mode %s Hz (zeta %s)\n', mat2str(SP(:,1)'), ...
+        mat2str(round(SP(:,2)', 1)), mat2str(round(SP(:,3)', 2)));
+c = all(SP(2:end, 2) > 5);
+chkp(c, sprintf(['a stand SPRING cannot produce 2.4 Hz: it moves the slowest mode UP (to %.0f-%.0f Hz for a21_eff ' ...
+     '0 .. -10000 1/s^2)'], min(SP(2:end,2)), max(SP(2:end,2))));  nP = nP + c;  nF = nF + ~c;
+SGs = [1 0.8 0.7 0.6 0.5 0.45 0.4];  SG = zeros(numel(SGs), 3);
+for q = 1:numel(SGs)
+    p = struct('a21', g/lam, 'b', 2*g/ieqF(1, 0.0115), 'tau', tauN, 'ka', kaN, 'd', dN, 's', SGs(q));
+    [fq, zq] = lsm(p);  SG(q, :) = [SGs(q), fq, zq];
+end
+fprintf('   sensor gain s | least-damped mode below 10 Hz: f [Hz] (zeta; < 0 = unstable)\n');
+for q = 1:size(SG, 1), fprintf('     %.2f        | %5.2f (%+.3f)\n', SG(q, :)); end
+hit = SG(:,1) >= 0.4 & SG(:,1) <= 0.7 & SG(:,3) < 0.05 & SG(:,2) >= 2.0 & SG(:,2) <= 3.5;
+c = any(hit);
+chkp(c, sprintf(['a position-sensor GAIN LOSS near the stand reproduces the rocking: s %s gives an undamped or unstable ' ...
+     'mode at %s Hz in the vertical loop itself (candidate mechanism, not observed directly; it does not explain ' ...
+     'the static current deficit of 16-Nov)'], mat2str(SG(hit,1)'), mat2str(round(SG(hit,2)', 1))));  nP = nP + c;  nF = nF + ~c;
 
 %% ---- 5. robustness at 2.4 Hz ------------------------------------------------------
 % Small-gain view: an extra relative loop error delta at w can create a closed-loop pole there only if
@@ -199,8 +247,10 @@ fprintf(['  39 g at 11.5 mm: total error needed %.2f, parametric part <= %.2f (W
          '    the UNMODELLED (rocking) part there is >= %.2f; the 9-11 mm result tolerates %.2f-%.2f on top of W\n'], ...
         1/Tq(1), Wnear, duMin, min(Wu24), max(Wu24));
 c = duMin > 0.5*min(Wu24) && duMin < 2*max(Wu24);
-chkp(c, sprintf(['record: the rocking mode is about as large as the WHOLE remaining margin at 2.4 Hz (>= %.2f vs %.2f-%.2f ' ...
-     'tolerated): it is not safely covered; its size at 9-11 mm must be measured (sine injection)'], duMin, min(Wu24), max(Wu24)));
+chkp(c, sprintf(['record: IF the rocking is an unstructured extra error, it is about as large as the WHOLE remaining ' ...
+     'margin at 2.4 Hz (>= %.2f vs %.2f-%.2f tolerated). (2026-11-16, AUDIT.md 4.13: if it is a sensor-gain loss near the ' ...
+     'stand, see 4b, this number does not describe it; the conclusion "keep 11.5 mm out" stands either way)'], ...
+     duMin, min(Wu24), max(Wu24)));
 nP = nP + c;  nF = nF + ~c;
 
 %% ---- 6. summary -------------------------------------------------------------------
@@ -211,12 +261,13 @@ fprintf('  amplitude, 11.5 mm  39 g: %.3f (hole-up, limit cycle) / %.3f mm (hole
 fprintf('  damping             42 g: zeta ~ %.2f; 39 g at 11.5 mm: none (self-sustained)\n', HK(2,4));
 fprintf('  nature              sustained through the loop; tied to the stand (gone with the stand lowered); mechanism open\n');
 fprintf('                      (candidate: position-sensor gain loss near the stand; not a demonstrated rotation)\n');
-fprintf(['  consequence         at 11.5 mm the mode needs >= %.2f unmodelled loop error at 2.4 Hz, about the whole\n' ...
-         '                      margin left at 9-11 mm (%.2f-%.2f). At 9-11 mm it is damped (no sustained rocking seen),\n' ...
-         '                      but its size there is unknown -> keep 11.5 mm out of the claimed range; measure L(jw).\n'], ...
+fprintf('  stand lowered       39 g at 11.5 mm: %.3f mm (vs %.3f with the normal stand): the rocking is tied to the stand\n', bLow, b39u);
+fprintf(['  consequence         the effect lives within ~0.7 mm of the stand: claimed range = set points 9-11 mm with the\n' ...
+         '                      stand reading >= ~0.85 mm below the set point; 11.5 mm on the normal stand stays OUT.\n' ...
+         '                      (As an unstructured error it would need >= %.2f at 2.4 Hz vs %.2f-%.2f left at 9-11 mm.)\n'], ...
         duMin, min(Wu24), max(Wu24));
-fprintf(['  LAB (wish-list 3, refined): sine injection at u at 1.5, 2, 2.4, 3, 4 Hz plus the planned higher\n' ...
-         '                      frequencies, at 10 and 11 mm, both balls: measures L(j w) through the rocking band\n']);
+fprintf(['  still open          L(jw) at 1.5-2.4 Hz: the 16-Nov sine injection (10 mm) was too noisy there (> 20 %% error,\n' ...
+         '                      s17); 11 mm and the 42 g ball were not measured\n']);
 
 %% ---- 7. figure -----------------------------------------------------------------
 col = P.plot.colors;
@@ -228,9 +279,10 @@ for q = 1:numel(R), s = PL(:,1) == q;
     plot(ax, PL(s,2) + 0.04*(q - 3.5), PL(s,3), mk{q}, 'Color', col(R{q}.ball,:), 'MarkerFaceColor', col(R{q}.ball,:), ...
          'MarkerSize', 7 + 3*strcmp(recs{q,3}, 'hold'));
 end
+plot(ax, 11.5 + 0.2, bLow, 'p', 'Color', 'k', 'MarkerFaceColor', 'y', 'MarkerSize', 14);
 set(ax, 'YScale', 'log');  xline(ax, 11.25, 'k--', 'validated range ends');
 xlabel(ax, 'gap set point [mm]');  ylabel(ax, sprintf('x band rms %.1f-%.1f Hz [mm]', fR));
-legend(ax, strcat(recs(:,3)', {' '}, desc), 'Location', 'northwest');
+legend(ax, [strcat(recs(:,3)', {' '}, desc), {'hold 39 g, stand LOWERED (16-Nov)'}], 'Location', 'northwest');
 title(ax, '(a) Rocking amplitude per hover plateau', 'Color', 'k');
 for q = 1:3, r = R{q};
     if q == 3, continue, end
@@ -255,11 +307,20 @@ legend(ax, [arrayfun(@(o) sprintf('%s %d-%d mm', bN{o.ball}, o.g), O2(:)', 'Unif
 title(ax, '(d) Room left for unmodelled dynamics (s11)', 'Color', 'k');
 exportgraphics(f1, fullfile(P.dir.figs, 'p11_rocking.png'), 'Resolution', P.plot.res, 'BackgroundColor', 'w');
 
-save(fullfile(P.dir.data, 'rocking.mat'), 'PL', 'HK', 'IX', 'Tq', 'Wu24', 'W24', 'duMin', 'fR', 'bMax911');
+save(fullfile(P.dir.data, 'rocking.mat'), 'PL', 'HK', 'IX', 'Tq', 'Wu24', 'W24', 'duMin', 'fR', 'bMax911', ...
+     'bLow', 'SP', 'SG');                       % bLow, SP, SG added 2026-11-16 (lowered-stand hold, 4b scans)
 fprintf('\nSaved data/rocking.mat, figs/p11_rocking.png\n');
 fprintf('SUMMARY: %d PASS / %d FAIL\n', nP, nF);
 
 %% ======================= local functions ================================
+function [fq, zq] = least_damped(p, C, T0, kaC)
+% least-damped oscillatory closed-loop mode below 10 Hz: frequency [Hz] and damping ratio (< 0 = unstable)
+[~, Acl] = loop_u(C, T0, kaC, p, 1);
+sc = log(eig(Acl))/T0;  sc = sc(imag(sc) > 1e-6 & abs(sc)/(2*pi) < 10);
+if isempty(sc), fq = NaN;  zq = NaN;  return, end
+zz = -real(sc)./abs(sc);  [zq, o] = min(zz);  fq = abs(sc(o))/(2*pi);
+end
+
 function [xb, env, fpk] = band_env(x, T0, fR)
 % Zero-phase FFT band-pass, envelope (|analytic signal|) and the peak frequency inside the band.
 x = x(:) - mean(x);  n = numel(x);  X = fft(x);  f = (0:n-1)'/(n*T0);  f(f > 1/(2*T0)) = f(f > 1/(2*T0)) - 1/T0;
@@ -275,7 +336,10 @@ Ac = [0 1 0; p.a21 0 -p.b; 0 0 -1/p.tau];  Bc = [0; 0; p.ka/p.tau];
 Gc = ss(Ac, Bc, eye(3), 0);  Gc.InputDelay = p.d*T;
 Gd = absorbDelay(c2d(Gc, T, 'zoh'));
 [Ap, Bp, Cp, Dp] = ssdata(Gd);  assert(all(Dp(:) == 0), 'loop_u: plant must be strictly proper');
-np = size(Ap, 1);  Cx = Cp(1, :);  Ci = Cp(3, :);
+% (added 2026-11-16, AUDIT.md 4.12) optional position-sensor gain p.s on the OUTER loop: the reading moves
+% p.s times the true motion (default 1 = s11's loop, unchanged). The inner current loop is not affected.
+sx = 1;  if isfield(p, 's'), sx = p.s; end
+np = size(Ap, 1);  Cx = sx*Cp(1, :);  Ci = Cp(3, :);
 Kp = sgn*C.Kp;  Kd = sgn*C.Kd;  Ki = sgn*C.Ki;  Kc = sgn*C.Kc;  kff = sgn/kaC;
 A = blkdiag(Ap, 0, 1);
 A(np + 1, 1:np) = Cx;

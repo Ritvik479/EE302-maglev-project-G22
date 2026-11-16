@@ -156,9 +156,15 @@ fprintf(' near the stand (gap 0.4-0.9 mm): residual %s mA, in standard errors %s
 %  the result as a two-outcome record. The data decide: a departure >= 3 se means a STATIC stand effect.)
 dep = find(zN <= -3, 1);  gN = gap(near);
 isStatic = ~isempty(dep);
-chkp(true, sprintf(['RECORD: the quasi-static current departs from the force law (>= 3 se) from %.2f mm above the stand ' ...
-     'down to %.2f mm (residual %.0f mA there) -> the stand effect is STATIC (squeeze film alone cannot explain it); ' ...
-     'not a reading error alone (see header)'], gN(dep), min(gN), 1e3*res(find(near, 1, 'last'))));
+% (2026-11-16, AUDIT.md 5.22: was chkp(true, ...), which printed PASS even if the test failed; the message
+%  now also prints when no departure is found, instead of indexing an empty dep)
+if isStatic
+    chkp(true, sprintf(['the quasi-static current departs from the force law (>= 3 se) from %.2f mm above the stand ' ...
+         'down to %.2f mm (residual %.0f mA there) -> the stand effect is STATIC (squeeze film alone cannot explain it); ' ...
+         'not a reading error alone (see header)'], gN(dep), min(gN), 1e3*res(find(near, 1, 'last'))));
+else
+    chkp(false, 'the quasi-static current does NOT depart from the force law by >= 3 se near the stand (no static effect found)');
+end
 nP = nP + isStatic;  nF = nF + ~isStatic;
 hy = 1e3*(iu - idn);
 fprintf(' up-down difference: median %+.1f mA over all bins, %s mA within 0.9 mm of the stand\n', median(hy), mat2str(round(hy(gap < 0.9), 1)));

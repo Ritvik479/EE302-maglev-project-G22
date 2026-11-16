@@ -16,7 +16,7 @@ Status legend: `[ ]` open, `[x]` done, `[~]` decided but waiting.
 | 2 | Correct `group 28/PARAMETERS.md` (outward-facing) | [x] 2026-11-16 (zip rebuilt). **Student: send it if the old one was shared (D4)** |
 | 3 | One canonical stand-zone paragraph, pasted everywhere | [x] 2026-11-16 (text only; scripts parse-checked, not re-run) |
 | 4 | Text-only MAJOR fixes | [x] 2026-11-16 (comments/strings only; P values unchanged; nothing to re-run) |
-| 5 | Code fixes in leaf scripts (s09, s14, s17, s18) | [ ] |
+| 5 | Code fixes in leaf scripts (s09, s14, s17, s18) | [x] 2026-11-16 (tested on a scratch copy; repo outputs not yet regenerated = Step 6) |
 | 6 | Re-run in dependency order, compare with expectations | [ ] |
 | 7 | README updates (robustness numbers, new counts) | [ ] |
 | 8 | One value per quantity (text) | [ ] |
@@ -142,7 +142,19 @@ Original plan for this step:
 - [ ] 3.16 `maglev_cases` line 69: kg row labelled per D2. Same file: header line 18 "D = SIMULATION ONLY" → tested
       on hardware 16-Nov; "9–11.5 mm validated" → 9–11 mm; τ evidence wording (22–25 ms measured).
 
-## Step 5 — Code fixes in leaf scripts
+## Step 5 — Code fixes in leaf scripts (DONE)
+
+Done 2026-11-16. All four scripts were run on a SCRATCH COPY of the project (repo `data/`, `figs/`, `models/` untouched).
+Results of those test runs (they are the expectations for Step 6):
+
+| Script | Before | After | What changed |
+|---|---|---|---|
+| s09 | 15/1 | **16/1** | New classification: **69 cases in the set** (nominal, 64 corners, 3 sensor); outside: 4 delay refs, 2 kg tests (D2), 2 stress cases (D3, renamed in `maglev_cases`, group 'stress'). In the set: **51 fully ok**, 0 lost, 18 within 0.1 mm of the stand (all on 10.5 -> 11 mm), integral clamped in 4. (= audit's corrected 53/73 minus the 2 kg cases, which are ok.) New check: true-x 1.5-3.5 Hz band rms < 0.05 mm (lab 9-11 mm bound, declared before the run) in the noisy cases of the set: PASS, but **close: 0.048 mm (42 g noise)**. Stress cases: 0.42-0.44 mm -> NOT ok. `lost` also catches x ~ 0. CLEARANCE FAIL kept, explained by the stand effect. Variant D: 56/77 ok (unchanged checks 4/4). Figure p6_cases_special: both kg lines visible (thick solid + thin dashed on top) |
+| s14 | 8/0 | **11/0** | §1b lowered-stand 11.5 mm hold: band rms 0.048 mm vs 0.250 (13-Nov) -> stand-tied. §4b: stand spring moves the slowest mode UP (11-22 Hz); sensor gain s 0.6/0.5/0.45/0.4 -> 3.07/2.64/2.44/2.25 Hz, zeta -0.06/-0.32/-0.47/-0.63. `loop_u` has an optional p.s (default 1 = s11 loop; |T| check still 8.9e-16). §5/§6 reworded (4.13). rocking.mat + bLow, SP, SG |
+| s17 | 10/1 | **10/2** | §C lowered-stand lift-off simulated from the rest readings (s08 plant, lab controller wound up): nominal **8.90 / 8.89 mm**, 9 cases **8.69-9.14 / 8.68-9.14**; lab 8.65 / 8.59 -> 0.25 / 0.30 mm higher than nominal. NEW honest FAIL: **both** lab lift-offs lie just outside the 9-case range (audit said one). Complex G_iu fit 12-40 Hz: d 0.5 -> ka 2.45, tau 22.6 ms (cost 0.164); d 0.6 -> 2.25, 20.5 ms (0.162); d 0.3 -> 0.217; d 0 / 1 -> 0.399 / 0.352. So d 0.5-0.6 equally good, 0 and 1 rejected. p13: phase wrapped like the lab points, noisy points open, no lines in the ratio panel. |ΔT| message reworded (5.12) |
+| s18 | 5/0 | **5/0** | RECORD uses `chkp(isStatic, ...)` and no longer crashes if the test fails (5.22) |
+
+Original plan for this step:
 
 - [ ] **s09** — 3.22: ringing test for noisy/tilt cases (e.g. 1.5–3.5 Hz band of the true x vs a limit); rename
       "lab-like" → "11.5 mm stress case" (D3); `lost` also catches x ≈ 0; count 53 of 73, not 54. Also 3.26 (kg 0.4
@@ -164,10 +176,10 @@ Original plan for this step:
 | 0 | s07, s08 (optional) | wording-only changes; re-run only to refresh console logs; `.mat` must be identical |
 | 1 | s10 | 12/0; `LM` identical (`isequaln` vs git); only `U` changes |
 | 2 | s11 | 12/4; `robustness.mat` identical (sanity) |
-| 3 | s14 | 8 PASS + new scan checks |
-| 4 | s09 | "fully ok" 53 (or what the new ringing test gives); total may change — explain any new FAIL |
-| 5 | s17 | 10/1 + new lift-off lines |
-| 6 | s18 | 5/0 |
+| 3 | s14 | 11/0 (scratch run) |
+| 4 | s09 | 16/1; 51 of 69 in the set fully ok (scratch run) |
+| 5 | s17 | 10/2 (new FAIL = lowered-stand lift-off outside the 9-case range; scratch run) |
+| 6 | s18 | 5/0 (scratch run) |
 
 Do NOT re-run s05–s08 or s12. Compare every rewritten `.mat` with the git baseline.
 

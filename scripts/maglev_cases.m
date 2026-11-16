@@ -112,8 +112,11 @@ end
 K(end+1) = mk('39 g, sensor noise', 'sensor', 39, B.pl39, B.sc, struct('sigX', E.sigX, 'sigI', E.sigI));
 K(end+1) = mk('42 g, sensor noise', 'sensor', 42, B.pl42, B.sc, struct('sigX', E.sigX, 'sigI', E.sigI));
 K(end+1) = mk('39 g, zero drift', 'sensor', 39, B.pl39, B.sc, struct('izRate', -0.85e-3));
-K(end+1) = mk('39 g, tilt artifact', 'unmodelled', 39, B.pl39, B.sc, struct('dxA', 0.27e-3));
-K(end+1) = mk('39 g, lab-like (noise + drift + tilt)', 'unmodelled', 39, B.pl39, B.sc, ...
+% 11.5 mm STRESS cases (renamed 2026-11-16, AUDIT.md 3.22 / 4.12): the 0.27 mm x artifact was measured 0.4 mm
+% above the normal stand and is applied here at EVERY gap, where the lab shows <= 0.05 mm. Not part of the
+% uncertainty set; s09 reports them separately. (Old names: 'tilt artifact', 'lab-like (noise + drift + tilt)'.)
+K(end+1) = mk('39 g, stress: x artifact 2.45 Hz', 'stress', 39, B.pl39, B.sc, struct('dxA', 0.27e-3));
+K(end+1) = mk('39 g, stress: noise + drift + x artifact', 'stress', 39, B.pl39, B.sc, ...
               struct('sigX', E.sigX, 'sigI', E.sigI, 'izRate', -0.85e-3, 'dxA', 0.27e-3));
 end
 

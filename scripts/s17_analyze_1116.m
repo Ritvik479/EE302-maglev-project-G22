@@ -14,7 +14,9 @@
 %      a braking spike tied to x ~ 11.05-11.14 mm on every down-step. Here: same Newton test (s13/s16; spike =
 %      more negative than 1.5x the worst up-step, pooled over these three runs, criterion fixed in s16), overshoot
 %      vs model (s07 plant, d = 0.5, as s13/s16), clearance to the stand.
-%   C. LOWERED STAND extras: lift-off from >= 13 mm, 11.5 mm hold (rocking) vs 13-Nov.
+%   C. LOWERED STAND extras: lift-off from >= 13 mm vs simulation from the measured rest readings (nominal and
+%      9 cases, s08 plant via maglev_cases; revised 2026-11-16), 11.5 mm hold (rocking) vs 13-Nov.
+%   (2026-11-16 also: complex G_iu fit for tau and d, AUDIT.md 5.11; p13 phase wrapping, 5.13.)
 % INPUTS    data/lab_2026-11-16/runs/{sine_39g_10mm,rampFLAT_39g,ramp116FLAT_39g_lowstand,sweep_39g_lowstand}_*.fig
 %           (renamed 2026-11-16 from runs_1116/4_39g_*, 3b_39g_1*, 3b116_39g_*, 2_39g_*; contents unchanged),
 %           data/lab_2026-11-13/{sweeps_holds_results,exp_ABC_results}.mat,
@@ -122,14 +124,31 @@ fprintf(' |Delta * T_model| (robust stability needs < 1)     : %s\n', mat2str(ro
 good = [Z.seL]./abs(Lm) < 0.2;
 fprintf(' points measured to < 20 %% (se/|L|): %s Hz | too noisy: %s Hz\n', mat2str(fz(good)), mat2str(fz(~good)));
 c = all(abs(Dl(good).*Tmod(good)) < 1);
-chkp(c, sprintf('where L is measured to < 20 %%, |Delta T| < 1 (max %.2f): the model error there cannot destabilize the loop', ...
+% (wording revised 2026-11-16, AUDIT.md 5.12: the test covers only the measured points of a loop already known
+%  to be stable; 1.5-2.4 Hz and the model's |S| peak (~45 Hz) were not measured)
+chkp(c, sprintf(['at the points where L is measured to < 20 %%, the model error is below the robust-stability bound ' ...
+     '(|Delta T| max %.2f < 1); not tested at 1.5-2.4 Hz or at the model''s |S| peak'], ...
      max(abs(Dl(good).*Tmod(good)))));  nP = nP + c;  nF = nF + ~c;
 hiF = fz >= 12 & good;
 fprintf(' 12-40 Hz (good points): |L| lab/model %s, |G_iu| lab/model %s, |G_xu| lab/model %s\n', mat2str(round(abs(Lm(hiF)./Lmd(hiF)), 2)), ...
         mat2str(round(abs(Giu_m(hiF)./Giu_d(hiF)), 2)), mat2str(round(abs(Gxu_m(hiF)./Gxu_d(hiF)), 2)));
 % what coil time constant would explain the G_iu ratio? |ka/(1 + j w tau)| with the measured |G_iu| (delay/ZOH as model)
 tauFit = fminbnd(@(tt) sum((abs(Giu_m(hiF)) - abs(squeeze(freqresp(disc(ka/(tt*sS + 1), 0.5, T0), 2*pi*fz(hiF))).')).^2), 0.010, 0.040);
-fprintf(' coil time constant that fits |G_iu| at 12-40 Hz (ka %.2f fixed): %.1f ms (model 27 ms; 12-Nov step test 25-29 ms)\n', ka, 1e3*tauFit);
+fprintf([' coil time constant that fits |G_iu| at 12-40 Hz (MAGNITUDE only, ka %.2f fixed): %.1f ms. Above the corner ' ...
+         'frequency the magnitude fixes only ka/tau, so this trades with ka\n'], ka, 1e3*tauFit);
+% (added 2026-11-16, AUDIT.md 5.11) complex fit (magnitude AND phase) of G_iu at 12-40 Hz, free ka and tau, for
+% each fixed extra delay d: the phase separates tau from d, and these data were taken while LEVITATING
+dTry = [0 0.3 0.5 0.6 1];  CFz = zeros(numel(dTry), 4);   % [d ka tau_ms cost]
+for q = 1:numel(dTry)
+    cost = @(th) sum(abs(Giu_m(hiF) - squeeze(freqresp(disc(th(1)/(abs(th(2))*sS + 1), dTry(q), T0), 2*pi*fz(hiF))).').^2 ...
+                     ./abs(Giu_m(hiF)).^2);
+    th = fminsearch(cost, [ka tauC], optimset('TolX', 1e-7, 'TolFun', 1e-10, 'MaxFunEvals', 4000));
+    CFz(q, :) = [dTry(q), th(1), 1e3*abs(th(2)), cost(th)];
+end
+fprintf(' complex fit of G_iu at 12-40 Hz (sum of squared relative errors), free ka and tau:\n');
+for q = 1:numel(dTry), fprintf('   d %.1f: ka %.2f, tau %.1f ms, cost %.3f\n', CFz(q, :)); end
+[~, qb] = min(CFz(:,4));
+fprintf(' best d %.1f (ka %.2f, tau %.1f ms); static ka from hover data %.2f\n', CFz(qb, 1:3), ka);
 
 %% ======================= B. stand-proximity test ==========================
 fprintf('\n==== B. Stand proximity: braking spike and overshoot, normal vs lowered stand (39 g) ====\n');
@@ -196,12 +215,34 @@ chkp(c, sprintf(['the overshoot mismatch goes with the spike: with a spike lab/m
 
 %% ======================= C. lowered stand extras ===========================
 fprintf('\n==== C. Lowered stand: lift-off and 11.5 mm hold ====\n');
+% (revised 2026-11-16, AUDIT.md 5.15: the model value was a hard-coded "8.65-8.70", which is the WORST of the
+%  corners, not the nominal. Now simulated here from each run's measured rest reading and logged set point:
+%  lab controller with its wound-up integral, s08 plant via maglev_cases, nominal d 0.5 / c x1 and the 9 cases
+%  d 0.3/0.5/0.6 x c x0.95/1/1.05, as s18 does for the normal stand. Closest approach = min x in the first 1 s.)
+[~, B] = maglev_cases(P);
+CfL = B.C;  CfL.zLim = B.C.iLim/B.C.Ki;  LfL = struct('T0', T0, 'ka', B.L.kaC, 'umax', B.L.umax);
+dSet = [0.3 0.5 0.6];  cSet = [0.95 1 1.05];  LO = zeros(2, 5);   % [rest, lab, sim nominal, sim min, sim max] [mm]
 for q = 2:3
     r = RR{q};  lw = r.t >= r.t(r.kOn) & r.t < r.t(r.kOn) + 1;  xmin = min(r.x(lw));
-    tl = r.t(find(r.tau > 0, 1)) - r.t(r.kOn);
-    fprintf(' %s: lift %.0f ms after switch-on, closest to the magnet %.2f mm (model from 13.0-13.5 mm: 8.65-8.70)\n', RS{q,3}, 1e3*tl, 1e3*xmin);
+    tl = r.t(find(r.tau > 0, 1)) - r.t(r.kOn);  xr0 = r.xr(r.kOn);
+    xs = zeros(numel(dSet), numel(cSet));
+    for id = 1:numel(dSet), for ic = 1:numel(cSet)
+        pl = B.pl39;  plf = struct('m', pl.m, 'lam', pl.lam, 'c', pl.c*cSet(ic), 'ioff', B.sc.iz0, 'tau', pl.tau, ...
+                                   'ka', pl.ka, 'ci', B.sc.iz0);
+        sm = maglev_cascade_sim(CfL, LfL, plf, @(tt) xr0, 1.0, struct('x0', r.xRest, 'xStand', r.xRest, ...
+                                'i0s', B.sc.iz0, 'z0', CfL.zLim, 'd', dSet(id)));
+        xs(id, ic) = 1e3*min(sm.x);
+    end, end
+    LO(q-1, :) = [1e3*r.xRest, 1e3*xmin, xs(2,2), min(xs(:)), max(xs(:))];
+    fprintf([' %s: rest %.2f mm, set point %.1f mm, lift %.0f ms after switch-on, closest to the magnet %.2f mm | ' ...
+             'simulation: nominal %.2f mm, 9 cases %.2f-%.2f mm\n'], RS{q,3}, 1e3*r.xRest, 1e3*xr0, 1e3*tl, 1e3*xmin, ...
+            xs(2,2), min(xs(:)), max(xs(:)));
     c = xmin > 0.0080;  chkp(c, sprintf('%s: lift-off stayed > 8 mm from the magnet', RS{q,3}));  nP = nP + c;  nF = nF + ~c;
 end
+fprintf(' lab rises %s mm higher (closer to the magnet) than the nominal simulation\n', mat2str(round(LO(:,3)' - LO(:,2)', 2)));
+c = all(LO(:,2) >= LO(:,4) - 1e-6);
+chkp(c, sprintf(['lowered-stand lift-off: the lab closest approach (%s mm) lies inside the simulated 9-case range ' ...
+     '(lowest %s mm)'], mat2str(round(LO(:,2)', 2)), mat2str(round(LO(:,4)', 2))));  nP = nP + c;  nF = nF + ~c;
 r = RR{3};
 hk = find(abs(r.xr - 0.0115) < 1e-7);
 if ~isempty(hk)
@@ -221,24 +262,40 @@ tl = tiledlayout(fg, 2, 2, 'TileSpacing', 'compact');
 title(tl, 'Lab 2026-11-16, item 4: loop gain measured by sine injection (39 g, 10 mm)', 'Color', 'k');
 fg2 = logspace(log10(1), log10(60), 300);
 Lc = cellfun(@(Lx) squeeze(freqresp(Lx, 2*pi*fg2)).', LM, 'UniformOutput', false);
+% (revised 2026-11-16, AUDIT.md 5.13: model phase wrapped exactly like the lab points, to (-360, 0] deg; points
+%  with > 20 % standard error drawn OPEN; ratio panel without lines joining repeated frequencies)
+rd1 = [0.9 0.2 0.1];  bl1 = [0 0.45 0.9];  wrapN = @(a) a - 360*(a > 0);
 ax = nexttile(tl);  hold(ax, 'on');  set(ax, 'XScale', 'log', 'YScale', 'log');
-plot(ax, fg2, abs(Lc{2}), 'Color', [0 0.45 0.9], 'LineWidth', 1.5);
-errorbar(ax, fz, abs(Lm), [Z.seL], 'o', 'Color', [0.9 0.2 0.1], 'MarkerFaceColor', [0.9 0.2 0.1]);
-yline(ax, 1, 'k:');  xlabel(ax, 'f [Hz]');  ylabel(ax, '|L|');  title(ax, '|L(j\omega)|: lab (red) vs model (blue)', 'Color', 'k');
+plot(ax, fg2, abs(Lc{2}), 'Color', bl1, 'LineWidth', 1.5);
+errorbar(ax, fz(good), abs(Lm(good)), [Z(good).seL], 'o', 'Color', rd1, 'MarkerFaceColor', rd1);
+errorbar(ax, fz(~good), abs(Lm(~good)), [Z(~good).seL], 'o', 'Color', rd1, 'MarkerFaceColor', 'w');
+yline(ax, 1, 'k:');  xlabel(ax, 'f [Hz]');  ylabel(ax, '|L|');
+legend(ax, 'model (d 0.5)', 'lab', 'lab, > 20 % error', '', 'Location', 'southwest');
+title(ax, '|L(j\omega)|: lab vs model', 'Color', 'k');
 ax = nexttile(tl);  hold(ax, 'on');  set(ax, 'XScale', 'log');
-plot(ax, fg2, unwrap(angle(Lc{2}))*180/pi, 'Color', [0 0.45 0.9], 'LineWidth', 1.5);
-plot(ax, fz, angle(Lm)*180/pi - 360*(angle(Lm) > 0), 'o', 'Color', [0.9 0.2 0.1], 'MarkerFaceColor', [0.9 0.2 0.1]);
-yline(ax, -180, 'k:');  xlabel(ax, 'f [Hz]');  ylabel(ax, 'phase L [deg]');  title(ax, 'phase of L', 'Color', 'k');
+phM = wrapN(angle(Lc{2})*180/pi);  phM([false, abs(diff(phM)) > 180]) = NaN;   % break the line at the wrap
+phL = wrapN(angle(Lm)*180/pi);
+plot(ax, fg2, phM, 'Color', bl1, 'LineWidth', 1.5);
+plot(ax, fz(good), phL(good), 'o', 'Color', rd1, 'MarkerFaceColor', rd1);
+plot(ax, fz(~good), phL(~good), 'o', 'Color', rd1, 'MarkerFaceColor', 'w');
+yline(ax, -180, 'k:');  ylim(ax, [-360 0]);  xlabel(ax, 'f [Hz]');  ylabel(ax, 'phase L [deg], wrapped to (-360, 0]');
+title(ax, 'phase of L', 'Color', 'k');
 ax = nexttile(tl);  hold(ax, 'on');  set(ax, 'XScale', 'log');
-plot(ax, fg2, abs(1./(1 + Lc{2})), 'Color', [0 0.45 0.9], 'LineWidth', 1.5);
-plot(ax, fz, abs(Sm), 'o', 'Color', [0.9 0.2 0.1], 'MarkerFaceColor', [0.9 0.2 0.1]);
+plot(ax, fg2, abs(1./(1 + Lc{2})), 'Color', bl1, 'LineWidth', 1.5);
+plot(ax, fz(good), abs(Sm(good)), 'o', 'Color', rd1, 'MarkerFaceColor', rd1);
+plot(ax, fz(~good), abs(Sm(~good)), 'o', 'Color', rd1, 'MarkerFaceColor', 'w');
 xlabel(ax, 'f [Hz]');  ylabel(ax, '|S| = |U/D|');  title(ax, 'sensitivity at the rig input', 'Color', 'k');
 ax = nexttile(tl);  hold(ax, 'on');  set(ax, 'XScale', 'log');
-plot(ax, fz, abs(Giu_m./Giu_d), 's-', 'Color', [0.2 0.6 0.2], 'MarkerFaceColor', [0.2 0.6 0.2]);
-plot(ax, fz, abs(Gxu_m./Gxu_d), 'd-', 'Color', [0.6 0.2 0.8], 'MarkerFaceColor', [0.6 0.2 0.8]);
-plot(ax, fz, abs(Lm./Lmd), 'o-', 'Color', [0.9 0.2 0.1], 'MarkerFaceColor', [0.9 0.2 0.1]);
+rs = {abs(Giu_m./Giu_d), 's', [0.2 0.6 0.2]; abs(Gxu_m./Gxu_d), 'd', [0.6 0.2 0.8]; abs(Lm./Lmd), 'o', rd1};
+for q = 1:3
+    plot(ax, fz(good), rs{q,1}(good), rs{q,2}, 'Color', rs{q,3}, 'MarkerFaceColor', rs{q,3}, 'MarkerSize', 7);
+end
+for q = 1:3
+    plot(ax, fz(~good), rs{q,1}(~good), rs{q,2}, 'Color', rs{q,3}, 'MarkerFaceColor', 'w', 'MarkerSize', 7);
+end
 yline(ax, 1, 'k:');  xlabel(ax, 'f [Hz]');  ylabel(ax, 'measured / model');
-legend(ax, 'coil G_{iu}', 'plant G_{xu}', 'loop L', 'Location', 'best');  title(ax, 'gain ratio lab / model', 'Color', 'k');
+legend(ax, 'coil G_{iu}', 'plant G_{xu}', 'loop L', 'Location', 'best');
+title(ax, 'gain ratio lab / model (open: > 20 % error in L)', 'Color', 'k');
 exportgraphics(fg, fullfile(P.dir.figs, 'p13_sine_loop.png'), 'BackgroundColor', 'w');  close(fg);
 
 fg = figure('Visible', 'off', 'Color', 'w', 'Position', [50 50 1400 800]);

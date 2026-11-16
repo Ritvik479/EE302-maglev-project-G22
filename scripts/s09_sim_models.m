@@ -5,7 +5,13 @@
 %             2. verify it: (a) same answer as the MATLAB simulation maglev_cascade_sim.m,
 %                (b) reproduces the lab 39 g sweep, (c) a sign error makes it fail
 %             3. run every nominal and uncertain case of scripts/maglev_cases.m
-%             5. (added 2026-11-15) the same cases with controller variant D (simulation only, see s11)
+%             5. (added 2026-11-15) the same cases with controller variant D (designed in s11; tested on the
+%                hardware 2026-11-16, s18)
+% REVISED   2026-11-16 (AUDIT.md 3.22, 3.16, 4.12): cases are classified as IN the uncertainty set (nominal,
+%           corners, sensor) or OUTSIDE it (delay references d 0 / 1; kg tests = hardware gain-margin test, not
+%           part of the robust set; 11.5 mm stress cases with the x artifact applied at every gap). "ok" now
+%           also tests noisy and artifact cases for a sustained 1.5-3.5 Hz oscillation of the TRUE x (band rms
+%           < 0.05 mm per level, the lab's 9-11 mm upper bound, s14), and "lost" also catches a ball at the magnet.
 % INPUTS    data/lab_2026-11-13/{sweeps_holds_results,exp_ABC_results}.mat, runs/sweep_39g_holeup_*.fig
 % OUTPUTS   models/maglev_cl_sim.slx, console PASS/FAIL + case table,
 %           data/sim_cases_results.mat, figs/p6_cases_corners.png, figs/p6_cases_special.png
@@ -102,10 +108,11 @@ for k = 1:numel(K)
             .setVariable('L', B.L).setVariable('sc', K(k).sc);
 end
 tic;  out = sim(in, 'ShowProgress', 'off', 'StopOnError', 'off');  fprintf('  %d runs in %.0f s\n', numel(K), toc);
-M = struct('ok', {}, 'lift', {}, 'held', {}, 'merr', {}, 'ring', {}, 'os', {}, 'ts', {}, 'usat', {}, 'xstd', {}, ...
-           'nlev', {}, 'clampLev', {}, 'unexpl', {}, 'why', {}, 'clear', {}, 'tClose', {}, 'xrClose', {}, 'lost', {});
+M = struct('ok', {}, 'lift', {}, 'held', {}, 'merr', {}, 'ring', {}, 'band', {}, 'os', {}, 'ts', {}, 'usat', {}, ...
+           'xstd', {}, 'nlev', {}, 'clampLev', {}, 'unexpl', {}, 'why', {}, 'clear', {}, 'tClose', {}, 'xrClose', {}, ...
+           'lost', {});
 for k = 1:numel(K), M(k) = case_metrics(out(k), K(k), B.C, B.L); end
-fprintf('  %-46s | ok | lift [s] | max |mean e| [um] | ring [mm] | max OS [mm] | max settle [ms] | u at 0.9 [%%]\n', 'case');
+fprintf('  %-46s | ok | lift [s] | max |mean e| [um] | ring [mm] | band [mm] | max OS [mm] | max settle [ms] | u at 0.9 [%%]\n', 'case');
 for k = 1:numel(K)
     if startsWith(K(k).group, 'corner'), continue; end
     print_case(K(k).name, M(k));
@@ -122,21 +129,36 @@ for k = find(~[M.ok] & ~contains({K.group}, 'corner'))
     fprintf('  NOT OK: %-46s %s\n', K(k).name, M(k).why);
 end
 grp = {K.group};
-inSet = ~strcmp(grp, 'delay ref');      % cases inside the uncertainty set (delay 0.3-0.6); refs: d = 0 and d = 1
+% IN the uncertainty set: nominal, corners (delay 0.3-0.6), sensor. OUTSIDE (revised 2026-11-16): delay references
+% (d 0, d 1), kg tests (hardware gain-margin test, not in the robust set, AUDIT.md 3.16), 11.5 mm stress cases (3.22).
+outGrp = {'delay ref', 'actuator', 'stress'};
+inSet = ~ismember(grp, outGrp);
 close = find(~[M.held] & ~[M.lost] & inSet);
 fprintf(['  Summary (%d cases in the set): %d fully ok | ball lost in %d | %d come within 0.1 mm of the stand ' ...
          '(at x_ref = 11 mm: %d) | integral clamped somewhere in %d\n'], nnz(inSet), nnz([M(inSet).ok]), ...
         nnz([M(inSet).lost]), numel(close), nnz(abs([M(close).xrClose] - 11) < 1e-6), ...
         nnz(~cellfun(@isempty, {M(inSet).clampLev})));
+for gq = outGrp
+    sg = strcmp(grp, gq{1});
+    fprintf('  outside the set, %-10s: %d cases, %d fully ok, ball lost in %d\n', gq{1}, nnz(sg), nnz([M(sg).ok]), nnz([M(sg).lost]));
+end
+for k = find(strcmp(grp, 'stress'))
+    fprintf('    %-46s 1.5-3.5 Hz band of the TRUE x: up to %.3f mm rms (lab at 9-11 mm: <= 0.05)\n', K(k).name, M(k).band);
+end
 chk(~any([M(inSet).lost]), sprintf(['STABILITY: the ball is never lost in any of the %d cases of the set ' ...
     '(measured delay 0.3-0.6 sample included)'], nnz(inSet)));
-chk(~any([M(~inSet).lost]), sprintf('STABILITY: nor in the %d reference cases (d = 0, and d = 1 as a stress case)', nnz(~inSet)));
+chk(~any([M(~inSet).lost]), sprintf(['STABILITY: nor in the %d cases outside the set (d = 0 / d = 1 references, kg ' ...
+    'tests, 11.5 mm stress cases)'], nnz(~inSet)));
 chk(isempty(close), sprintf(['CLEARANCE: >= 0.1 mm to the stand after lift-off in every case of the set ' ...
-    '(%d cases come closer; the model overpredicts the lab overshoot near 11 mm ~2x)'], numel(close)));
+    '(%d cases come closer, on the 10.5 -> 11 mm down-step; there the lab overshoots ~0.4x the model, because ' ...
+    'within ~0.7-0.9 mm of the stand the rig has a stand-proximity effect the model lacks, 16-Nov README)'], numel(close)));
 chk(~any([M.unexpl]), ['every level with a steady error above tolerance (20 um; 50 um with noise/tilt) has the ' ...
     'integral at its clamp: no unexplained offsets']);
 chk(all([M(~cellfun(@(s) s.sigX > 0 || s.dxA > 0, {K.sc})).ring] < 0.02), ...
     'no sustained oscillation in any noise-free case (x std < 0.02 mm over the last 0.5 s of every level)');
+noisyIn = inSet & cellfun(@(s) s.sigX > 0 || s.dxA > 0, {K.sc});
+chk(all([M(noisyIn).band] < 0.05), sprintf(['no sustained 1.5-3.5 Hz oscillation in the noisy cases of the set ' ...
+    '(true-x band rms <= %.3f mm < 0.05 mm, the lab''s 9-11 mm bound; %d cases)'], max([M(noisyIn).band]), nnz(noisyIn)));
 cn = strcmp(grp, 'corner, d low');  cd = strcmp(grp, 'corner, d high');
 fprintf('  delay effect on the corners, d %.1f -> %.1f: worst overshoot %.2f -> %.2f mm, worst settle %.0f -> %.0f ms\n', ...
         B.dly.lo, B.dly.hi, max([M(cn).os]), max([M(cd).os]), max([M(cn).ts]), max([M(cd).ts]));
@@ -153,8 +175,9 @@ for b = [39 42]
             b, 1e3*(max(o.x(o.tt > 1)) - 0.0115), 1e3*max(o.x(o.tt > 1)), 1e3*pl.xStand, ...
             subsref({'clear', 'TOUCHES THE STAND'}, substruct('{}', {1 + (max(o.x) >= pl.xStand - 1e-6)})));
 end
-fprintf('  Lab (Exp A, 39 g, same step): overshoot 0.34 mm, no contact. The model overpredicts down-step overshoot\n');
-fprintf('  near 11 mm (s08), so this is pessimistic; still, 11.5 mm should be reached by lifting, not by a down-step.\n');
+fprintf(['  Lab (Exp A, 39 g, same step): overshoot 0.33-0.34 mm, closest 0.11 mm to the stand reading (contact not\n' ...
+         '  excluded). Within ~0.8 mm of the stand the model lacks the stand-proximity effect (16-Nov README), so this\n' ...
+         '  comparison lies outside the model''s range. 11.5 mm (normal stand) is outside the claimed range.\n']);
 % (ii) kg = 0.4 cannot lift off from the stand (Exp C changed kg only while hovering)
 pl = B.pl39;  sc = B.sc;  sc.kg = 0.4;  sc.Tend = 3;
 o = runOne(pl, B.C, B.L, sc);
@@ -187,10 +210,10 @@ fprintf('  kg 0.4 hovering at 11 mm (never tried in the lab): the model %s (end 
         substruct('{}', {1 + (o.x(end) > B.pl39.xStand - 0.1e-3)})), 1e3*o.x(end));
 chk(abs(zLab - zSim) < 0.03, 'model reproduces how close the lab kg 0.4 test was to the integral clamp (within 30 mA)');
 
-%% ---- 5. controller variant D (SIMULATION ONLY, added 2026-11-15) ------------------------
-% D = i0 0.85 A, clamp +-0.45 A, integral reset to 0 at switch-on (s11 section 6). Not on the hardware:
-% the lab-model change is deferred to the next lab slot. Same model, same 75 cases, same metrics.
-fprintf('\n==== 5. Controller variant D (simulation only): i0 0.85 A, clamp 0.45 A, integral reset at switch-on ====\n');
+%% ---- 5. controller variant D (added 2026-11-15; tested on the hardware 2026-11-16) ----------
+% D = i0 0.85 A, clamp +-0.45 A, integral reset to 0 at switch-on (s11 section 6). Hardware test: s18.
+% Same model, same 77 cases, same metrics.
+fprintf('\n==== 5. Controller variant D: i0 0.85 A, clamp 0.45 A, integral reset at switch-on (hardware test: s18) ====\n');
 [KD, BD] = maglev_cases(P, 'D');
 % 5a. Simulink = MATLAB simulation for variant D (as 2a)
 pl = BD.pl39;  sc = BD.sc;  sc.gate = 1;  sc.Tend = 6;
@@ -211,8 +234,9 @@ for k = 1:numel(KD)
              .setVariable('L', BD.L).setVariable('sc', KD(k).sc);
 end
 tic;  outD = sim(inD, 'ShowProgress', 'off', 'StopOnError', 'off');  fprintf('  %d runs in %.0f s\n', numel(KD), toc);
-MD = struct('ok', {}, 'lift', {}, 'held', {}, 'merr', {}, 'ring', {}, 'os', {}, 'ts', {}, 'usat', {}, 'xstd', {}, ...
-            'nlev', {}, 'clampLev', {}, 'unexpl', {}, 'why', {}, 'clear', {}, 'tClose', {}, 'xrClose', {}, 'lost', {});
+MD = struct('ok', {}, 'lift', {}, 'held', {}, 'merr', {}, 'ring', {}, 'band', {}, 'os', {}, 'ts', {}, 'usat', {}, ...
+            'xstd', {}, 'nlev', {}, 'clampLev', {}, 'unexpl', {}, 'why', {}, 'clear', {}, 'tClose', {}, 'xrClose', {}, ...
+            'lost', {});
 for k = 1:numel(KD), MD(k) = case_metrics(outD(k), KD(k), BD.C, BD.L); end
 liftCase = ~strcmp({K.group}, 'actuator');               % kg cases start hovering, no lift-off
 hiPt = @(oo) 1e3*min(oo.x(oo.tt < 1.0));                  % highest point (smallest gap) in the first second
@@ -263,20 +287,22 @@ exportgraphics(f1, fullfile(P.dir.figs, 'p6_cases_corners.png'), 'Resolution', P
 
 f2 = figure('Position', [60 60 1150 800]);  tiledlayout(3, 1, 'TileSpacing', 'compact');
 spec = {{'39 g, kg 0.4 (hover 10 mm, as Exp C)', '39 g, kg 2.0 (hover 10 mm, as Exp C)'}, {'39 g, sensor noise', '39 g, zero drift'}, ...
-        {'39 g, tilt artifact', '39 g, lab-like (noise + drift + tilt)'}};
+        {'39 g, stress: x artifact 2.45 Hz', '39 g, stress: noise + drift + x artifact'}};
+lsp = {'-', '--'};  lwp = [2.4 1.2];     % (2026-11-16, AUDIT.md 3.26) first case thick solid, second thin dashed ON TOP
 for t = 1:3
     nexttile; hold on; grid on;  kn = find(strcmp({K.name}, 'nominal 39 g'));
-    plot(out(kn).tt, 1e3*out(kn).x, 'Color', gry, 'LineWidth', 2.5);
-    for j = 1:2
+    hn = plot(out(kn).tt, 1e3*out(kn).x, 'Color', gry, 'LineWidth', 2.5);
+    hj = gobjects(1, 2);
+    for j = [1 2]
         k = find(strcmp({K.name}, spec{t}{j}));
-        plot(out(k).tt, 1e3*out(k).x, 'Color', col(j + 2*(t-1) - (t == 3)*0,:), 'LineWidth', 1);
+        hj(j) = plot(out(k).tt, 1e3*out(k).x, lsp{j}, 'Color', col(j + 2*(t-1),:), 'LineWidth', lwp(j));
     end
-    plot(out(kn).tt, 1e3*out(kn).xref, 'k--', 'LineWidth', 1);
+    hs = plot(out(kn).tt, 1e3*out(kn).xref, 'k:', 'LineWidth', 1);
     set(gca, 'YDir', 'reverse');  ylim([8 12.2]);  ylabel('true gap x [mm]');
-    legend(['nominal 39 g', spec{t}, {'set point'}], 'Location', 'south', 'NumColumns', 4);
+    legend([hn hj hs], ['nominal 39 g', spec{t}, {'set point'}], 'Location', 'south', 'NumColumns', 4);
 end
 xlabel('time [s]');
-sgtitle('Actuator, sensor and unmodelled-dynamics cases (39 g ball)', 'Color', 'k', 'FontWeight', 'bold');
+sgtitle('kg tests (outside the set), sensor cases, 11.5 mm stress cases (39 g ball)', 'Color', 'k', 'FontWeight', 'bold');
 exportgraphics(f2, fullfile(P.dir.figs, 'p6_cases_special.png'), 'Resolution', P.plot.res, 'BackgroundColor', 'w');
 
 caseNames = {K.name};  caseGroups = {K.group};
@@ -306,10 +332,13 @@ function m = case_metrics(o, k, C, L)
 %   tolerance 20 um (50 um with noise or tilt);  ringing = std of true x, last 0.5 s.
 %   integral part = i_ref - i0 - Kp e - Kd v, rebuilt from the logged signals; "clamped" if
 %   its mean is within 1 mA of +-0.3 A.
-% ok     = held, every level reached, steady error within tolerance, no ringing (noise-free).
+%   band = rms of the TRUE x in 1.5-3.5 Hz over the same window (zero-phase FFT band-pass, as s14), max over
+%   levels (added 2026-11-16): catches a sustained oscillation that the noise hides from the std test.
+% ok     = held, every level reached, steady error within tolerance, and no sustained oscillation:
+%          noise-free: ring < 0.02 mm; noisy / artifact cases: band < 0.05 mm (lab 9-11 mm bound, s14).
 % unexpl = a level is out of tolerance although its integral is NOT clamped.
 t = o.tt;  x = o.x;  xr = o.xref;  sc = k.sc;
-if isempty(t), m = struct('ok', false, 'lift', Inf, 'held', false, 'merr', NaN, 'ring', NaN, 'os', NaN, ...
+if isempty(t), m = struct('ok', false, 'lift', Inf, 'held', false, 'merr', NaN, 'ring', NaN, 'band', NaN, 'os', NaN, ...
                           'ts', NaN, 'usat', NaN, 'xstd', NaN, 'nlev', 0, 'clampLev', [], 'unexpl', true, ...
                           'why', 'simulation failed', 'clear', NaN, 'tClose', NaN, 'xrClose', NaN, 'lost', true); return; end
 m.lift = t(find(o.tau > 0, 1));  if isempty(m.lift), m.lift = Inf; end
@@ -323,22 +352,23 @@ zint = o.iref - C.i0 - C.Kp*(o.xm - xr) - C.Kd*v;
 noisy = sc.sigX > 0 || sc.dxA > 0;  tol = 20 + 30*noisy;
 nW = 333;  if sc.dxA > 0, nW = round(floor(1.0*sc.dxF)/sc.dxF/L.T0); end
 kc = [find(t >= m.lift, 1); find(diff(xr) ~= 0) + 1; numel(t) + 1];
-nLev = 1 + nnz(diff(sc.bpX) ~= 0);  E = nan(numel(kc) - 1, 3);  OS = [];  TS = [];
+nLev = 1 + nnz(diff(sc.bpX) ~= 0);  E = nan(numel(kc) - 1, 4);  OS = [];  TS = [];
 for j = 1:numel(kc) - 1
     s = max(kc(j), kc(j+1) - nW):kc(j+1) - 1;   s5 = max(kc(j), kc(j+1) - 167):kc(j+1) - 1;
-    E(j, :) = [1e6*abs(mean(o.xm(s) - xr(s))), 1e3*std(x(s5)), abs(mean(zint(s))) > C.iLim - 1e-3];
+    E(j, :) = [1e6*abs(mean(o.xm(s) - xr(s))), 1e3*std(x(s5)), abs(mean(zint(s))) > C.iLim - 1e-3, 1e3*band_rms(x(s), L.T0)];
     if j > 1
         w = kc(j) - 100:min(kc(j+1) - 1, kc(j) + 333);
         [os, ts] = step_ms(t(w), x(w), xr(kc(j) - 1), xr(kc(j)));  OS(end+1) = os; TS(end+1) = ts; %#ok<AGROW>
     end
 end
-m.merr = max(E(:,1));  m.ring = max(E(:,2));  m.os = max(OS);  m.ts = max(TS);
+m.merr = max(E(:,1));  m.ring = max(E(:,2));  m.band = max(E(:,4));  m.os = max(OS);  m.ts = max(TS);
 m.usat = 100*mean(o.u(after) >= 0.9 - 1e-9);  m.xstd = mean(E(:,2));  m.nlev = numel(kc) - 1;
 bad = E(:,1) >= tol;  lev = 1e3*xr(kc(1:end-1));
 m.clampLev = lev(logical(E(:,3)) & bad)';
 m.unexpl = any(bad & ~E(:,3));
-m.lost = ~(isfinite(m.lift) && m.nlev >= nLev && x(end) < k.pl.xStand - 0.1e-3);
-m.ok = m.held && m.nlev >= nLev && ~any(bad) && (noisy || m.ring < 0.02);
+m.lost = ~(isfinite(m.lift) && m.nlev >= nLev && x(end) < k.pl.xStand - 0.1e-3 && x(end) > 1e-3);   % (+ at the magnet)
+osc = (~noisy && m.ring >= 0.02) || (noisy && m.band >= 0.05);
+m.ok = m.held && m.nlev >= nLev && ~any(bad) && ~osc;
 why = {};
 if m.lost, why{end+1} = 'BALL LOST'; end
 if ~m.held && ~m.lost, why{end+1} = sprintf('came within %.2f mm of the stand at %.2f s (x_ref %.1f mm)', m.clear, m.tClose, m.xrClose); end
@@ -346,6 +376,7 @@ if m.nlev < nLev, why{end+1} = sprintf('reached %d of %d levels', m.nlev, nLev);
 if any(bad), why{end+1} = sprintf('steady error %.0f um; integral clamped at %s mm', m.merr, mat2str(m.clampLev)); end
 if m.unexpl, why{end+1} = 'UNEXPLAINED offset (integral not clamped)'; end
 if ~noisy && m.ring >= 0.02, why{end+1} = sprintf('ringing %.3f mm', m.ring); end
+if noisy && m.band >= 0.05, why{end+1} = sprintf('sustained 1.5-3.5 Hz oscillation of the true x, %.3f mm rms', m.band); end
 m.why = strjoin(why, '; ');
 end
 
@@ -369,6 +400,12 @@ if isempty(kk), ts = NaN; else, ts = 1e3*(t(after(kk)) - t(k50)); end
 end
 
 function print_case(name, m)
-fprintf('  %-46s | %s | %5.2f    | %6.1f            | %.3f     | %.2f        | %5.0f           | %4.1f\n', ...
-        name, subsref({'NO', 'ok'}, substruct('{}', {1 + m.ok})), m.lift, m.merr, m.ring, m.os, m.ts, m.usat);
+fprintf('  %-46s | %s | %5.2f    | %6.1f            | %.3f     | %.3f     | %.2f        | %5.0f           | %4.1f\n', ...
+        name, subsref({'NO', 'ok'}, substruct('{}', {1 + m.ok})), m.lift, m.merr, m.ring, m.band, m.os, m.ts, m.usat);
+end
+
+function b = band_rms(x, T0)
+% rms of x in the 1.5-3.5 Hz band: zero-phase FFT band-pass of the mean-removed window (as s14 band_env)
+x = x(:) - mean(x);  n = numel(x);  X = fft(x);  f = (0:n-1)'/(n*T0);  f(f > 1/(2*T0)) = f(f > 1/(2*T0)) - 1/T0;
+X(abs(f) < 1.5 | abs(f) > 3.5) = 0;  b = rms(real(ifft(X)));
 end
