@@ -12,7 +12,7 @@ Status legend: `[ ]` open, `[x]` done, `[~]` decided but waiting.
 | Step | What | Status |
 |---|---|---|
 | 0 | Git snapshot of the audited state | [x] 2026-11-16 (baseline commit) |
-| 1 | Decisions | [~] D1, D3, D4 agreed; D2 (R1 / kg) under discussion |
+| 1 | Decisions | [x] 2026-11-16, all final (table below) |
 | 2 | Correct `group 28/PARAMETERS.md` (outward-facing) | [ ] on hold until the student says go |
 | 3 | One canonical stand-zone paragraph, pasted everywhere | [ ] |
 | 4 | Text-only MAJOR fixes | [ ] |
@@ -59,12 +59,12 @@ Leaves (output loaded by nothing): s09, s13, s14, s16, s17, s18
 
 | # | Question | Decision |
 |---|---|---|
-| D1 | 1.12: label `maglev_params.m` as manual/pre-lab, or update it | **Label** (agreed) |
-| D2 | 3.16: relabel kg as "hardware gain-margin test", or trim the set with Exp C | **Pending** — see note below |
-| D3 | 3.22: tilt case → rename "11.5 mm stress case", or scale tilt with gap | **Rename** (agreed) |
-| D4 | Send corrected PARAMETERS.md to the other group if already shared | **Yes, if shared** (agreed; student to confirm whether it was shared) |
+| D1 | 1.12: label `maglev_params.m` as manual/pre-lab, or update it | **Label** (final) |
+| D2 | 3.16: relabel kg as "hardware gain-margin test", or trim the set with Exp C | **Relabel; R1 stands, no trimming** (final). Exp C cited in the report as evidence the set is conservative on the slow-coil side |
+| D3 | 3.22: tilt case → rename "11.5 mm stress case", or scale tilt with gap | **Rename** (final) |
+| D4 | Send corrected PARAMETERS.md to the other group if already shared | **Yes, if shared** (final; the student sends it, Claude does not) |
 
-**Note on D2 (checked 2026-11-16 from `data/robustness.mat`, read-only):**
+**Basis for D2 (checked 2026-11-16 from `data/robustness.mat`, read-only):**
 - Worst Ms 2.230 sits at 39 g, 9 mm, λ +5 %, c +5 %, **τ 20 ms, k_a 2.70, d 0.6**: fast coil, high gain, long delay.
 - Worst Ms per level: τ 20/27/35 ms → 2.23/1.89/2.01; d 0.3/0.5/0.6 → 1.71/1.97/2.23; k_a 2.2/2.43/2.7 → 2.01/2.04/2.23.
 - All 64 points with Ms > 2 are at d = 0.6.
