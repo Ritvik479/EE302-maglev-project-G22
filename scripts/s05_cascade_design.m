@@ -48,7 +48,7 @@ chk = @(c, m) fprintf('%s: %s\n', ternary(c, 'PASS', 'FAIL'), m);
 L.T0   = 0.003;          % [s]  FixedStep of the lab models
 L.ka   = 2.44;           % [A per unit u]  coil static gain (coil steps, run 4)
 L.ci   = 0.02;           % [A]  offset
-L.tau  = 0.027;          % [s]  coil time constant (coil steps: 25-29 ms)
+L.tau  = 0.027;          % [s]  coil time constant: design value (measured later 22-25 ms; see data/README.md)
 L.m    = P.nom.m;        % [kg] 39.288 g ball
 L.xr   = 0.010;          % [m]  set point used in the lab
 L.umax = 0.90;           % [-]  our command ceiling: 0.9*2.44 = 2.2 A steady (< 2.345 A)
@@ -96,7 +96,7 @@ fprintf('\nGains: Kc = %.3f /A | Kp = %.1f A/m, Kd = %.3f A s/m, Ki = %.0f A/(m 
 fprintf('       integral clamp |z| <= %.3g m s  (= +-0.30 A)\n', C.zLim);
 
 %% ---- 2. linear discrete closed loop + robustness grid ------------------
-tauG = [0.020 0.027 0.035];  kaG = [2.2 2.44 2.7];   % measured: 25-29 ms, 2.4-2.6 A
+tauG = [0.020 0.027 0.035];  kaG = [2.2 2.44 2.7];   % measured: tau 22-25 ms, ka 2.43 (2.33-2.46 incremental)
 a21G = P.g ./ [P.Fem.P2 8.3e-3 10e-3];  i0G = [0.65 0.75 0.90];   % predicted 0.70-0.81 A (both balls)
 nd = [0 1];                                % extra whole samples of delay (RT-CON)
 res = [];                                  % [tau ka a21 i0 nd rho Ms]

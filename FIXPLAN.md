@@ -19,7 +19,7 @@ Status legend: `[ ]` open, `[x]` done, `[~]` decided but waiting.
 | 5 | Code fixes in leaf scripts (s09, s14, s17, s18) | [x] 2026-11-16 (tested on a scratch copy; repo outputs not yet regenerated = Step 6) |
 | 6 | Re-run in dependency order, compare with expectations | [x] 2026-11-16 (all as expected; .mat contents checked vs baseline) |
 | 7 | README updates (robustness numbers, new counts) | [x] 2026-11-16 |
-| 8 | One value per quantity (text) | [ ] |
+| 8 | One value per quantity (text) | [x] 2026-11-16 (reference table in data/README.md) |
 | 9 | Remaining MINOR stale text and figures | [ ] |
 | 10 | Optional new analysis | [ ] |
 | — | Then write D6 (report) | [ ] |
@@ -219,7 +219,17 @@ Original plan:
 - [ ] New s09 count; lowered-stand lift-off numbers (5.15); "simulation optimistic for D" vs which envelope (6.6);
       D lift time sim ≤ 90 vs lab 30–33 ms (5.19).
 
-## Step 8 — One value per quantity (text only)
+## Step 8 — One value per quantity (text only) (DONE)
+
+Done 2026-11-16. The single values live in ONE table: `data/README.md`, "Reference values for the report" (u, force
+law with λ ± 0.15 mm, which plant is "the model", k_a, τ, d, noise, current zero, operating range, the three
+nominal points, the two lift-off definitions, the overshoot metric, nominal/robust margins, stand-effect onset).
+Conflicting spots fixed: 12-Nov README coil row (τ, k_a); 13-Nov README "20× smaller" -> 14× std / 19× band, λ 5.81
+note; s05 comments (τ, k_a); s10 tau line and unmodelled table (i noise 0.021 A) -> s10 re-run (12/0; only
+LM.unmodelled text changed). Not touched: `group 28/PARAMETERS.md` (already consistent except it gives λ without
+the ±0.15 mm; left so the package already sent stays current).
+
+Original plan:
 
 | Quantity | Use everywhere |
 |---|---|

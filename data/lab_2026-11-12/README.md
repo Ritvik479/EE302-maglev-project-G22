@@ -12,7 +12,7 @@ lab PD: Kp 35, Kd 450 on Δe (= 1.35 s/m effective, in units of the command u pe
 | File | What | Result |
 |---|---|---|
 | `run4_pd_oscillation_39g.fig` | PD, Kp 45. u0 0.30 at 0 s, 0.32 at ~5 s, 0.34 at ~12 s; Kp→40 at ~16 s | Sustained 7-9 Hz oscillation, up to 9 mm p-p, ball hits the stand every cycle |
-| `coil_steps_0p2_0p3_0p4.fig` | `my_driver`, EM1 Control 0→0.2→0.3→0.4→0.2, ball on stand at 12.9 mm | Coil: I ≈ 2.4-2.6 × u, first-order τ ≈ 25-29 ms, no extra dead time. Ball jumped to the magnet at u = 0.4 (0.93 A) |
+| `coil_steps_0p2_0p3_0p4.fig` | `my_driver`, EM1 Control 0→0.2→0.3→0.4→0.2, ball on stand at 12.9 mm | Coil: I ≈ 2.4-2.6 × u (ratio incl. the current zero; incremental 2.33–2.46, 1.9 from u = 0), first-order τ ≈ 25-29 ms (revised 2026-11-16, AUDIT.md 2.20: 22.5–25 ms on the two steps with the ball resting on the stand; 25–29 ms only after the ball jumped to the magnet), no extra dead time. Ball jumped to the magnet at u = 0.4 (0.93 A) |
 | `run4_quicklook.png` | Quick plot of run 4 (not report style) | |
 
 ## screenshots/
