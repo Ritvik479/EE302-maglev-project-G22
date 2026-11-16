@@ -75,12 +75,23 @@ Not done (no time): variant D from the lowered stand, sine at 11 mm, 42 g sine, 
   0.61–1.20 (median 0.99); the 13-Nov 10.5 → 11 mismatch (lab 0.25–0.32 vs model 0.64–0.73) is the same pattern.
 - **11.5 mm hold with the stand lowered:** no 2.4 Hz rocking: 1.5–3.5 Hz band rms 0.048 mm vs 0.25 mm on 13-Nov with
   the normal stand (one run each). Its x std 0.115 mm is ordinary for that run (9–11 mm plateaus 0.055–0.120 mm).
-- **Loop gain by sine injection (39 g, 10 mm):** crossover ≈ 29 Hz (model 23.6), phase margin ≈ 47° (interpolated
-  between 20 and 40 Hz), largest measured |S| 1.51 at 40 Hz (model 1.58); coil time constant fit 20.7 ms (model 27 ms);
-  1.5–2.4 Hz points too noisy (> 20 % error).
+- **Loop gain by sine injection (39 g, 10 mm):** crossover ≈ 29 Hz (28–30 Hz depending on which amplitude is used
+  at 20 Hz; model 23.6 Hz, |L| 4–36 % above the model at 20–40 Hz); phase margin ≈ 47° (43–50°), which **agrees** with
+  the model's 45.4°; largest measured |S| 1.51 at 40 Hz (model 1.58; the model's peak 1.59 at 45 Hz was not measured);
+  1.5–2.4 Hz points too noisy (> 20 % error). **Coil and delay** (complex fit of G_iu = I/U at 12–40 Hz, magnitude and
+  phase, s17; revised 2026-11-16): d 0.5 → τ 22.6 ms, k_a 2.45; d 0.6 → τ 20.5 ms, k_a 2.25 (equally good); d 0 and
+  d 1 fit ~2.2× worse. So these data, taken while levitating, support d ≈ 0.5–0.6 and τ ≈ 21–23 ms (model nominal
+  27 ms, range 20–35). The earlier "20.7 ms" was a magnitude-only fit with k_a fixed, which trades τ against k_a.
 - **Variant D works on the hardware:** reset holds i_ref at i0 + Kp e while the coil is off; lift-off closest approach
-  10.38–10.60 mm vs 8.95–9.07 mm for the lab controller; settles in 0.14 s vs 0.27–0.52 s.
-- **Lift-off from the lowered stand (13.1–13.2 mm), lab controller:** closest approach 8.59–8.65 mm (simulation 8.65–8.70).
+  10.38–10.60 mm vs 8.95–9.07 mm for the lab controller; settles in 0.14 s vs 0.27–0.52 s (n = 2 vs 3, 39 g, normal
+  stand only). Simulation from the same rest reading (9 cases, s18): D ≥ 10.96 mm and lifts in ≤ 90 ms, so the real D
+  rises 0.4–0.6 mm higher and lifts 2–3× faster (30–33 ms) than simulated; for the lab controller the simulation
+  (≥ 8.84 mm) brackets the lab (8.95–9.07). The 77-case envelope of s09 (D ≥ 10.31 mm) does contain the lab values.
+- **Lift-off from the lowered stand (13.1–13.2 mm), lab controller:** closest approach 8.65 / 8.59 mm (rest 13.13 /
+  13.19 mm). Simulation from the same rest readings (s17, revised 2026-11-16; the old "8.65–8.70" was the worst corner,
+  not the nominal): nominal 8.90 / 8.89 mm, 9 cases (d 0.3–0.6, c ±5 %) 8.69–9.14 / 8.68–9.14 mm. So the lab rises
+  0.25–0.30 mm higher than nominal and just beyond every simulated case (s17 FAIL, kept). Together with variant D
+  (above), **lift-off is the least well-modelled phase**.
 
 ## Screenshots
 01 rig front panel photo · 02 Device Manager (USB descriptor request failed) · 03 "USB device not recognized" dialog ·

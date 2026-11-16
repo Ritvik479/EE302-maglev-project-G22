@@ -35,7 +35,7 @@ No log sheet was received; set points were rebuilt from the data.
 | `expA_39g_sweep_{main,iref}.fig` | 39 g, set point 11→10.5→10→9.5→(9)→…→11.5 mm | Held every level. At 37.2 s **i_ref went to 0 in one sample** → ball dropped to the stand; re-lifted at 42.4 s to 9.5 mm. Consistent with a mistyped set point (> 14.9 mm, e.g. 0.09), then 0.0095. **9.0 mm was never done with this ball.** At 11.5 mm: slow ±0.33 mm swing at 2.4 Hz (only 2 s recorded) |
 | `expB_42g_step{1,2}_{main,iref}.fig` | 42 g, 11 → 10 mm | Run 1: ball rested at 12.13 mm (others 11.90–11.92) and **turned over** after lift-off: irregular swing, reading 8.7–12.3 mm, for ~3.5 s, never lost (s07 printed "2.3 Hz" from zero crossings; that estimator proved unreliable on irregular motion in s08, so no frequency is claimed). It then hovered exactly like run 2 (0.975/0.902 A vs 0.971/0.897 A at 11/10 mm). Run 2: normal |
 | `expB_42g_sweep_{main,iref}.fig` | 42 g, 11→…→9→…→11→**10.5** mm (ended at 10.5, not 11.5) | Held every level 9–11 mm |
-| `expC_39g_kg_{main,iref}.fig` | 39 g at 10 mm, kg 1→0.8→0.6→0.5→0.4→1→1.25→1.5→2→1 | **Stable at every kg.** Jitter std 0.05–0.064 mm for kg 0.6–2, 0.073 at 0.5, 0.121 at 0.4 (model, noise only: 0.118 at 0.4). Linear model (fitted plant): stable for 0.28 < kg < 3.76 |
+| `expC_39g_kg_{main,iref}.fig` | 39 g at 10 mm, kg 1→0.8→0.6→0.5→0.4→1→1.25→1.5→2→1 | **Stable at every kg.** Jitter std 0.05–0.064 mm for kg 0.6–2, 0.073 at 0.5, 0.121 at 0.4 (model, noise only: 0.118 at 0.4). Linear model (fitted plant, **d = 0**): stable for 0.28 < kg < 3.76 (with the measured delay d 0.5: 0.292–3.95, s11) |
 
 ### Findings
 - **Current-sensor zero drifts** while levitating: the reading at u = 0 fell 0.0405 -> 0.0102 A (Exp A, 61 s) and 0.0405 -> -0.0012 A (Exp C, 59 s), mean -0.52 mA/s. This is why the hover current at a fixed gap reads 10-40 mA lower later in a run (the true current is unchanged; the integral absorbs it). Correcting each visit for the drift cuts the repeat-visit scatter from 12.0 to 4.8 mA rms. Stand reading drifted only -0.03 to -0.08 mm. Exp B sweep and B step 1 stopped recording at switch-off, so they use the mean drift rate. **Tip: keep recording ~3 s after switching to Control 0.**
@@ -146,6 +146,41 @@ three cascade models: Kp 151.2, Ki 734, Kd 2.6, Kc 2.05, i0 0.75 A, 1/ka = 1/2.4
   (Wu 0.17-0.24). So the mode is not safely covered; 11.5 mm stays out of the claimed range, and its size at 9-11 mm
   must be measured: sine injection at u at 1.5, 2, 2.4, 3, 4 Hz (plus higher), 10 and 11 mm, both balls.
 - s11 now also saves the per-region W, |T|, Wu curves (`RB.opt2curves`); its results are unchanged (12 PASS / 4 FAIL).
+- **Re-run 2026-11-16 (11 PASS / 0 FAIL)** with three additions: (1) the same 39 g hold at 11.5 mm with the stand
+  LOWERED (16-Nov): band rms 0.048 mm vs 0.250 mm on the normal stand, i.e. the rocking is tied to the stand, not the
+  gap; (2) a stand "spring" (a21_eff 0 … −10 000 s⁻²) only moves the slowest mode UP (11–22 Hz); (3) a position-sensor
+  gain s on the outer loop: s 0.6 / 0.5 / 0.45 / 0.4 gives an unstable mode at 3.07 / 2.64 / 2.44 / 2.25 Hz in the
+  vertical loop itself. The "≥ 0.19 unmodelled error" figure above assumes an unstructured extra mode; for a sensor-gain
+  loss it does not apply. See `data/lab_2026-11-16/README.md`, 'Stand-proximity effect'.
+
+## Robustness over the uncertainty set (s11; numbers written here 2026-11-16, AUDIT.md 3.14)
+Before 2026-11-16 these numbers existed only in the console ("12 PASS / 4 FAIL"). Re-run 2026-11-16, unchanged.
+- **Set:** 1458 grid points = 2 balls × gap 9 / 10 / 11 mm × λ ±5 % × c ±5 % × coil τ 20 / 27 / 35 ms ×
+  k_a 2.2 / 2.43 / 2.7 A/unit × extra delay d 0.3 / 0.5 / 0.6 sample. The actuator gain error kg 0.4–2.0 is **not**
+  part of this set (see below).
+- **Nominal** (39 g, 10 mm, d 0.5): Ms 1.59, stable gain range 0.292–3.95, phase margin 45.4°, delay margin
+  5.3 ms (1.78 samples) on top of d. At d 0.3 / 0.6: Ms 1.41 / 1.71. (Ms = peak of |S| = |1/(1+L)|.)
+- **Stability:** closed loop stable at **all 1458** grid points (eigenvalues).
+- **Grid-worst margins:** Ms **2.23**, PM ≥ 29.3°, stable gain range at least [0.54, 2.23], delay margin ≥ 2.8 ms.
+  The target **worst Ms ≤ 2**, declared before the run, is **NOT met**. The worst point is 39 g, 9 mm, λ +5 %, c +5 %,
+  τ 20 ms, k_a 2.7, d 0.6 (fast coil, high gain, long delay). All 64 points with Ms > 2 are at d 0.6; at d 0.5 the
+  worst is 1.97. The measured coil (τ ≈ 21–23 ms, s17) and delay (0.5–0.6) sit near this corner, so it cannot be
+  argued away.
+- **Between grid points** (multiplicative bound |W T| < 1, W = envelope of the grid plants + 10 %): one disk for the
+  whole set fails (max 1.11); Option 1 (centred nominal) fails (1.25); **Option 2** (four ball × gap regions) passes:
+  max |W T| 0.96 / 0.97 / 0.95 / **0.997** (39 g 9–10, 39 g 10–11, 42 g 9–10, 42 g 10–11 mm). W covers 400 random
+  interior plants per region (|δ|/W ≤ 0.88). Options 1 and 2 were added after the one-disk test failed (disclosed in
+  s11). So "guaranteed" means: proven at the grid points, and a sufficient bound between them that random sampling
+  supports. It is strong evidence, not a proof.
+- **Room left for unmodelled error** on top of the set (Option 2, worst region): 22 % below 2 Hz, **0 % at 2–10 Hz**,
+  2 % at 10–30 Hz, 13 % at 30–166 Hz. The 2–10 Hz band holds the unstable pole (6.5 Hz) and the crossover region.
+- **kg (Exp C) is a hardware gain-margin test, not part of the set.** The nominal model (d 0.5) is stable for
+  kg 0.292–3.95, consistent with Exp C (stable at 0.4 and 2.0). With kg 0.4, 33 of the 243 grid points at 39 g / 10 mm
+  are unstable (all τ 35 ms with k_a ≤ 2.43), so the real plant is not at those corners. Removing them from the set
+  would not change the worst Ms (2.23 sits at τ 20 ms; checked 2026-11-16 from `robustness.mat`).
+- **Measured** (sine injection 2026-11-16, s17): phase margin ≈ 47° (43–50° depending on which amplitude is used at
+  20 Hz) vs model 45.4°; |S| 1.51 at 40 Hz vs model 1.58. The loop below 3 Hz and at the model's |S| peak (45 Hz) was
+  not measured.
 
 ## Afternoon runs, further notes (s08, continued)
 - **42 g roll (placed hole-up):** see the table. The rest reading after the run equals the hole-down reading within 0.002 mm.
@@ -176,7 +211,9 @@ three cascade models: Kp 151.2, Ki 734, Kd 2.6, Kc 2.05, i0 0.75 A, 1/ka = 1/2.4
 - The open-loop coil steps (2026-11-12) cannot discriminate: away from the nonlinear 0 → 0.2 step every d from 0 to
   0.75 fits within 0.5 %. They do not contradict the estimate.
 - Nominal loop (39 g, 10 mm) with d = 0.55: Ms 1.65, gain range 0.293–3.57, phase margin 44°, delay margin 5.2 ms
-  (d = 0: Ms 1.36, PM 59°; d = 1: Ms 2.41, PM 33°).
+  (d = 0: Ms 1.36, PM 59°; d = 1: Ms 2.41, PM 33°). **The nominal used everywhere since 2026-11-15 is d = 0.5**
+  (range 0.3–0.6): there Ms 1.59, gain range 0.292–3.95, PM 45.4°, delay margin 5.3 ms (see the robustness section).
+  The 16-Nov sine injection, taken while levitating, independently supports d ≈ 0.5–0.6 (s17).
 - **Used in the models from 2026-11-15:** nominal d = 0.5, uncertainty range 0.3–0.6 sample (the measured 0.32–0.55
   rounded outward to tenths, so the Simulink model applies it exactly). `maglev_cases.m` reads it from
   `data/delay_estimate.mat`; s09, s10 and s11 were re-run with it. The earlier "0 / +1 sample" set is kept only as

@@ -18,7 +18,7 @@ Status legend: `[ ]` open, `[x]` done, `[~]` decided but waiting.
 | 4 | Text-only MAJOR fixes | [x] 2026-11-16 (comments/strings only; P values unchanged; nothing to re-run) |
 | 5 | Code fixes in leaf scripts (s09, s14, s17, s18) | [x] 2026-11-16 (tested on a scratch copy; repo outputs not yet regenerated = Step 6) |
 | 6 | Re-run in dependency order, compare with expectations | [x] 2026-11-16 (all as expected; .mat contents checked vs baseline) |
-| 7 | README updates (robustness numbers, new counts) | [ ] |
+| 7 | README updates (robustness numbers, new counts) | [x] 2026-11-16 |
 | 8 | One value per quantity (text) | [ ] |
 | 9 | Remaining MINOR stale text and figures | [ ] |
 | 10 | Optional new analysis | [ ] |
@@ -198,7 +198,20 @@ Original plan:
 
 Do NOT re-run s05–s08 or s12. Compare every rewritten `.mat` with the git baseline.
 
-## Step 7 — READMEs
+## Step 7 — READMEs (DONE)
+
+Done 2026-11-16, numbers taken from the Step 6 console logs:
+- 13-Nov README: new section "Robustness over the uncertainty set" (3.14: 1458 points all stable; nominal Ms 1.59,
+  PM 45.4°, gain 0.292-3.95, DM 5.3 ms; grid-worst Ms 2.23 target missed, PM >= 29.3°, gain >= [0.54, 2.23],
+  DM >= 2.8 ms; |WT| one disk 1.11 / Option 1 1.25 / Option 2 0.96-0.997; room 22 / 0 / 2 / 13 %; kg outside the set,
+  33/243; measured PM). Delay section: nominal is d 0.5 (3.5). Exp C row: "d = 0" (2.25). s14 re-run note.
+- 16-Nov README: sine bullet (crossover 28-30 Hz, PM 43-50° vs model 45.4°, complex G_iu fit tau/d, 5.10/5.11);
+  variant D bullet (n, sim timing and height, which envelope, 5.19/6.6); lowered-stand lift-off (5.15).
+- models/README: s09 verification (69 in set, 51 ok, 18 close, stress/kg outside; in-sample current, 3.21); variant D
+  hardware vs simulation (6.6, 5.19); "x artifact" wording.
+- data/README: s13/s14 re-check note updated.
+
+Original plan:
 
 - [ ] 3.14: write the robustness numbers into a README: grid 1458 points all stable; worst Ms 2.23 (target ≤ 2
       **missed**; 1.97 at d 0.5); Option-2 \|WT\| peak 0.997 (42 g, 10–11 mm); PM ≥ 29°; gain range [0.54, 2.23];

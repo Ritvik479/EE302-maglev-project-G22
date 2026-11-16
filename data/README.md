@@ -27,4 +27,6 @@ The scripts load these by path, so they stay here.
 | `overshoot_mismatch.mat` | `s13_overshoot_mismatch.m` | overshoot-mismatch analysis |
 | `rocking.mat` | `s14_rocking.m` | 2.4 Hz rocking analysis |
 
-Note (2026-11-16): s13 and s14 predate the stand-proximity finding in `lab_2026-11-16/README.md`; they are due for a re-check.
+Note (2026-11-16): s14 was re-checked after the audit (stand-lowered hold, stand-spring and sensor-gain scans; 11/0).
+s13 still predates the stand-proximity finding in `lab_2026-11-16/README.md`: its H-force and "position vs timing"
+conclusions are superseded there (see `FIXPLAN.md` steps 9-10). `rocking.mat` gained `bLow`, `SP`, `SG`.

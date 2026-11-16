@@ -34,7 +34,7 @@ record; not needed to build anything.
 ## Simulation model [STANDALONE]
 | File | What |
 |---|---|
-| `maglev_cl_sim.slx` | Closed-loop simulation for the nominal and uncertain cases (PS9 deliverable 2). Nonlinear plant (fitted force law, coil lag, stand and magnet limits), sensors (noise, current-zero offset and drift, optional tilt artifact), and the lab cascade controller block for block, including the gated sweep clock. **Do not edit by hand:** rebuilt by `scripts/build_maglev_cl_sim.m` every time `scripts/s09_sim_models.m` runs. Parameters come from the workspace structs `pl`, `C`, `L`, `sc`, defined in `scripts/maglev_cases.m` |
+| `maglev_cl_sim.slx` | Closed-loop simulation for the nominal and uncertain cases (PS9 deliverable 2). Nonlinear plant (fitted force law, coil lag, stand and magnet limits), sensors (noise, current-zero offset and drift, optional 2.45 Hz x artifact for the 11.5 mm stress cases), and the lab cascade controller block for block, including the gated sweep clock. **Do not edit by hand:** rebuilt by `scripts/build_maglev_cl_sim.m` every time `scripts/s09_sim_models.m` runs. Parameters come from the workspace structs `pl`, `C`, `L`, `sc`, defined in `scripts/maglev_cases.m` |
 
 ### How the simulation model is used
 ```matlab
@@ -49,7 +49,10 @@ Controller variant D in simulation: `[K, B] = maglev_cases(P, 'D')` gives i0 0.8
 reset to 0 at switch-on (`sc.zI = 0`). The default `'lab'` is the deployed controller, whose integral is wound up to the
 clamp at switch-on. See `scripts/s11_robustness.m` (section 6) and `s09_sim_models.m` (section 5). Variant D was tested on
 the hardware on 2026-11-16 (`data/lab_2026-11-16`, `scripts/s18_analyze_D_ramp.m`): lift-off closest approach 10.38–10.60 mm
-measured vs ≥ 10.96 mm simulated (the simulation is optimistic for D).
+measured vs ≥ 10.96 mm simulated from that rest reading (9 cases, s18), so the simulation is optimistic for D against
+the nominal plant; the 77-case envelope (≥ 10.31 mm) does contain the lab values. The simulation also lifts slower
+(≤ 90 ms vs 30–33 ms in the lab). An exploratory stand-tied force (AUDIT.md 5.19) explains the timing, not the
+0.2–0.6 mm extra rise: lift-off is the least well-modelled phase (see also the lowered-stand lift-off, 16-Nov README).
 
 **Loop delay (revised 2026-11-15).** The coil receives u delayed by d = `sc.nd + sc.ndSub/10` samples beyond the
 normal ZOH step, through ONE Delay block at the solver step T0/10 (length `10*sc.nd + sc.ndSub`; exact because u
@@ -58,13 +61,21 @@ start). `maglev_cases` sets the measured value from s12: nominal d = 0.5, corner
 at d = 0 (the model before 2026-11-15) and d = 1 (stress). The logged `u` is the controller output before the delay,
 as on the lab scope.
 
-### Verification (s09, re-run 2026-11-15 with the measured delay)
+### Verification (s09; re-run 2026-11-16 after the audit fixes, 16 PASS / 1 FAIL)
 - Agrees with the independent MATLAB simulation `scripts/maglev_cascade_sim.m` within 0.0001 mm (same delay in both),
   for d = 0, 0.3, 0.5, 0.6 and 1; and the delay is active (the undelayed run differs by 0.11 A in current).
-- Reproduces the lab 39 g sweep: lift timing 36 vs 39 ms, step overshoot 0.14 mm rms, hover current 3.0 mA rms.
+- Reproduces the lab 39 g sweep: lift timing 36 vs 39 ms, step overshoot 0.14 mm rms, hover current 3.0 mA rms. The
+  current agreement is **in-sample** (this run was one of the three used to fit the force law); lift timing and
+  overshoot are out-of-sample. The overshoot misfit is systematic: the simulation under-predicts the turn-around steps
+  at 9 mm and over-predicts 10.5 → 11 mm (the stand-proximity effect, 16-Nov README).
 - Sign test: with e = x_ref − x the ball never lifts.
-- 77 cases (73 in the uncertainty set + 4 delay references): ball never lost; 19 cases of the set come within 0.1 mm of
-  the stand on the 10.5 → 11 mm down-step (CLEARANCE, model overpredicts that overshoot ~2×; 2026-11-16: that
-  overprediction is the stand-proximity effect, see `data/lab_2026-11-16/README.md`).
+- 77 cases, classified 2026-11-16 (AUDIT.md 3.16, 3.22): **69 in the uncertainty set** (2 nominal, 64 corners,
+  3 sensor) and 8 outside it (4 delay references d 0 / 1, 2 kg tests = hardware gain-margin test, 2 **11.5 mm stress
+  cases** with the 2.45 Hz x artifact at every gap; formerly 'tilt artifact' and 'lab-like'). In the set: **51 fully
+  ok**, ball never lost, 18 come within 0.1 mm of the stand (all on the 10.5 → 11 mm down-step; CLEARANCE FAIL; in the
+  lab that overshoot is ~0.4× the model because of the stand-proximity effect the model lacks), integral clamped in 4.
+  "ok" now also requires no sustained 1.5–3.5 Hz oscillation of the true x (band rms < 0.05 mm, the lab's 9–11 mm
+  bound) in noisy cases: the sensor-noise cases pass at 0.044 / 0.048 mm (close to the limit); the two stress cases
+  fail (0.42–0.44 mm). Outside the set no ball is lost either.
 - Variant D: agrees with the MATLAB simulation within 0.0001 mm. Over all 77 cases it never loses the ball, never clamps
   the integral, lifts within 321 ms, and its highest point at lift-off is ≥ 10.31 mm (lab controller: 7.10 mm worst).
