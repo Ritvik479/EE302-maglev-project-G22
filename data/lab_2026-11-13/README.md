@@ -94,7 +94,7 @@ three cascade models: Kp 151.2, Ki 734, Kd 2.6, Kc 2.05, i0 0.75 A, 1/ka = 1/2.4
 - **Steps, sim vs lab** (24 steps, morning-fitted plant, no re-tuning): overshoot rms difference 0.18 mm, settling median
   111 ms in both. Systematic: lab down-step overshoot FALLS as the gap grows (39 g: 0.63 → 0.56 → 0.49 → 0.32 mm for steps
   ending at 9.5 → 11 mm) while the sim's RISES (0.51 → 0.64). Largest gap on 10.5 → 11 mm (lab 0.25–0.32, sim 0.64–0.73);
-  the morning data show the same. Partly explained by s13 (2026-11-15), see below.
+  the morning data show the same. ~~Partly explained by s13 (2026-11-15), see below.~~ [2026-11-16: it goes with the stand-proximity effect, see `data/lab_2026-11-16/README.md`.]
 
 ## Down-step overshoot mismatch (s13, 2026-11-15; `scripts/s13_overshoot_mismatch.m` -> `figs/p10_overshoot_mismatch.png`, `data/overshoot_mismatch.mat`)
 - With the measured delay (d = 0.5) the model is within 0.10 mm rms on 21 of 24 steps; the misfit is the three
@@ -110,8 +110,11 @@ three cascade models: Kp 151.2, Ki 734, Kd 2.6, Kc 2.05, i0 0.75 A, 1/ka = 1/2.4
   Steps that stay below 10.8 mm show nothing like it (worst -0.97, median -0.65 m/s^2 at h = 5).
   CAVEAT (verification): position (x = 11.0 mm) and timing (~35 ms after the step) are confounded, because all three
   steps are identical; the 42 g roll's passes through 11 mm cannot separate them (its residual is < -2 m/s^2 25 % of
-  the time anyway).
-- H-force (force decays more slowly than exp(-x/lam) beyond 11 mm): UNRESOLVED, conflicting evidence.
+  the time anyway). **[Superseded 2026-11-16]** The small steps and the lowered stand separated them: the spike is
+  STAND-TIED (0.67–0.89 mm above the stand on both stand heights; s16, s17).
+- H-force (force decays more slowly than exp(-x/lam) beyond 11 mm): ~~UNRESOLVED, conflicting evidence.~~
+  **REJECTED 2026-11-16:** with the stand lowered the same ball hovers at 11.5 mm on the force law within ~1 %
+  (×1.011); the ×1.04–1.08 below belongs to the stand (AUDIT.md 4.7). Kept for the record:
   * Static: hovering at 11.5 mm needs x1.04-1.08 the extrapolated force (3 holds; robust to the current-sensor zero,
     x1.04-1.09 for every plausible zero).
   * Dynamic (refinement, 2026-11-15): Newton solved for the force in all 13 lift-offs. Relative to each lift-off's own
@@ -121,7 +124,9 @@ three cascade models: Kp 151.2, Ki 734, Kd 2.6, Kc 2.05, i0 0.75 A, 1/ka = 1/2.4
     (see "Findings (first levitation)" above), so they cannot bound the force law.
   * IF the holds are right (kf = 0.120 /mm vs the s07 plant), H-force halves the 10.5 -> 11 gap (0.42 -> 0.20 mm) and
     cuts rms(lab - model) 0.18 -> 0.11 mm. The slow ramp (lab test e) measures the quasi-static law directly.
-- OPEN: the braking spike. Candidates: contact/braking by something near 11 mm, a sensor feature finer than the
+    [Not applicable: H-force is rejected; do not use this "halves the gap" figure.]
+- **[Done 2026-11-16]** The lab tests below were run (except the static sensor sweep): the spike is stand-tied, see
+  the 16-Nov README. Original text: OPEN: the braking spike. Candidates: contact/braking by something near 11 mm, a sensor feature finer than the
   0.7 mm table, or ball tilt. Lab test (next slot, ~30 min): photo of stand vs ball at 11 mm; static sensor check
   10.2-12.6 mm in 0.1-0.2 mm steps; sweep with the stand lowered ~1 mm (spike moves with stand = contact); small steps
   10.8 -> 11.1 and 10.6 -> 11.0 mm (position vs timing; keep steps <= 0.5 mm, the stand is at ~11.9 mm); slow ramp

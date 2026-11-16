@@ -179,7 +179,7 @@ for q = 1:2, r = R{q};
     plot(ax, r.t(on), 1e3*r.x(on), 'Color', [0 0.45 0.9]);  plot(ax, r.t(on), 1e3*r.xr(on), 'Color', [0.9 0.2 0.1], 'LineWidth', 1.5);
     yline(ax, 1e3*r.xRest, '--', 'stand', 'Color', [0.2 0.6 0.2]);  set(ax, 'YDir', 'reverse');
     ylim(ax, [8.5 12.2]);  xlabel(ax, 't [s]');  ylabel(ax, 'gap x [mm] (magnet up)');
-    title(ax, sprintf('%s: x and x_{ref}', r.name), 'Color', 'k');  legend(ax, 'x', 'x_{ref}', 'Location', 'southeast');
+    title(ax, sprintf('%s: x and x_{ref}', r.name), 'Color', 'k');  legend(ax, 'x', 'x_{ref}', 'Location', 'northeast');
 end
 ax = nexttile(tl);  hold(ax, 'on');
 cols = lines(6);
@@ -197,7 +197,8 @@ for k = find(dn)'
     plot(ax, NS(k,2), NS(k,1), mk, 'MarkerSize', 9, 'MarkerFaceColor', [0.9 0.2 0.1]*sp(k) + [0.6 0.6 0.6]*~sp(k), 'Color', 'k');
     text(ax, NS(k,2) + 2, NS(k,1), sprintf('%.1f\\rightarrow%.1f, x %.2f', ST(k,2:3), NS(k,3)), 'FontSize', 8);
 end
-yline(ax, 1.5*min(NS(up,1)), '--', 'spike threshold', 'Color', 'k');
+yline(ax, 1.5*min(NS(up,1)), '--', 'spike threshold', 'Color', 'k', 'LabelVerticalAlignment', 'bottom', ...
+      'LabelHorizontalAlignment', 'center');
 xlabel(ax, 'time of the most negative r after the step [ms]');  ylabel(ax, 'most negative r [m/s^2]');
 title(ax, 'Down-steps: braking spike, when and where (red = spike)', 'Color', 'k');
 exportgraphics(fg, fullfile(P.dir.figs, 'p12_3a_steps.png'), 'BackgroundColor', 'w');

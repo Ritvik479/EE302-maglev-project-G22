@@ -2,7 +2,8 @@
 % =========================================================================
 % PURPOSE   Estimate the loop delay beyond the normal one-sample ZOH step from data we already have.
 %           Until now it was carried as "0 or +1 sample (not observable)". It matters: with +1 sample the
-%           robust-stability test fails and the worst Ms is 5.0 (s11).
+%           loop is much more fragile (nominal Ms 2.41 at d = 1, s11; an older s11 grid at +1 sample gave a
+%           worst Ms of ~5, which the current s11 no longer computes).
 % DEFINITION The model (s05-s11): u[k] is computed from the samples at k and held over [k, k+1), so the
 %           current sampled at k+1 already responds to u[k]. An EXTRA delay of d samples (d may be
 %           fractional) holds u[k] over [k+d, k+1+d) instead. d = 0 is the model used so far; d = 1 is the

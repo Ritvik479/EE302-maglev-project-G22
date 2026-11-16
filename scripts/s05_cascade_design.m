@@ -63,6 +63,9 @@ fprintf('Force decay length: manual P2 = %.2f mm, lab data need lam > %.2f mm\n'
         1e3*P.Fem.P2, 1e3*lamMin);
 fprintf('  -> manual model is %s with the lift data (one-sided bound, 2 points only)\n', ...
         ternary(P.Fem.P2 > lamMin, 'consistent', 'INCONSISTENT'));
+fprintf(['  [SUPERSEDED 2026-11-13: lift thresholds from the stand are not an equilibrium, so this bound is void; the\n' ...
+         '   hover fits give lam ~5.9 mm, consistent with the manual (data/README.md). The lift-off sims below and\n' ...
+         '   figs/p3_liftoff_sim.png use force constants built on this premise: pre-lab design check only.]\n']);
 
 % Hover current at 10 mm for a force law that lifts at 12.9 mm with ~0.90 A:
 %   i0(10 mm) = 0.90*exp(-(12.9-10) mm / (2 lam))
@@ -125,7 +128,8 @@ fprintf('NOTE: with +1 sample the worst Ms is %.2f: stable but fragile, so re-ch
 rhoW = cascade_loop(C, L.T0, L.tau, L.ka, L.ka, a21n, bn, 0, -1);
 chk(rhoW > 1, sprintf('WRONG sign (all gains negated) is unstable (max|eig| = %.2f)', rhoW));
 rhoPD = pd_only_loop(45, 450, L.T0, L.tau, L.ka, a21n, bn);
-chk(rhoPD > 1, sprintf('lab x-only PD (Kp 45, Kd_raw 450) is unstable with tau = 27 ms (max|eig| = %.3f), as observed in run 4', rhoPD));
+chk(rhoPD > 1, sprintf(['lab x-only PD (Kp 45, Kd_raw 450) is unstable with tau = 27 ms (max|eig| = %.3f; linear model, ' ...
+     'manual force law; the 7-9 Hz of run 4 was a nonlinear cycle, see WHY)'], rhoPD));
 
 %% ---- 4. nonlinear lift-off simulation (ball starts on the stand) -------
 % Plan used in the lab: stand at 12 mm, set point 11 mm at start, 10 mm at t = 1.5 s.
@@ -177,7 +181,8 @@ set(ax(1), 'YDir', 'reverse');
 ylabel(ax(1), 'gap x [mm]');  ylabel(ax(2), 'current i [A]');  ylabel(ax(3), 'command u [-]');
 xlabel(ax(3), 'time [s]');
 legend(ax(1), [{cases.name}, {'set point'}], 'Location', 'southeast');
-title(ax(1), 'Cascade controller: nonlinear lift-off from the 12 mm stand', 'Color', 'k');
+title(ax(1), {'Cascade controller: nonlinear lift-off from the 12 mm stand', ...
+       '(PRE-LAB check; force constants from a withdrawn premise, see s05 section 0)'}, 'Color', 'k');
 title(ax(2), 'Coil current', 'Color', 'k');  title(ax(3), 'Command (PWM duty)', 'Color', 'k');
 exportgraphics(f1, fullfile(P.dir.figs, 'p3_liftoff_sim.png'), 'Resolution', P.plot.res, 'BackgroundColor', 'w');
 

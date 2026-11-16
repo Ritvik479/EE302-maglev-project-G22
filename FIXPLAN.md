@@ -20,7 +20,7 @@ Status legend: `[ ]` open, `[x]` done, `[~]` decided but waiting.
 | 6 | Re-run in dependency order, compare with expectations | [x] 2026-11-16 (all as expected; .mat contents checked vs baseline) |
 | 7 | README updates (robustness numbers, new counts) | [x] 2026-11-16 |
 | 8 | One value per quantity (text) | [x] 2026-11-16 (reference table in data/README.md) |
-| 9 | Remaining MINOR stale text and figures | [ ] |
+| 9 | Remaining MINOR stale text and figures | [x] 2026-11-16 |
 | 10 | Optional new analysis | [ ] |
 | — | Then write D6 (report) | [ ] |
 
@@ -242,7 +242,28 @@ Original plan:
 | Lift-off time | one definition ("x < rest − 0.2 mm") or name both |
 | Operating range | as in Step 3 |
 
-## Step 9 — Remaining MINOR stale text and figures
+## Step 9 — Remaining MINOR stale text and figures (DONE)
+
+Done 2026-11-16 (text and figure layout only; re-run: s02 39/39, s05 all PASS, s13 13/1, s16 9/2, s18 5/0;
+`phase3_cascade.mat` and `overshoot_mismatch.mat` identical; `phase2_results.mat` identical in every number and in
+`tests` — only anonymous function handles differ, which never compare equal after save/load):
+- s13: header REVISED note; §4 "not separable" and §5 H-force marked superseded; §6 summary rewritten (H-force
+  REJECTED, spike STAND-TIED); "[record]" labels; p10 legend. 13-Nov README s13 paragraphs struck/annotated.
+- s12 header "worst Ms 5.0" corrected; s05: λ > 8.25 mm printout and p3_liftoff_sim title marked pre-lab/withdrawn,
+  PD check message reworded; s02 pole-map legend moved below the axes (no pole hidden); p12 and p15 label overlaps
+  fixed; models/README: ramp116 still Flat, steps model first level 8 s, demo model saved with x_ref 11.5 mm.
+- Not done (not in this plan's list, low value): s07 settling-time "0 ms" display (2.23), s16 "POSITION-TIED"
+  message wording (5.7), s15 header note (5.3), data figure index (6A).
+
+## HANDOFF (for the report chat)
+Steps 0-9 done (git log). Use: `data/README.md` "Reference values for the report" (single values);
+13-Nov README "Robustness over the uncertainty set" (R4 claims and caveats); 16-Nov README "Stand-proximity effect"
+(R2 unmodelled; mechanism open); `AUDIT.md` 6C (claims) and 6D (unresolved items) — note 6C/6D predate these fixes:
+case counts are now 51 of 69 in the set (not 53 of 73), and both lowered-stand lift-offs are outside the simulated
+range. Figures safe to use: all regenerated ones; p3_liftoff_sim only as a labelled pre-lab check; p10 with its
+H-force curve labelled rejected. Step 10 (optional analysis) is still open.
+
+Original plan:
 
 - [ ] s13 §5–6 and 13-Nov README H-force paragraphs (4.6, 4.7); "Partly explained by s13"; `[record]` labels (4.9).
 - [ ] s12 header "worst Ms 5.0" (3.6); s02 PURPOSE (2) wording (1.16); file names (1.18).

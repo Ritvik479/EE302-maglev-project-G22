@@ -187,7 +187,7 @@ for v = 1:2
         xlim([-260 80]); ylim([-120 120]);
         title({'Zoom near the origin', '(+p unstable, -p mirror, -200 filter pole)'}, 'Color', 'k');
     end
-    legend('Location', 'best');
+    if v == 1, legend('Location', 'southoutside', 'NumColumns', 2); else, legend('Location', 'best'); end   % (2026-11-16, AUDIT.md 1.17: full-view legend hid a pole)
 end
 
 %% 4. Figure 2: Bode of the sign-absorbed plant -G(s)

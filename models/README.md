@@ -12,10 +12,10 @@ feed-forward 1/2.44, i_ref 0..2 A, u 0..0.9 (variant D differs, see below). e = 
 | `my_pd_rt.slx`, `my_pid_rt.slx` | INTECO PD / PID examples (copies, unmodified) | 2026-11-12 runs; base of the cascade models |
 | `my_cascade_rt.slx` | cascade controller, manual set point, test/run switch (i_test) | 2026-11-13 first levitation, Exp A/B |
 | `my_cascade_kg_rt.slx` | as `my_cascade_rt` + constant `kg` multiplying u before the limit | 2026-11-13 Exp C (actuator-gain test) |
-| `my_cascade_sweep_rt.slx` | gated sweep clock (tau counts while x < 11.5 mm) → lookup table 11→9→11 mm (Flat) + auto/manual switch | 2026-11-13 sweeps and holds, 2026-11-16 item 2. **Demo model** |
-| `my_cascade_steps_rt.slx` | sweep model with table 11.0→10.8→11.1→10.6→11.0→10.5→11.0 mm | 2026-11-16 item 3a |
+| `my_cascade_sweep_rt.slx` | gated sweep clock (tau counts while x < 11.5 mm) → lookup table 11→9→11 mm (Flat) + auto/manual switch | 2026-11-13 sweeps and holds, 2026-11-16 item 2. **Demo model.** Saved with the MANUAL x_ref = 11.5 mm (0.4 mm above the normal stand, the rocking height): set it to 10–11 mm before a demo |
+| `my_cascade_steps_rt.slx` | sweep model with table 11.0→10.8→11.1→10.6→11.0→10.5→11.0 mm (breakpoints [0 8 13 18 23 28 33] s of tau: first level 8 s, then 5 s each) | 2026-11-16 item 3a |
 | `my_cascade_ramp_rt.slx` | sweep model with table 11→10.5→10.5→11.4→10.5→10.5 mm, **Linear** (0.2 mm/s ramp) | 2026-11-16 item 3b (only the rebuilt run `ramp_39g` ramped) |
-| `my_cascade_ramp116_rt.slx` | ramp to 11.6 mm, lift threshold 12.0 mm (lowered stand only) | 2026-11-16 (ran Flat, see the data README) |
+| `my_cascade_ramp116_rt.slx` | ramp to 11.6 mm, lift threshold 12.0 mm (lowered stand only) | 2026-11-16 (ran Flat, see the data README). **Still saved with Flat interpolation**: set Linear, Save and Build before reusing it |
 | `my_cascade_sine_rt.slx` | `my_cascade_rt` + injection d_inj = A_inj sin(2π f_inj t) added to u before the limit; logs u_c, d_inj, f_inj, A_inj | 2026-11-16 item 4 |
 | `my_cascade_D_rt.slx` | **variant D**: i0 0.85 A, clamp ±0.45 A, integral held at 0 while `run` = 0 (Constant `run` → Switch; `run == 0` → level reset) | 2026-11-16 item 5. Save with `run` = 0 |
 | `group22_sensor.mat` | `SensorData` sensor calibration (33 points, 06-Nov-2026 export) used for every lab build | all lab models |
