@@ -17,7 +17,7 @@ Status legend: `[ ]` open, `[x]` done, `[~]` decided but waiting.
 | 3 | One canonical stand-zone paragraph, pasted everywhere | [x] 2026-11-16 (text only; scripts parse-checked, not re-run) |
 | 4 | Text-only MAJOR fixes | [x] 2026-11-16 (comments/strings only; P values unchanged; nothing to re-run) |
 | 5 | Code fixes in leaf scripts (s09, s14, s17, s18) | [x] 2026-11-16 (tested on a scratch copy; repo outputs not yet regenerated = Step 6) |
-| 6 | Re-run in dependency order, compare with expectations | [ ] |
+| 6 | Re-run in dependency order, compare with expectations | [x] 2026-11-16 (all as expected; .mat contents checked vs baseline) |
 | 7 | README updates (robustness numbers, new counts) | [ ] |
 | 8 | One value per quantity (text) | [ ] |
 | 9 | Remaining MINOR stale text and figures | [ ] |
@@ -169,7 +169,22 @@ Original plan for this step:
       drop "most likely a rotation"; add the lowered-stand hold to §1 (band rms 0.050 mm).
 - [ ] **s18** — 5.22: `chkp(isStatic, …)` instead of `chkp(true, …)`; header per Step 3.
 
-## Step 6 — Re-run order and expectations
+## Step 6 — Re-run order and expectations (DONE)
+
+Done 2026-11-16, in the repo, order s10 -> s11 -> s14 -> s09 -> s17 -> s18 (s07/s08 skipped: text-only edits).
+Results: s10 12/0, s11 12/4, s14 11/0, s09 16/1, s17 10/2, s18 5/0 (= the Step 5 scratch runs).
+Content check against the baseline commit c459a21 (MATLAB `isequaln`):
+- `linear_model.mat`: LM identical except its `unmodelled` text table; U changed (text) — as intended.
+- `robustness.mat` (RB), `delay_estimate.mat` (DE): IDENTICAL.
+- `rocking.mat`: all old variables IDENTICAL; new bLow (0.048 mm), SP, SG.
+- `sim_cases_results.mat`: B, BD identical; in M and MD every numeric metric (lift, held, merr, ring, os, ts,
+  usat, xstd, nlev, clear, lost) identical for all 77 cases; differences = new field `band`, the two renamed
+  stress cases (group 'stress'), and ONE ok verdict: '39 g, stress: noise + drift + x artifact' 1 -> 0 (the old
+  'lab-like' case; audit 3.22). The x-artifact-only case was already NOT ok.
+- Figures re-rendered (PNG bytes always differ); p6_cases_special checked: both kg lines visible.
+- `models/maglev_cl_sim.slx` rebuilt by s09 (as every s09 run does).
+
+Original plan:
 
 | # | Script | Expect |
 |---|---|---|
