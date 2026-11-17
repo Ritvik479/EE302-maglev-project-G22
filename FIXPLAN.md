@@ -274,7 +274,17 @@ Original plan:
 
 ## Step 10 — Optional
 
-- [ ] s13 §5b redone, binned by height above the stand, with the lowered-stand lift-offs (4.8).
+- [x] s13 §5b redone, binned by height above the stand, with the lowered-stand lift-offs (4.8). 2026-11-17,
+      `scripts/s20_liftoff_stand_height.m` (new; console + `figs/p16_liftoff_stand_height.png`; 6 PASS / 0 FAIL;
+      s13 untouched). 22 lift-offs (20 normal stand: 13 on 13-Nov, 7 on 16-Nov incl. 2 variant D; 2 lowered stand),
+      each normalised to its own baseline at 10.3-10.9 mm; stencil must stay >= 0.05 mm off the stand. Per-sample
+      values at 0.3-0.5 / 0.5-0.7 mm above the stand: 1.008 / 0.972 (n 7 / 6) vs the slow ramp's 1.151 / 1.091.
+      **But this is a resolution limit, not physics:** lift-offs cross 0.3-0.7 mm in 3-18 ms (median 7 ms), 21 of 22
+      faster than the 18 ms Newton stencil, so the near-stand values average over heights where the effect is absent.
+      A static force of the ramp's size would move the ball only 5-165 µm (median 36 µm) per crossing. Lowered stand:
+      no usable samples near its stand. **Conclusion for AUDIT 4.8 / 6D-1: lift-offs neither confirm nor refute the
+      static stand effect**; the old "lift-offs show no extra force" (s13 §5b) must not be used as evidence against it
+      (s13's 11.4-11.8 mm bin also had stencils reaching the stand).
 - [ ] Position-only PD gain-grid figure (2.15).
 - [x] D2 follow-up: does Exp C trimming lower the Option-2 \|WT\| peak? **No.** 2026-11-17, `scripts/s19_trim_expC.m`
       (new, console only, writes nothing; 5 PASS / 0 FAIL). Rule A (stable at kg 0.4) and rule B (stable at kg 0.4
