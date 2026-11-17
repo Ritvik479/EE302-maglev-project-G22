@@ -67,7 +67,7 @@ todo_uses = re.findall(r'\\todo\{', body_all)
 cap_uses = re.findall(r'\\capnote\{', body_all)
 check(not todo_uses, 'no \\todo placeholders left (%d found)' % len(todo_uses))
 check(not cap_uses, 'no \\capnote caption obligations left (%d found)' % len(cap_uses))
-files = re.findall(r'\\repfig\{[^}]*\}\{([^}]*)\}', body_all) + re.findall(r'\\figbox\{([^}]*)\}', body_all)
+files = re.findall(r'\\repfig(?:\[[^\]]*\])?\{[^}]*\}\{([^}]*)\}', body_all) + re.findall(r'\\figbox\{([^}]*)\}', body_all)
 missing = [f for f in files if not os.path.exists(os.path.normpath(os.path.join(HERE, f)))]
 check(not missing, 'all %d figure files exist' % len(files) + ('' if not missing else ': missing ' + ', '.join(missing)))
 
@@ -79,7 +79,7 @@ body = re.sub(r'\\begin\{thebibliography\}.*?\\end\{thebibliography\}', ' ', bod
 body = re.sub(r'\\begin\{tikzpicture\}.*?\\end\{tikzpicture\}', ' ', body, flags=re.S)
 body = re.sub(r'(?<!\\)%.*', ' ', body)                                   # comments
 body = re.sub(r'\\(?:ref|label|eqref|cite|code|pageref)\{[^}]*\}', ' ', body)
-body = re.sub(r'\\repfig\{[^}]*\}\{[^}]*\}\{[^}]*\}', ' ', body)           # label, file, width (caption kept)
+body = re.sub(r'\\repfig(?:\[[^\]]*\])?\{[^}]*\}\{[^}]*\}\{[^}]*\}', ' ', body)  # short entry, label, file, width (caption kept)
 body = re.sub(r'\\figbox\{[^}]*\}\{[^}]*\}\{[^}]*\}', ' ', body)
 body = re.sub(r'\\begin\{(?:subfigure|tabularx|longtable|tabular)\}(?:\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\})+', ' ', body)
 body = re.sub(r'[pm]\{[\d.]+cm\}', ' ', body)                              # column widths
@@ -227,7 +227,7 @@ required = [
 for where, pat, what in required:
     check(re.search(pat, where, re.S) is not None, what)
 for lab in ('expAB', 'sweeps'):
-    cap = re.search(r'\\repfig\{' + lab + r'\}\{[^}]*\}\{[^}]*\}\{(.*?)\}\n', tex, re.S)
+    cap = re.search(r'\\repfig(?:\[[^\]]*\])?\{' + lab + r'\}\{[^}]*\}\{[^}]*\}\{(.*?)\}\r?\n', tex, re.S)
     check(cap is not None and re.search(r'd\s*=\s*0', cap.group(1)) is not None,
           'caption of fig:%s says the simulation used d = 0 (Z8)' % lab)
 

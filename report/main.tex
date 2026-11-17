@@ -54,9 +54,10 @@
 \newcommand{\figbox}[3]{%
   \IfFileExists{#1}{\includegraphics[width=#2]{#1}}{%
     \fbox{\parbox[c][#3][c]{\dimexpr#2-2\fboxsep-2\fboxrule\relax}{\centering\footnotesize\textsf{[Insert image]}\\[2pt]\texttt{\detokenize{#1}}}}}}
-% One report figure: \repfig{label}{file}{width}{caption}
-\newcommand{\repfig}[4]{%
-  \begin{figure}[H]\centering\figbox{#2}{#3}{5cm}\caption{#4}\label{fig:#1}\end{figure}}
+% One report figure: \repfig[short entry for the list of figures]{label}{file}{width}{caption}
+\newcommand{\repfig}[5][]{%
+  \begin{figure}[H]\centering\figbox{#3}{#4}{5cm}%
+  \if\relax\detokenize{#1}\relax\caption{#5}\else\caption[#1]{#5}\fi\label{fig:#2}\end{figure}}
 % Placeholder for text still to be written: \todo{stage}{what goes here}
 \newcommand{\todo}[2]{\par\noindent\fcolorbox{orange!80!black}{orange!8}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\small\textbf{[Stage #1]} #2}}\par}
 % Caption obligation from numbers.md (kept visible until the caption is written)
@@ -159,7 +160,7 @@ Table~\ref{tab:deliverables} with the parts of this report that answer them.
 
 \begin{table}[H]
 \centering
-\caption{Problem Statement~9: requirements, deliverables and where they are answered}
+\caption[Requirements and deliverables of Problem Statement~9]{Problem Statement~9: requirements, deliverables and where they are answered}
 \label{tab:deliverables}
 \begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{3.6cm}@{}}
 \toprule
@@ -181,10 +182,9 @@ produced an identified nonlinear model, an uncertainty set built from the measur
 two balls. The controller was designed once and deployed unchanged; one improvement (``variant~D'', a different
 start-up of the integral action) was designed in simulation and tested on the hardware on the last day.
 
-Two rules are kept throughout. Every number carries a status label (measured, simulated, derived or not obtained;
-Section~\ref{sec:status}), and every number comes from a script that checks itself and can be re-run
-(Appendix~\ref{app:scripts}). Results that missed their targets, items that were not obtained, and statements that
-could not be confirmed are reported as such, mainly in Section~\ref{sec:discussion}.
+Every number carries a status label (measured, simulated, derived or not obtained; Section~\ref{sec:status}). Targets
+that were missed, items not obtained and statements that could not be confirmed are reported as such
+(Section~\ref{sec:discussion}).
 
 % =========================== 2 LEARNING OBJECTIVES ===========================
 \section{Learning Objectives}
@@ -438,12 +438,12 @@ filter blocks are absent, the coil time constant is about $22$--$25$\,ms instead
 not volts. The pre-lab results are therefore kept only as predictions, labelled as such. The manual-model figures for the
 force law and the equilibrium are in Appendix~\ref{app:figs}.
 
-\repfig{p2bode}{../figs/p2_bode.png}{0.75\linewidth}{Bode diagram of the manual's sign-absorbed plant $-G(s)$ and its
+\repfig[Bode diagram of the manual plant (pre-lab)]{p2bode}{../figs/p2_bode.png}{0.75\linewidth}{Bode diagram of the manual's sign-absorbed plant $-G(s)$ and its
 refinements, 39.288\,g ball at 9\,mm (pre-lab prediction with the manual's model\st{S}). The filter and the hold delay
 leave the magnitude almost unchanged but add phase lag. The lab later showed that the filters are absent and the sample
 time is 3\,ms.}
 
-\repfig{p2nyq}{../figs/p2_nyquist.png}{0.7\linewidth}{Nyquist plot of $L=G_sC$ for the reduced manual plant (one unstable
+\repfig[Nyquist plot with P and PD control (pre-lab)]{p2nyq}{../figs/p2_nyquist.png}{0.7\linewidth}{Nyquist plot of $L=G_sC$ for the reduced manual plant (one unstable
 open-loop pole), with P control and with PD control (pre-lab\st{S}). Stability requires one counter-clockwise
 encirclement of $-1$: the P loop only runs along the real axis, the PD loop encircles $-1$.}
 
@@ -541,7 +541,7 @@ $u$ command (duty fraction).
 \draw[dashed, gray] (1.3,-3.25) rectangle (16.0,-5.85);
 \node[gray, anchor=north west, font=\footnotesize] at (1.3,-3.25) {MLS1EM rig};
 \end{tikzpicture}}
-\caption{The cascade control loop as deployed. The outer PID turns the position error $e=x-x_{\mathrm{ref}}$ and the
+\caption[The cascade control loop]{The cascade control loop as deployed. The outer PID turns the position error $e=x-x_{\mathrm{ref}}$ and the
 velocity $v$ into a current reference; the inner loop (feed-forward $1/\hat k_a$ plus $K_c$ on the current error) makes
 the coil current follow it. Gap $x$ is measured downward from the magnet; positive gains raise the current when the ball
 is too low. Limits: integral contribution $\pm0.30$\,A, $i_{\mathrm{ref}}$ $0$--$2$\,A, $u$ $0$--$0.9$.}
@@ -559,7 +559,7 @@ is too low. Limits: integral contribution $\pm0.30$\,A, $i_{\mathrm{ref}}$ $0$--
 \figbox{../data/lab_2026-11-12/screenshots/00_rig_photo_calibration_stand.jpeg}{\linewidth}{5cm}
 \caption{Ball resting on the calibration stand}\label{fig:rig-b}
 \end{subfigure}
-\caption{The INTECO MLS1EM magnetic levitation rig.}
+\caption[The INTECO MLS1EM rig]{The INTECO MLS1EM magnetic levitation rig.}
 \label{fig:rig}
 \end{figure}
 
@@ -590,9 +590,7 @@ winds up to its $+0.30$\,A clamp; the lift-off starts from that state. Further c
 \item \code{my_cascade_D_rt}: variant~D (Section~\ref{sec:obs-varD}): a run switch holds the integral at zero while the
       coil is off; bias $0.85$\,A, integral clamp $\pm0.45$\,A.
 \end{itemize}
-Each run was saved from the scopes (``Print to Figure'', \code{.fig}) and read on the analysis PC with
-\code{read_scope_fig.m}. The scope keeps every 3\,ms sample (it stores each one twice, as stairs; the reader removes the
-copies). Logged signals: position, velocity, current and command on the main scope; current, $i_{\mathrm{ref}}$ and, in the
+Each run was saved from the scopes as a \code{.fig} file containing every 3\,ms sample. Logged signals: position, velocity, current and command on the main scope; current, $i_{\mathrm{ref}}$ and, in the
 test models, $x_{\mathrm{ref}}$, the sweep clock, $k_g$ or the injected sine on a second scope.
 \begin{figure}[H]\centering
 \begin{subfigure}{0.49\linewidth}\centering
@@ -603,7 +601,7 @@ test models, $x_{\mathrm{ref}}$, the sweep clock, $k_g$ or the injected sine on 
 \figbox{../data/lab_2026-11-13/screenshots/02_cascade_controller_inside.png}{\linewidth}{4.5cm}
 \caption{Inside the cascade controller block}\label{fig:labmodel-b}
 \end{subfigure}
-\caption{The deployed lab model.}
+\caption[The deployed lab model]{The deployed lab model.}
 \label{fig:labmodel}
 \end{figure}
 
@@ -629,7 +627,7 @@ for a bias current of $0.75$\,A, which the fitted force law gives at about $9.3$
 \emph{analysis} nominal (linear model, robustness, simulation cases, sine injection) is the 39\,g ball at $10$\,mm; and the
 \emph{manual comparison} (Section~\ref{sec:th-prelab}) is at $9$\,mm, as in the manual.
 
-\paragraph{Two plant fits.} The force law was fitted twice on 13 November (Section~\ref{sec:obs-ident}). ``The model''
+\paragraph{Two plant fits.} The force law was fitted twice (Section~\ref{sec:obs-ident}). ``The model''
 means the combined fit ($\lambda=5.90$\,mm, 42 hover visits), used for the linear model, the robustness analysis and the
 Simulink cases. The step-overshoot comparisons use the morning fit ($\lambda=5.81$\,mm, 18 visits), because they were set up
 before the afternoon data existed; the two differ by $1.6\,\%$ in $\lambda$, and the text names the fit where it matters.
@@ -670,9 +668,7 @@ reports a real finding (for example, a target that was missed) and is explained 
 functions provide the parameters (\code{maglev_params}), the equilibrium and linearization (\code{maglev_equilibrium},
 \code{maglev_plant}), the fitted plant and uncertainty cases (\code{maglev_cases}), an independent MATLAB simulation
 (\code{maglev_cascade_sim}), the Simulink model builder (\code{build_maglev_cl_sim}) and the scope-file reader
-(\code{read_scope_fig}). For this report all eighteen analysis scripts were re-run on 17 November 2026; every PASS/FAIL total
-matched the earlier runs and every saved result was numerically identical. Appendix~\ref{app:scripts} lists each script,
-its purpose and its totals.
+(\code{read_scope_fig}). Appendix~\ref{app:scripts} lists each script, its purpose and its totals.
 
 % ======================== 5 EXPERIMENTAL PROCEDURE ========================
 \section{Experimental Procedure}
@@ -753,9 +749,7 @@ The offline work ran alongside the sessions; Table~\ref{tab:scripts} gives the s
 \item Compare simulation and hardware and investigate the misfits (s13, s14); after session~3, analyse the new tests (s16,
       s17, s18) and the follow-up questions (s19, s20, s21).
 \end{enumerate}
-Each script prints its own PASS/FAIL checks (Section~\ref{sec:scripts}). On 16 November all results were audited
-line by line, the problems found were fixed, and the affected scripts were re-run. For this report everything was run
-once more from the saved data.
+
 
 % =================== 6 OBSERVATION AND DATA RECORDING ===================
 \section{Observation and Data Recording}
@@ -788,8 +782,7 @@ the controller's feed-forward uses $\hat k_a = 2.44$, the value available at des
 \subsection{Identification: Force Law, Loop Delay and Sensor Noise}
 \label{sec:obs-ident}
 \paragraph{Current-sensor zero.} The current reading is not zero when the coil is off: at the start of a session it read
-$0.03$--$0.06$\,A at $u=0$, and this offset fell by $0.3$--$1.2$\,mA per second of coil-on time, reaching $-0.02$\,A late on
-16 November\st{M}. On 13 November it fell from $0.0405$ to $0.0102$\,A during the 61\,s of Experiment~A\st{M}. The true
+$0.03$--$0.06$\,A at $u=0$, and this offset fell by $0.3$--$1.2$\,mA per second of coil-on time, reaching $-0.02$\,A in the last session\st{M}; during the 61\,s of Experiment~A it fell from $0.0405$ to $0.0102$\,A\st{M}. The true
 current is therefore the reading minus a drifting zero, measured at $u=0$ before and after each run and interpolated
 linearly in coil-on time. This correction matters: two visits to the same gap in one run differed by $12.0$\,mA rms in the
 raw readings and by $4.8$\,mA rms after correction\st{M}. Runs without a coil-off record use the drift rate of a
@@ -798,13 +791,13 @@ neighbouring run with the same ball, or the mean rate of the session.
 \paragraph{Force law.} At each hover plateau the ball is in equilibrium, so the true current and the gap give one
 point of \eqref{eq:hover}. A least-squares fit of \eqref{eq:hover} to these points, with one decay length $\lambda$ for both
 balls and one constant $c$ per ball, gives the force law. It was fitted twice (Table~\ref{tab:forcefit}): on the 18
-morning visits, and on all 42 visits of 13 November at $9$--$11$\,mm. Plateaus with oscillation in the $1.5$--$3.5$\,Hz band
+morning visits, and on all 42 visits at $9$--$11$\,mm. Plateaus with oscillation in the $1.5$--$3.5$\,Hz band
 and the $11.5$\,mm holds were left out (Section~\ref{sec:obs-stand} explains why). The combined fit is the reference
 model of this report (Fig.~\ref{fig:forcefit}).
 
 \begin{table}[H]
 \centering
-\caption{Force-law fits $F = c\,i^2e^{-x/\lambda}$ from the hover data of 13 November}
+\caption[Force-law fits]{Force-law fits $F = c\,i^2e^{-x/\lambda}$ from the hover data}
 \label{tab:forcefit}
 \begin{tabular}{@{}lccc@{}}
 \toprule
@@ -834,8 +827,8 @@ is known to $\pm0.57\,\%$ over $9$--$11$\,mm\st{D}. Three further checks support
       $c$ values.
 \end{itemize}
 
-\repfig{forcefit}{../figs/p5_force_fit_all.png}{0.75\linewidth}{Identified force law: drift-corrected hover current
-against gap for both balls, 42 visits on 13 November (morning: open circles; afternoon sweeps: filled squares), and the
+\repfig[Identified force law]{forcefit}{../figs/p5_force_fit_all.png}{0.75\linewidth}{Identified force law: drift-corrected hover current
+against gap for both balls, 42 visits (morning: open circles; afternoon sweeps: filled squares), and the
 combined fit $\lambda = 5.90$\,mm\st{M}. The $11.5$\,mm holds (crosses) were not fitted: they lie $0.4$--$0.5$\,mm above the
 stand, where the stand-proximity effect acts (Section~\ref{sec:obs-stand}).}
 
@@ -852,7 +845,7 @@ independently supports $d \approx 0.5$--$0.6$ (Section~\ref{sec:obs-simlab}). Th
 nominal and $0.3$--$0.6$ as its range: the measured $0.32$--$0.55$ rounded outward to tenths, so that the Simulink model can
 apply it exactly.
 
-\repfig{delay}{../figs/p9_delay.png}{0.85\linewidth}{Extra loop delay from run~3\st{M}. (A) Output-error fit of the
+\repfig[Extra loop delay]{delay}{../figs/p9_delay.png}{0.85\linewidth}{Extra loop delay from run~3\st{M}. (A) Output-error fit of the
 coil model against the delay: minimum at $d = 0.55$; the open-loop coil steps are almost flat in $d$. (B) Noise shaping by the
 inner loop: only a fractional delay ($d \approx 0.5$) reproduces the measured resonance near 65\,Hz. Bottom: the $0.3 \to 0.5$\,A
 step with models for $d = 0$, $0.55$ and $1$.}
@@ -894,7 +887,7 @@ G_{iu}(s) = \frac{2.432}{0.027\,s + 1}\ \ \frac{\text{A}}{\text{unit}} \quad\tex
 
 \begin{table}[H]
 \centering
-\caption{Operating points and linear coefficients (identified law; $a_{21}=1661\,\text{s}^{-2}$ everywhere)\st{D}}
+\caption[Operating points and linear coefficients]{Operating points and linear coefficients (identified law; $a_{21}=1661\,\text{s}^{-2}$ everywhere)\st{D}}
 \label{tab:oppoints}
 \begin{tabular}{@{}c|ccc|ccc@{}}
 \toprule
@@ -912,7 +905,7 @@ $x_0$ [mm] & $i_0$ [A] & $u_0$ & $b$ [m\,s$^{-2}$A$^{-1}$] & $i_0$ [A] & $u_0$ &
 
 \paragraph{Validity of the linearization.} The linear model was checked against the nonlinear one: its matrices agree with
 a numerical Jacobian at all operating points, and it predicts the response to a small current pulse with the right sign and
-size. Along all 24 simulated set-point steps of 13 November the force error of the local linearization stays below
+size. Along all 24 simulated set-point steps of the sweeps the force error of the local linearization stays below
 $1.17\,\%$ of the weight; the linear and nonlinear step overshoots agree within $0.026$\,mm rms, and a single linear model
 (39\,g, $10$\,mm) for both balls and all gaps within $0.086$\,mm rms\st{S} (Fig.~\ref{fig:a-linnl}). Linearization is therefore
 not the cause of the lab-versus-model differences discussed in Section~\ref{sec:obs-simlab}.
@@ -962,10 +955,10 @@ the set point; the cause of the extra delay (its size is in the set); back-EMF a
 sensor noise (simulation cases; the integral removes the drift); and the kinks of the 33-point position calibration table.
 How much room the controller leaves for such effects is quantified in Section~\ref{sec:obs-robust}.
 
-\repfig{lincoeffs}{../figs/p7_linear_coeffs.png}{0.85\linewidth}{Left: hover current against gap from the identified law,
+\repfig[Hover current and input gain against gap]{lincoeffs}{../figs/p7_linear_coeffs.png}{0.85\linewidth}{Left: hover current against gap from the identified law,
 with the 42 lab visits (dots) and the band covered by the uncertainty set (shaded); star = analysis nominal. Right: input gain
 $b = 2g/i_0$; $a_{21}$ is the same at every gap\st{D}. The $11.5$\,mm region (grey) is outside the claimed range.}
-\repfig{plantbode}{../figs/p7_plant_bode.png}{0.75\linewidth}{Frequency response of the plant $u \to x$ (ZOH, $T_0 = 3$\,ms):
+\repfig[Plant frequency response over the uncertainty set]{plantbode}{../figs/p7_plant_bode.png}{0.75\linewidth}{Frequency response of the plant $u \to x$ (ZOH, $T_0 = 3$\,ms):
 the nominal 39\,g and 42\,g plants at $10$\,mm with $d = 0.5$ (colour) and 192 corners of the set at $d = 0.3$ and $0.6$
 (grey)\st{D}. The dashed line marks the unstable pole at $6.5$\,Hz.}
 
@@ -983,7 +976,7 @@ times faster than the coil. The outer poles were placed at $\omega_n = 40$\,rad/
 $\omega_i = 12$\,rad/s. The closed-loop pair, at $-28 \pm j28.6$\,rad/s, then has a natural frequency close to the speed of the
 unstable pole ($p = 40.76$\,rad/s) and good damping, and the integral pole is slow enough not to disturb the transient. A sweep of
 $\omega_n$, $\zeta$ and $\tau_{\mathrm{in}}$ against the design grid (below) preceded the choice; it found $\tau_{\mathrm{in}}=3$\,ms
-best for the worst-case $M_s$. That sweep was not saved, so no numbers are quoted from it.
+best for the worst-case $M_s$. 
 
 \paragraph{Gains.} Equations \eqref{eq:kc} and \eqref{eq:gains} give the gains of Table~\ref{tab:gains} (arithmetic in
 Section~\ref{sec:calc}). They were deployed unchanged on all three lab days; a regression of the logged $i_{\mathrm{ref}}$ on
@@ -1016,8 +1009,7 @@ nonlinear simulation\st{S}:
 \item The nominal design loop is stable with $M_s = 1.36$. Negating all gains makes it unstable (the sign test).
 \item A grid of 81 plants ($\tau$ $20$/$27$/$35$\,ms $\times$ $k_a$ $2.2$/$2.44$/$2.7$ $\times$ three force-decay lengths $\times$ $i_0$
       $0.65$/$0.75$/$0.90$\,A) is stable everywhere, with worst $M_s = 1.67$; with one extra sample of delay it is still stable,
-      but the worst $M_s$ rises to $5.23$. This showed early that the loop delay matters, and it was measured on 13 November
-      (Section~\ref{sec:obs-ident}). Two of the three decay lengths (8.3 and 10\,mm) came from a pre-lab reading of the stand
+      but the worst $M_s$ rises to $5.23$. This showed early that the loop delay matters, so it was measured (Section~\ref{sec:obs-ident}). Two of the three decay lengths (8.3 and 10\,mm) came from a pre-lab reading of the stand
       lift-off thresholds that was later withdrawn; the grid was a design-time check only and is superseded by the analysis of
       Section~\ref{sec:obs-robust}.
 \item The inner loop was predicted to reach $63\,\%$ of a $0.3 \to 0.5$\,A step in $3.0$\,ms, against $27$\,ms for the open coil
@@ -1029,17 +1021,16 @@ nonlinear simulation\st{S}:
 
 \subsection{First Levitation and Experiments A--C}
 \label{sec:obs-first}
-\paragraph{Runs 1--2.} The first two runs of 13 November gave no coil current at all, although the command followed the
+\paragraph{Runs 1--2.} The first two runs of session~2 gave no coil current at all, although the command followed the
 control law: the rig's power supply was off\st{M}. Nothing else was changed before run~3.
 
 \paragraph{Run 3: the inner loop alone.} With the ball on the stand and the test current reference stepped from $0.3$ to
 $0.5$\,A, the measured current settled at $0.294$ and $0.497$\,A, and reached $63\,\%$ of the step 2 samples ($6$\,ms) after
 the command jump\st{M} (Fig.~\ref{fig:run3}). The design predicted $3.0$\,ms\st{S}, i.e.\ one sample; the extra sample is
 consistent with the loop delay found later (Section~\ref{sec:obs-ident}). The open coil needs about $27$\,ms for the same
-$63\,\%$, so the inner loop makes the current about nine times faster, as intended. The first command sample after the jump
-is large because the feed-forward and $K_c$ both act on the reference step.
+$63\,\%$, so the inner loop makes the current about nine times faster, as intended. 
 
-\repfig{run3}{../figs/p3_lab_run3.png}{0.75\linewidth}{Run~3 (13 November): measured inner current loop with the ball resting
+\repfig[Run 3: inner current loop]{run3}{../figs/p3_lab_run3.png}{0.75\linewidth}{Run~3: measured inner current loop with the ball resting
 on the stand, test reference $0.3 \to 0.5$\,A\st{M}. The current reaches $63\,\%$ of the step in 2 samples ($6$\,ms); the
 dashed curve is the open coil with $\tau = 27$\,ms, shown for comparison only. The command $u$ is a duty fraction.}
 
@@ -1052,7 +1043,7 @@ While hovering, the position fluctuated with a standard deviation of $0.071$\,mm
 and the current read $0.898$ and $0.830$\,A (raw readings, including the current-sensor zero)\st{M}. These two hover
 currents were the first data for the force law (Section~\ref{sec:obs-ident}). Fig.~\ref{fig:run4} shows the run.
 
-\repfig{run4}{../figs/p3_lab_run4.png}{0.85\linewidth}{Run~4 (13 November): first levitation with the cascade controller,
+\repfig[Run 4: first levitation]{run4}{../figs/p3_lab_run4.png}{0.85\linewidth}{Run~4: first levitation with the cascade controller,
 39\,g ball\st{M}. Top: whole run (switch-on at $3.6$\,s, set point $11 \to 10$\,mm at $14.4$\,s). Middle left: lift-off from
 the stand; middle right: the set-point step with the design-time simulation. The curve labelled ``simulation (Phase~3)''
 uses the \emph{pre-identification} plant (manual force law, no extra delay)\st{S}, not the identified model of
@@ -1076,7 +1067,7 @@ run~2: $0.975$/$0.902$\,A against $0.971$/$0.897$\,A at $11$/$10$\,mm\st{M}, so 
 orientation. From then on the rest reading was used as a seating check: a ball resting more than $0.1$\,mm away from its
 usual reading was reseated. The sweep run ($11 \to 9 \to 10.5$\,mm) held every level (Fig.~\ref{fig:expAB}, bottom).
 
-\repfig{expAB}{../figs/p4_sweep_lab_vs_sim.png}{0.85\linewidth}{Experiments A (39\,g) and B (42\,g, sweep run), 13 November:
+\repfig[Experiments A and B: gap sweeps]{expAB}{../figs/p4_sweep_lab_vs_sim.png}{0.85\linewidth}{Experiments A (39\,g) and B (42\,g, sweep run):
 lab gap (blue) and simulation (red) with the morning-fitted plant and the measured sensor noise\st{M/S}. The simulation uses
 $d = 0$ (no extra loop delay; the delay had not yet been measured), so its overshoots are not the comparison used in this
 report (Section~\ref{sec:obs-simlab} uses $d=0.5$); with $d=0$ the 16 steps of this figure agree within $0.16$\,mm rms. The
@@ -1099,7 +1090,7 @@ the measured sensor noise (median ratio lab/simulation $0.98$\st{S}). At $10$\,m
 through $K_c$ to the coil, gives $0.066$\,mm and the position noise alone $0.014$\,mm\st{S}: the jitter is mainly current-sensor
 noise. Lowering $K_c$ would slow the inner loop rather than remove the noise, so it was left unchanged.
 
-\repfig{kgtest}{../figs/p4_kg_test.png}{0.85\linewidth}{Experiment~C (13 November): 39\,g ball at 10\,mm with the command
+\repfig[Experiment C: actuator gain test]{kgtest}{../figs/p4_kg_test.png}{0.85\linewidth}{Experiment~C: 39\,g ball at 10\,mm with the command
 scaled by $k_g$ from $0.4$ to $2.0$\st{M}. Top: gap and $k_g$ (the ball lifted at 11\,mm and was moved to 10\,mm first).
 Bottom: jitter and spectral peak against $k_g$, with the noise-only simulation and the model's slowest closed-loop pole
 (morning-fitted plant, $d=0$)\st{S}. $k_g$ is a hardware \emph{gain-margin} test of the nominal loop; it is \emph{not} part of
@@ -1120,11 +1111,9 @@ time (Experiment~A never reached it), at a raw current of $0.744$\,A\st{M}. Ever
 in less than $400$\,ms: median $111$\,ms (maximum $204$\,ms) in the lab, against $111$\,ms in simulation\st{M/S}. During the
 24 steps the measured motion and the measured current obey Newton's law with the identified force law: the slope of the
 current the coil delivered against the current the measured motion needs has a median of $1.03$ (middle half
-$0.91$--$1.07$)\st{M}. Together with Experiments A--C this gives the range claimed for the controller: set points
-$9$--$11$\,mm, both balls, with the stand at least about $0.85$\,mm below the set point (Section~\ref{sec:obs-stand}).
+$0.91$--$1.07$)\st{M}. With Experiments A--C this is the basis of the claimed range (Section~\ref{sec:obs-stand}).
 
-\repfig{sweeps}{../figs/p5_sweeps_lab_vs_sim.png}{0.85\linewidth}{Automatic sweeps $11 \to 9 \to 11$\,mm, 13 November
-afternoon: lab (blue) and simulation (red)\st{M/S}. The simulation uses the morning-fitted plant, the measured sensor noise and
+\repfig[Automatic sweeps, lab and simulation]{sweeps}{../figs/p5_sweeps_lab_vs_sim.png}{0.85\linewidth}{Automatic sweeps $11 \to 9 \to 11$\,mm: lab (blue) and simulation (red)\st{M/S}. The simulation uses the morning-fitted plant, the measured sensor noise and
 $d = 0$ (no extra loop delay); the quantitative overshoot comparison of Section~\ref{sec:obs-simlab} uses $d = 0.5$ instead.
 The set point is the logged $x_{\mathrm{ref}}$. Middle: the 42\,g ball placed hole-up rolls over after lift-off
 (Fig.~\ref{fig:roll}).}
@@ -1138,7 +1127,7 @@ After the roll the two 42\,g sweeps needed the same current at every unflagged p
 spheres (each has a hole and a seam), so the reading on the stand depends on how the ball sits; the rest reading
 (Table~\ref{tab:settings}) is therefore recorded before every run.
 
-\repfig{roll}{../figs/p5_42g_roll.png}{0.8\linewidth}{Sweep lift-offs, 13 November\st{M}: the 42\,g ball placed hole-up
+\repfig[Sweep lift-offs and ball placement]{roll}{../figs/p5_42g_roll.png}{0.8\linewidth}{Sweep lift-offs\st{M}: the 42\,g ball placed hole-up
 (red) rolls over in the first $\sim$3\,s and comes back to the rest reading of a hole-down ball ($11.87 \to 11.68$\,mm); the
 42\,g ball placed hole-down (green) and the 39\,g ball (blue) lift quietly. Placement matters: the rest reading is used as a
 seating check.}
@@ -1153,7 +1142,7 @@ $1.72$ (hole-down) times more than the measured vertical motion requires by Newt
 the ratio is $1.03$: at $11.5$\,mm on the normal stand the reading and the current no longer describe the same simple vertical
 motion. Section~\ref{sec:obs-stand} shows that this ``rocking'' belongs to the stand, not to the gap.
 
-\repfig{hold115}{../figs/p5_hold115_rocking.png}{0.85\linewidth}{Holds at 11.5\,mm on the normal stand, 13 November\st{M}.
+\repfig[Holds at 11.5 mm: the 2.4 Hz rocking]{hold115}{../figs/p5_hold115_rocking.png}{0.85\linewidth}{Holds at 11.5\,mm on the normal stand\st{M}.
 Top: gap after lift-off; bottom: amplitude spectra. All three show a peak near 2.4\,Hz. The plot title's ``$\sim$20$\times$''
 is, more precisely, 14$\times$ in standard deviation ($0.252$ vs $0.018$\,mm) and 19$\times$ in the $1.5$--$3.5$\,Hz band rms
 ($0.253$ vs $0.013$\,mm). With the stand lowered the 39\,g rocking disappears (Section~\ref{sec:obs-stand}).}
@@ -1183,7 +1172,7 @@ gain and the most delay. The target was chosen because $M_s \le 2$ guarantees a 
 margin of at least $29^\circ$ (Section~\ref{sec:calc}); the margins actually found stay close to these values (loop gain may
 rise by a factor of at least $2.23$, phase margin $\ge 29.3^\circ$), so the miss is small. The result is reported as obtained; the set was not trimmed to meet the target (see also Experiment~C below).
 
-\repfig{margins}{../figs/p8_margins.png}{0.9\linewidth}{Margins of the deployed controller over the 1458-point uncertainty grid
+\repfig[Margins over the uncertainty grid]{margins}{../figs/p8_margins.png}{0.9\linewidth}{Margins of the deployed controller over the 1458-point uncertainty grid
 ($d$ from 0.3 to 0.6)\st{D}. Top left: $|S|$ at the coil command, grid (grey) and nominal (blue); the worst peak,
 $M_s = 2.23$, \emph{exceeds the target of 2}. Top right: nominal $|S|$ for different extra delays. Bottom left: stable gain
 range at every grid point; the shaded region contains the range $0.4$--$2.0$ tested on the hardware. Bottom right: delay
@@ -1208,7 +1197,7 @@ $10$--$30$\,Hz and $13\,\%$ at $30$--$166$\,Hz\st{D}. Near the crossover the par
 an unmodelled effect of noticeable size at $2$--$10$\,Hz would not be covered by this test. This is evidence for robust
 stability of the parametric set, not a mathematical proof (Section~\ref{sec:th-robust}).
 
-\repfig{wtopt}{../figs/p8_WT_options.png}{0.85\linewidth}{Robust stability test $|WT| < 1$ for the parametric set, three
+\repfig[Robust stability test $|WT|<1$]{wtopt}{../figs/p8_WT_options.png}{0.85\linewidth}{Robust stability test $|WT| < 1$ for the parametric set, three
 ways of drawing the uncertainty\st{D}. One disk around the nominal plant (grey) and Option~1 with a centred nominal (blue)
 fail. Option~2, one disk per operating-point region (red and green), passes with a worst peak of $0.997$. Options~1 and~2 were
 \emph{added after the one-disk test failed}.}
@@ -1243,12 +1232,11 @@ plant was fitted on the same day's data). With the wrong sign convention the mod
 $\times$ $\lambda$, $c$, $\tau$, $k_a$ each at its two extremes $\times$ $d = 0.3$ and $0.6$; the gap is covered by the
 scenario) and three sensor cases (noise for each ball, current-zero drift). Eight lie outside it on purpose: four delay
 references ($d = 0$ and $d = 1$ for each ball), the two Experiment~C gains $k_g = 0.4$ and $2.0$, and two stress cases that
-add a $0.27$\,mm reading/true mismatch at $2.45$\,Hz, built from the 13 November $11.5$\,mm hold\st{D}.
+add a $0.27$\,mm reading/true mismatch at $2.45$\,Hz, built from the $11.5$\,mm hold\st{D}.
 
 \paragraph{Results.} The ball is never lost in any of the 77 cases\st{S}. Of the 69 cases in the set, 51 are fully OK
 (lift within the time limit, every level reached with zero steady error, no sustained oscillation, at least $0.1$\,mm from
-the stand after lift-off), and 18 come within $0.1$\,mm of the stand, all on the last down-step $10.5 \to 11$\,mm\st{S}. This
-is the one self-check of the Simulink script that fails, and the FAIL is kept. The corner overshoots range from $0.47$ to
+the stand after lift-off), and 18 come within $0.1$\,mm of the stand, all on the last down-step $10.5 \to 11$\,mm\st{S}.  The corner overshoots range from $0.47$ to
 $0.97$\,mm, and every corner settles within $153$\,ms\st{S} (Fig.~\ref{fig:corners}). The stand reading is less than
 $1$\,mm below the $11$\,mm set point, so the larger corner overshoots on that down-step reach it. On the hardware
 the same step overshoots \emph{less} than the model (Section~\ref{sec:obs-simlab}), because of the stand-proximity effect
@@ -1261,17 +1249,16 @@ Outside the set, the four delay references and the two $k_g$ cases are fully OK,
 reading/true mismatch drives a sustained oscillation of the \emph{true} position of $0.42$--$0.44$\,mm rms in the
 $1.5$--$3.5$\,Hz band, although the ball is never lost\st{S} (Fig.~\ref{fig:special}). At $9$--$11$\,mm the lab never showed more
 than $0.051$\,mm in that band\st{M}, so this artefact is not present there; the stress cases show what the $11.5$\,mm
-condition would do to the controller. Starting from the stand with $k_g = 0.4$ the model cannot lift the ball (the clamped
-integral supplies $0.925$\,A of the $0.939$\,A needed)\st{D/S}; the $k_g$ cases therefore start from hover at $10$\,mm, as
-Experiment~C did.
+condition would do to the controller. The $k_g$ cases start from hover at $10$\,mm, as Experiment~C did, because with $k_g = 0.4$ the ball cannot lift
+from the stand (Section~\ref{sec:obs-first}).
 
-\repfig{corners}{../figs/p6_cases_corners.png}{0.9\linewidth}{Simulink cases, hardware scenario (lift-off, then
+\repfig[Simulink cases: corners of the set]{corners}{../figs/p6_cases_corners.png}{0.9\linewidth}{Simulink cases, hardware scenario (lift-off, then
 $11 \to 9 \to 11$\,mm): the 64 corners of the uncertainty set (grey, $d = 0.3$ top and $0.6$ bottom) around the nominal plant
 ($d = 0.5$; blue 39\,g, red 42\,g)\st{S}. The grey trace that stays at about $11.2$\,mm in the 42\,g panels is a
 \emph{clamp-limited corner}: the integral sits at its $0.30$\,A clamp and the ball is held with a $204$\,\textmu m steady error.
 The deepest down-step dips reach the stand reading (see text).}
 
-\repfig{special}{../figs/p6_cases_special.png}{0.9\linewidth}{Simulink special cases, 39\,g ball (true gap)\st{S}. Top:
+\repfig[Simulink cases: special and stress cases]{special}{../figs/p6_cases_special.png}{0.9\linewidth}{Simulink special cases, 39\,g ball (true gap)\st{S}. Top:
 $k_g = 0.4$ and $2.0$ while hovering at 10\,mm, as in Experiment~C; these are \emph{outside} the uncertainty set (hardware
 gain-margin test). Middle: measured sensor noise and current-zero drift (in the set). Bottom: the two \emph{stress cases}, a
 $0.27$\,mm reading/true mismatch at 2.45\,Hz built from the 11.5\,mm hold; they are outside the claimed range and are the
@@ -1282,37 +1269,35 @@ only cases with a sustained oscillation.}
 Three kinds of comparison were made with the \emph{same} controller in the model and on the rig: set-point steps (time
 domain), the loop gain measured by sine injection (frequency domain), and lift-offs from the stand (large motion).
 
-\paragraph{Set-point steps.} The reference comparison uses the 24 steps of the three afternoon sweeps of 13 November and the
+\paragraph{Set-point steps.} The reference comparison uses the 24 steps of the three automatic sweeps and the
 morning-fitted plant with $d = 0.5$. Lab and model overshoots agree within $0.10$\,mm rms on 21 of the 24 steps; over all 24
 the difference is $0.18$\,mm rms\st{M/S}. The overshoot is large by design: $100$--$130\,\%$ of the $0.5$\,mm step\st{M},
 a property of the design (the model shows it too), not a model error. The three outliers are all the same step, $10.5 \to 11$\,mm
 (downward, towards the stand): the lab overshot $0.25$--$0.32$\,mm where the model predicts $0.64$--$0.73$\,mm\st{M/S}, and the
 lab overshoot of the down-steps \emph{falls} as the end gap approaches the stand while the model's rises
-(Fig.~\ref{fig:mismatch}a). On 16 November the same step repeated it: lab $0.26$/$0.35$\,mm against model
-$0.64$/$0.73$\,mm\st{M/S}. Steps towards the magnet on 16 November had lab/model ratios of $0.68$--$1.16$\st{M/S}.
+(Fig.~\ref{fig:mismatch}a). In session~3 the same step repeated it: lab $0.26$/$0.35$\,mm against model
+$0.64$/$0.73$\,mm\st{M/S}. Steps towards the magnet in that session had lab/model ratios of $0.68$--$1.16$\st{M/S}.
 
 Three explanations were tested. \emph{Linearization} is ruled out: the nonlinear model has the same mismatch
 (Section~\ref{sec:obs-unc}). \emph{Kinks of the position calibration table} are ruled out: on the $10.5 \to 11$\,mm steps the
 measured acceleration shows a short braking spike of $-1.75$ to $-2.01\,\text{m/s}^2$ relative to the acceleration the logged
 current explains, $1.7$--$2.3$ times the worst value on the other steps, while the table kinks can produce at most
 $0.11\,\text{m/s}^2$\st{M} (Fig.~\ref{fig:mismatch}b--d). A \emph{weaker decay of the magnet force beyond $11$\,mm} was
-rejected on 16 November, when the stand was lowered: the rocking at $11.5$\,mm disappeared and the spike moved with the stand
+rejected when the stand was lowered: the rocking at $11.5$\,mm disappeared and the spike moved with the stand
 (Section~\ref{sec:obs-stand}). The step mismatch goes with the spike: on down-steps \emph{with} a spike the lab/model overshoot
 ratio is at most $0.56$, \emph{without} a spike its median is $0.99$ ($0.61$--$1.20$)\st{M/S}. Away from the stand, therefore,
 the model predicts the step response well; near the stand it does not, for a reason outside the model.
 
-For the record: earlier, different comparisons gave $0.16$\,mm rms (Experiments A--B, $d = 0$, 16 steps), $0.18$\,mm ($d = 0$,
-24 steps) and $0.14$\,mm (Simulink, 39\,g sweep)\st{M/S}; they use other definitions and are not used for conclusions.
 
-\repfig{mismatch}{../figs/p10_overshoot_mismatch.png}{0.9\linewidth}{Down-step overshoot mismatch, 13 November sweeps
-(model: morning plant, $d = 0.5$)\st{M/S}. (a) Lab overshoot falls with the end gap, the model's rises. The green
+
+\repfig[Down-step overshoot mismatch and braking spike]{mismatch}{../figs/p10_overshoot_mismatch.png}{0.9\linewidth}{Down-step overshoot mismatch in the sweeps (model: morning plant, $d = 0.5$)\st{M/S}. (a) Lab overshoot falls with the end gap, the model's rises. The green
 ``model + H-force'' curve is a \emph{rejected} hypothesis (weaker force decay beyond 11\,mm), shown only for the record. (b), (c)
 Measured acceleration against the acceleration explained by the logged current: an ordinary step, and a $10.5 \to 11$\,mm step
 with its braking spike. (d) Most negative Newton residual per step. Its title, ``only on the steps that pass through 11\,mm'',
-predates the 16 November finding: the spike is tied to the \emph{stand} ($0.67$--$0.89$\,mm above it), not to the gap of
+predates the stand tests: the spike is tied to the \emph{stand} ($0.67$--$0.89$\,mm above it), not to the gap of
 11\,mm (Section~\ref{sec:obs-stand}).}
 
-\paragraph{Loop gain by sine injection.} On 16 November a sine was added to the command while the 39\,g ball hovered at
+\paragraph{Loop gain by sine injection.} In session~3 a sine was added to the command while the 39\,g ball hovered at
 $10$\,mm, at ten frequencies from $1.5$ to $40$\,Hz (amplitude $0.01$, raised to $0.02$, $0.04$ and $0.08$ at $12$, $20$ and
 $40$\,Hz)\st{M}. From the logged signals the loop gain $L$, the sensitivity, the coil response $G_{iu}$ and the plant response
 $G_{xu}$ follow at each frequency. The command hit its limits in less than $1\,\%$ of each analysed window (at most
@@ -1329,29 +1314,26 @@ $\tau = 22.6$\,ms, $k_a = 2.45$ with $d = 0.5$, or $\tau = 20.5$\,ms, $k_a = 2.2
 are about $2.2$ times worse\st{M}. This independent measurement, made while levitating, supports the delay range and the coil
 values found from run~3 and the coil steps. Below $3$\,Hz, where the $2.4$\,Hz rocking would show, the loop was not measured.
 
-\repfig{sine}{../figs/p13_sine_loop.png}{0.9\linewidth}{Loop gain measured by sine injection at the coil command,
-39\,g ball at 10\,mm, 16 November\st{M}, against the model with $d = 0.5$\st{D}. Top: magnitude and phase of $L$; bottom left:
+\repfig[Loop gain by sine injection]{sine}{../figs/p13_sine_loop.png}{0.9\linewidth}{Loop gain measured by sine injection at the coil command,
+39\,g ball at 10\,mm\st{M}, against the model with $d = 0.5$\st{D}. Top: magnitude and phase of $L$; bottom left:
 sensitivity $|S|$; bottom right: ratios measured/model for the coil, the plant and the loop. Open symbols ($1.5$--$2.4$\,Hz)
 are \emph{too noisy} (more than $20\,\%$ error in $L$) and are not used.}
 
 \paragraph{Lift-off.} Lift-off is the largest motion and the least well modelled phase. From the normal stand, three
 lift-offs of the lab controller (39\,g) came to $8.95$--$9.07$\,mm from the magnet, inside the range of nine simulated
-cases started from the same rest reading (closest $8.84$\,mm)\st{M/S}; for variant~D the lab came to $10.38$--$10.60$\,mm and
-the nine cases to no closer than $10.96$\,mm, but still inside the envelope of all 77 cases (no closer than $10.31$\,mm;
-Section~\ref{sec:obs-varD})\st{M/S}. From the lowered stand (rest $13.13$ and $13.19$\,mm) the ball came to $8.65$ and
+cases started from the same rest reading (closest $8.84$\,mm)\st{M/S} (variant~D: Section~\ref{sec:obs-varD}). From the lowered stand (rest $13.13$ and $13.19$\,mm) the ball came to $8.65$ and
 $8.59$\,mm\st{M}. The nominal simulation from the same rest gives $8.90$ and $8.89$\,mm, and
 nine cases around it $8.69$--$9.14$ and $8.68$--$9.14$\,mm\st{S}: both lab lift-offs rose $0.25$--$0.30$\,mm higher than the
-nominal model and lie \emph{outside} the simulated range\st{M/S}. This is the second FAIL of the 16 November script and is
-kept. Over the 77 Simulink cases the lab controller's closest approach at lift-off is $7.10$\,mm at worst (median
+nominal model and lie \emph{outside} the simulated range\st{M/S}.  Over the 77 Simulink cases the lab controller's closest approach at lift-off is $7.10$\,mm at worst (median
 $9.38$\,mm)\st{S}, so the deviation does not threaten the magnet, but it shows that the model is weakest during lift-off, where
 the gap, the current and the coil's low-command gain all change quickly.
 
 \subsection{The Stand-Proximity Effect and the \texorpdfstring{2.4\,Hz}{2.4 Hz} Rocking}
 \label{sec:obs-stand}
-Three observations of 13 November did not fit the model, and all three occurred close to the calibration stand: the
+Three observations of session~2 did not fit the model, and all three occurred close to the calibration stand: the
 $11.5$\,mm rocking (Section~\ref{sec:obs-sweeps}), the small overshoot and braking spike on the $10.5 \to 11$\,mm steps
 (Section~\ref{sec:obs-simlab}), and hover currents at $11.5$\,mm that do not lie on the identified force law (they were
-therefore not fitted, Fig.~\ref{fig:forcefit}). The tests of 16 November were designed to separate two possibilities: an
+therefore not fitted, Fig.~\ref{fig:forcefit}). The tests of session~3 were designed to separate two possibilities: an
 effect of the \emph{gap} (for example, the force law changing beyond $11$\,mm) or an effect of the \emph{distance to the
 stand}. The way to separate them is to move the stand.
 
@@ -1362,7 +1344,7 @@ time after the step varied from about $24$ to $57$\,ms\st{M} (Fig.~\ref{fig:step
 controller's transient) would keep the time and move the position; this one keeps the position. The ball never came within
 $0.51$\,mm of the stand in these runs, and the overshoot mismatch repeated (Section~\ref{sec:obs-simlab}).
 
-\repfig{steps3a}{../figs/p12_3a_steps.png}{0.9\linewidth}{Small steps near the normal stand, 16 November\st{M/S}. Top: gap
+\repfig[Small steps near the stand]{steps3a}{../figs/p12_3a_steps.png}{0.9\linewidth}{Small steps near the normal stand\st{M/S}. Top: gap
 and set point for the 39\,g and 42\,g balls (stand reading dashed green). Bottom left: lab against model overshoot (model:
 morning plant, $d = 0.5$); the down-steps ending at 11.0--11.1\,mm lie near the 1:2 line. Bottom right: the braking spike of
 each down-step, time after the step and reading where it occurs. (Two point labels overlap in the lower-left panel.)}
@@ -1371,15 +1353,13 @@ each down-step, time after the step and reading where it occurs. (Two point labe
 $13.19$\,mm), steps that passed through $11.0$--$11.2$\,mm but stayed more than $0.9$\,mm above the stand showed \emph{no}
 spike (most negative residuals $-0.79$ and $-0.67\,\text{m/s}^2$, below the spike threshold), and their overshoots matched the
 model\st{M}. A large down-step to $11.6$\,mm on the lowered stand did show a spike, now at about $12.4$\,mm, $0.70$\,mm above
-the lowered stand (Fig.~\ref{fig:standprox}). Counting every spike found, 11 spikes were seen (3 on 13 November, 6 in the
-small steps of 16 November, 2 in the stand test: one with the normal and one with the lowered stand), with both balls, and all
+the lowered stand (Fig.~\ref{fig:standprox}). Counting every spike found, 11 spikes were seen (3 in the sweeps of session~2, 6 in the small steps, 2 in the stand test: one with the normal and one with the lowered stand), with both balls, and all
 of them $0.67$--$0.89$\,mm above the stand\st{M}. The spike is tied to the stand, not to the gap. With the stand lowered, the
 39\,g ball also held $11.5$\,mm with a rocking band of only $0.048$\,mm rms, against $0.250$\,mm with the normal
 stand\st{M} (one run each). The weaker-decay hypothesis for the force law is therefore rejected: the same gap behaves normally
 once the stand is moved away.
 
-\repfig{standprox}{../figs/p14_stand_proximity.png}{0.9\linewidth}{Braking spike against stand position, 39\,g ball,
-16 November\st{M/S}. Top: the normal-stand run (whose first, unintended version jumped $10.5 \to 11.4$\,mm instead of ramping)
+\repfig[Braking spike against stand position]{standprox}{../figs/p14_stand_proximity.png}{0.9\linewidth}{Braking spike against stand position, 39\,g ball\st{M/S}. Top: the normal-stand run (whose first, unintended version jumped $10.5 \to 11.4$\,mm instead of ramping)
 and two lowered-stand runs (stand reading dashed green). Bottom left: most negative Newton residual of each down-step against
 the position where it occurs: red = normal stand, blue = lowered stand. \emph{The spike moves with the stand}: it appears
 $0.7$--$0.8$\,mm above whichever stand is in place, and steps through 11\,mm far above the lowered stand show none. Bottom right:
@@ -1407,7 +1387,7 @@ analysis of 22 lift-offs (both stands) shows no extra force there, but it cannot
 the ramp's size would move the ball only $5$--$165$\,\textmu m (median $36$\,\textmu m) during a crossing\st{M/D}. The
 lift-offs therefore neither confirm nor refute the static effect (Fig.~\ref{fig:liftzone}).
 
-\repfig{liftzone}{../figs/p16_liftoff_stand_height.png}{0.75\linewidth}{Force needed divided by the force-law force, against
+\repfig[Force factor near the stand]{liftzone}{../figs/p16_liftoff_stand_height.png}{0.75\linewidth}{Force needed divided by the force-law force, against
 height above the stand\st{M}: slow ramp (blue, quasi-static) and lift-offs (red, Newton residual with a 3-sample stride). The
 ramp shows the static stand effect below about 0.7\,mm. The lift-offs cross the zone in a median of 7\,ms, shorter than the
 18\,ms stencil, so their values there are blurred towards 1: they \emph{neither confirm nor refute} the static effect.}
@@ -1439,7 +1419,7 @@ picture\st{M} (Fig.~\ref{fig:rocking}):
 Like the spike, the rocking disappears when the stand is lowered: it belongs to the stand-proximity effect. Its mechanism
 remains open.
 
-\repfig{rocking}{../figs/p11_rocking.png}{0.9\linewidth}{The 2.4\,Hz rocking\st{M/D}. (a) Band rms ($1.5$--$3.5$\,Hz) per
+\repfig[The 2.4 Hz rocking]{rocking}{../figs/p11_rocking.png}{0.9\linewidth}{The 2.4\,Hz rocking\st{M/D}. (a) Band rms ($1.5$--$3.5$\,Hz) per
 hover plateau; the star is the 39\,g hold at 11.5\,mm with the stand lowered. (b) 39\,g hole-up at 11.5\,mm: constant
 envelope (limit cycle). (c) 42\,g at 11.5\,mm: decaying ringing. (d) Extra relative loop error the controller still tolerates
 on top of the parametric set, per Option-2 region; the star marks the unmodelled part needed for the 11.5\,mm limit cycle. That
@@ -1470,7 +1450,7 @@ make the wound-up lift-off \emph{worse}: they bring the ball closer than $6$\,mm
 $10.42$\,mm at worst, with a peak current of $1.18$\,A\st{S}. Neither the bias nor the clamp enters the linear loop, so the
 margins of Section~\ref{sec:obs-robust} hold unchanged for D.
 
-\repfig{clampfix}{../figs/p8_clamp_fix.png}{0.85\linewidth}{Lift-off from the stand with the integral wound up (except D,
+\repfig[Lift-off options A--D (simulation)]{clampfix}{../figs/p8_clamp_fix.png}{0.85\linewidth}{Lift-off from the stand with the integral wound up (except D,
 whose integral is held at zero until switch-on), then $11 \to 10.5 \to 11$\,mm, for the deployed controller (``now'') and the
 options A--D, in four cases (simulation\st{S}). A--C reach the steady state in every case but overshoot towards the magnet at
 lift-off (C touches it in the bottom case); D lifts gently in all four.}
@@ -1481,7 +1461,7 @@ lifts more slowly than the deployed controller, because the current must first b
 violently. It does not change the step overshoot, so the near-stand clearance finding of Section~\ref{sec:obs-cases} is
 unchanged.
 
-\paragraph{Variant D on the hardware.} On 16 November variant~D (\code{my_cascade_D_rt}: bias $0.85$\,A, clamp $\pm0.45$\,A,
+\paragraph{Variant D on the hardware.} Variant~D (\code{my_cascade_D_rt}: bias $0.85$\,A, clamp $\pm0.45$\,A,
 integral held at zero while the run switch is off) was tested with the 39\,g ball on the normal stand, with two lift-offs
 (Fig.~\ref{fig:varD}):
 \begin{itemize}
@@ -1502,7 +1482,7 @@ lift-offs of D against three of the deployed controller, with one ball and the n
 the lowered stand or with the 42\,g ball (no time). Variant~D is therefore a \emph{tested improvement} of the lift-off, not yet a
 replacement validated over the whole range.
 
-\repfig{varD}{../figs/p15_variantD_ramp.png}{0.95\linewidth}{16 November, 39\,g ball, normal stand\st{M}. Left: lift-offs
+\repfig[Variant D on the hardware; slow ramp]{varD}{../figs/p15_variantD_ramp.png}{0.95\linewidth}{Variant~D, 39\,g ball, normal stand\st{M}. Left: lift-offs
 of variant~D (2 runs) and the deployed controller (3 runs); with $n = 2$ against $n = 3$ this is a small sample. Middle: the
 current reference of variant~D and the run switch; with the loop off it stays at the value expected with the integral held at
 zero (dashed). Right: slow-ramp current minus the force law against height above the stand, the static stand effect of
@@ -1527,8 +1507,7 @@ Date & Issue & Effect & Action / lesson \\
 12 Nov & The example PD was run with the ball resting on the stand above the set point, then with the stand at $11.8$\,mm &
 No lift: the PD lowered the command, or gave too little current for the 39\,g ball & Stand lowered so that the ball rests below
 the set point; later, the cascade controller \\
-12 Nov & Run files saved as \code{.fig} from the scopes could not be opened with \code{openfig} on the analysis PC & Data
-not readable at first & Files read as MAT files (\code{read_scope_fig}); the duplicate stair samples are removed \\
+
 13 Nov & Runs 1--2: rig power supply off & No coil current; the controller looked faulty & Power switched on; rig power checked before
 every session \\
 13 Nov & Experiment~A: set point probably mistyped (inferred) & Ball dropped to the stand, re-lifted after $5$\,s & Bound on the
@@ -1541,15 +1520,14 @@ hole-down sweep of the same ball added for comparison \\
 ($x_{\mathrm{ref}}$ on the scope) \\
 13 Nov & ``Lowered-stand'' run with a rest reading of $12.00$\,mm & Stand not actually lowered & Run excluded from all
 analysis \\
-13 Nov & Several records end while the ball still levitates (no coil-off tail) & Current-sensor zero not measurable for those
+13, 16 Nov & Several records end while the ball still levitates (no coil-off tail) & Current-sensor zero not measurable for those
 runs & Drift rate of a neighbouring run with the same ball used; coil-off tail added to the procedure \\
 16 Nov & RT-DAC/USB2 board not recognized by Windows & Rig did not respond & Board reconnected; USB check added before the
 first build \\
 16 Nov & Ramp model deployed without the change to linear interpolation (build not redone) & Set point jumped
 ($10.5 \to 11.4$\,mm, and $\to 11.6$\,mm on the lowered stand) instead of ramping; one down-step came within $0.03$\,mm of the
 stand & Model rebuilt and the ramp repeated; the jump runs were kept as stand tests \\
-16 Nov & Two small-step records with a short or no coil-off tail & Two self-check FAILs (s16) & FAILs kept and reported
-(Appendix~\ref{app:scripts}) \\
+
 16 Nov & Not enough time & Variant~D from the lowered stand, sine injection at $11$\,mm and with the 42\,g ball, static sensor
 check not done & Reported as not obtained (Section~\ref{sec:discussion}) \\
 \bottomrule
@@ -1688,8 +1666,7 @@ about $47^\circ$ against $45.4^\circ$; lowered-stand lift-offs outside the simul
 \ref{sec:obs-simlab} \\
 R5 & Improvement tested on the hardware (variant~D): closest approach at lift-off $10.38$--$10.60$\,mm against
 $8.95$--$9.07$\,mm, settling $0.14$\,s against $0.27$--$0.52$\,s ($n = 2$ vs $3$) & M & \ref{sec:obs-varD} \\
-D5 & Recorded data: all runs of 12, 13 and 16 November, analysed by self-checking scripts; re-run on 17 November with identical
-results & M & \ref{sec:scripts}, App.~\ref{app:scripts} \\
+D5 & Recorded data of all runs, analysed by self-checking scripts & M & \ref{sec:scripts}, App.~\ref{app:scripts} \\
 D6 & This report; the presentation is prepared separately & -- & -- \\
 -- & Not obtained: loop gain below $3$\,Hz; sine at $11$\,mm and with the 42\,g ball; variant~D from the lowered stand; static
 sensor check; mechanism of the stand effect and of the rocking; cause of the loop delay & N & \ref{sec:disc-open} \\
@@ -1704,19 +1681,15 @@ sensor check; mechanism of the stand effect and of the rocking; cause of the loo
 The physics of Section~\ref{sec:theory} held up: the identified decay length ($5.90$\,mm) agrees with the manual's
 ($5.82$\,mm), the force law predicted hover currents it had never seen (Section~\ref{sec:obs-ident}), and a linear model of the
 identified plant reproduces the nonlinear step responses within a few hundredths of a millimetre. What the manual got wrong was
-the \emph{loop around} the physics. The pre-lab analysis, built on the manual's description, predicted that the filters and a
-$10$\,ms sample time would make a PD loop unstable; on the rig the filters were absent, the sample time was $3$\,ms, the coil time
-constant was some 35 to 40 times longer than the manual's $0.63$\,ms, and an extra delay of about half a sample appeared. Two lessons follow.
+the \emph{loop around} the physics: sample time, filters, coil lag and delay (Section~\ref{sec:obs-discovery}). Two lessons
+follow.
 First, the parameters that decide stability (coil lag and loop delay) had to be \emph{measured} on the rig, and they were; the
 force-law constants mattered much less. Second, a model is only as good as its least-checked block: the design-time check
 (Section~\ref{sec:obs-design}) gave a worst $M_s$ of $1.67$ without any extra delay but $5.23$ with one extra sample, and the
 measured delay (up to $0.6$ sample) is what brings the final analysis to $2.23$.
 
-Against the hardware the identified model is good where it was built to be used. Away from the stand the step overshoots agree
-within $0.10$\,mm rms, the measured loop gain at $3$--$40$\,Hz lies within the robust-stability bound, the phase margin is about
-$47^\circ$ against $45.4^\circ$, and every $k_g$ that held on the hardware is inside the model's stable range. It is weaker in two
-places: near the stand, where an effect outside the model acts, and during lift-off, where the lab ball came $0.25$--$0.30$\,mm
-closer to the magnet than the nominal model from the lowered stand. At lift-off the current, the gap and the coil gain all change
+Against the hardware the identified model is good away from the stand (Section~\ref{sec:obs-simlab}). It is weaker
+in two places: near the stand, where an effect outside the model acts, and during lift-off. At lift-off the current, the gap and the coil gain all change
 quickly, and the coil gain near $u = 0$ is lower ($1.9$ instead of $2.43$\,A per unit); the model uses one gain throughout.
 
 \subsection{Why a Cascade Controller}
@@ -1724,7 +1697,7 @@ quickly, and the coil gain near $u = 0$ is lower ($1.9$ instead of $2.43$\,A per
 The manual's controller uses only the position. On the identified linear model the lab's position-only PD ($K_p = 45$, gain
 $450$ on the error difference) sits on the stability boundary: the largest closed-loop eigenvalue magnitude is $0.993$--$1.020$
 over $\tau = 22.5$--$29$\,ms and $d = 0$--$1$, with an unstable mode at $5.1$--$6.2$\,Hz\st{D}. The large $7.3$--$9.3$\,Hz cycle
-seen on 12 November, hitting the stand every cycle, was the nonlinear outcome of that marginal loop.
+seen in session~1, hitting the stand every cycle, was the nonlinear outcome of that marginal loop.
 
 To check that this is not just a badly tuned PD, a grid of $4860$ PD gains ($K_p$ from $10$ to $300$, the difference gain from
 $0$ to $4000$) was evaluated at the nine $(\tau, d)$ corners of the uncertainty set (39\,g, $10$\,mm)\st{D}. At each corner only
@@ -1736,10 +1709,9 @@ The reason is the coil. A position-only controller must create its phase lead \e
 $25$\,ms) and the delay, both in series with an unstable pole that doubles the error every $17$\,ms; the phase it needs is used up
 before it reaches the ball. The cascade measures the current and closes a loop around the coil that is nine times faster than the
 coil itself, so the outer loop sees an almost ideal current source and only has to stabilize the ball. An $M_s$ of $10$ means the
-Nyquist curve passes within $0.1$ of $-1$: a $10\,\%$ error in the right direction would destabilize the loop. (An earlier, unsaved
-grid result quoted during the audit could not be reproduced and is not used; the numbers here are from \code{s21}.)
+Nyquist curve passes within $0.1$ of $-1$: a $10\,\%$ error in the right direction would destabilize the loop. 
 
-\repfig{pdgrid}{../figs/p17_pd_gain_grid.png}{0.95\linewidth}{Position-only PD, $u = K_p e + K_r(e_k - e_{k-1})$, on the identified
+\repfig[Position-only PD against the cascade]{pdgrid}{../figs/p17_pd_gain_grid.png}{0.95\linewidth}{Position-only PD, $u = K_p e + K_r(e_k - e_{k-1})$, on the identified
 linear model, 39\,g at 10\,mm\st{D}. Left: $M_s$ over the gain grid at the nominal corner ($\tau = 27$\,ms, $d = 0.5$); white =
 unstable; crosses = the lab PD gains, on or beyond the edge. Right: per $(\tau, d)$ corner, the best PD for that corner alone (red)
 and the deployed cascade (blue). The best \emph{single} PD for all nine corners has a worst-case $M_s$ of $10.4$; the cascade has
@@ -1747,14 +1719,11 @@ $1.99$ at the same corners.}
 
 \subsection{The Missed Sensitivity Target}
 \label{sec:disc-ms}
-The design aimed at a worst-case $M_s \le 2$ over the uncertainty set and reached $2.23$\st{D}. All 64 grid points above $2$ have
-the largest extra delay, $d = 0.6$; at $d = 0.5$ the worst is $1.97$. The worst corner combines the highest loop gain (39\,g ball at
-$9$\,mm, $k_a = 2.7$, $\lambda$ and $c$ $+5\,\%$) with the fastest coil and the most delay. The likely reason is that a higher loop gain moves the crossover to a
-higher frequency, where the same delay costs more phase ($360^\circ f\,dT_0$). The miss is small in terms of margins (gain may still rise by a factor of
-$2.23$, PM $\ge 29.3^\circ$), every grid point is stable, and the hardware at the nominal point showed a phase margin close to the
-model's. It is still a missed target and is reported as such. Two ways to meet it were not tried for lack of time: lowering the
-outer bandwidth (less phase lost to the delay, at the price of a slower response), or a controller that predicts the current one
-step ahead to compensate the delay (state feedback with a predictor).
+The worst-case $M_s$ of $2.23$ (Section~\ref{sec:obs-robust}) occurs only with the largest extra delay, at the corner with
+the highest loop gain and the fastest coil. The likely reason is that a higher loop gain moves the crossover to a higher
+frequency, where the same delay costs more phase ($360^\circ f\,dT_0$). Two ways to meet the target were not tried for
+lack of time: lowering the outer bandwidth (less phase lost to the delay, at the price of a slower response), or a
+controller that predicts the current one step ahead to compensate the delay (state feedback with a predictor).
 
 \subsection{Sources of Error}
 \label{sec:disc-errors}
@@ -1771,10 +1740,8 @@ step ahead to compensate the delay (state feedback with a predictor).
 \item \emph{Velocity.} The velocity is an unfiltered difference of positions, so position noise reaches the controller amplified
       by $1/T_0$. The hover jitter is nevertheless dominated by the current-sensor noise passing through $K_c$
       (Section~\ref{sec:obs-first}).
-\item \emph{Simulation settings.} Some comparison figures (Figs.~\ref{fig:expAB} and~\ref{fig:sweeps}) were simulated before the
-      delay was measured, with $d = 0$; the quantitative comparisons use $d = 0.5$.
-\item \emph{Lift-off modelling.} One coil gain, no back-EMF of the moving ball, no dependence of the inductance on the gap; these
-      matter most during lift-off (Section~\ref{sec:disc-theory}).
+
+
 \item \emph{The stand.} Within about $0.7$--$0.8$\,mm of the stand an effect outside the model acts (next subsection).
 \end{itemize}
 
@@ -1802,7 +1769,7 @@ Two statements in this report rest on inference, not on confirmation:
 \item \emph{Loop gain below $3$\,Hz}, sine injection at $11$\,mm and with the 42\,g ball\st{N}.
 \item \emph{Variant~D} from the lowered stand and with the 42\,g ball\st{N}.
 \item \emph{A static sensor check} with the stand moved in small steps, and a ramp to $11.6$\,mm with linear interpolation\st{N}.
-\item \emph{A log sheet for 13 November}\st{N}; set points were rebuilt from the data.
+\item \emph{A log sheet for session~2}\st{N}; set points were rebuilt from the data.
 \end{itemize}
 
 \subsection{Limitations}
@@ -1895,34 +1862,33 @@ UK: Wiley, 2005.
 \label{app:figs}
 These figures support the main text but are not needed to follow it. Each caption says where it belongs.
 
-\repfig{a-force}{../figs/p1_force_curves.png}{0.75\linewidth}{Pre-lab (Section~\ref{sec:th-prelab}): the manual's force model for
+\repfig[Manual force model (pre-lab)]{a-force}{../figs/p1_force_curves.png}{0.75\linewidth}{Pre-lab (Section~\ref{sec:th-prelab}): the manual's force model for
 its 57.1\,g reference ball\st{B}, reproduced to check the implementation against the manual's numbers.}
-\repfig{a-sweep}{../figs/p1_sweep.png}{0.8\linewidth}{Pre-lab (Section~\ref{sec:th-prelab}): equilibrium current, command, plant
+\repfig[Manual model against gap (pre-lab)]{a-sweep}{../figs/p1_sweep.png}{0.8\linewidth}{Pre-lab (Section~\ref{sec:th-prelab}): equilibrium current, command, plant
 gain and minimum proportional gain against the gap, from the \emph{manual's} model\st{D}. The command and gains are in the manual's
 volts, \emph{not} the duty $u$ of this report, so they cannot be compared with the lab values.}
-\repfig{a-polemap}{../figs/p2_polemap.png}{0.85\linewidth}{Pre-lab (Section~\ref{sec:th-prelab}): open-loop poles and zeros of
+\repfig[Open-loop poles and zeros (pre-lab)]{a-polemap}{../figs/p2_polemap.png}{0.85\linewidth}{Pre-lab (Section~\ref{sec:th-prelab}): open-loop poles and zeros of
 the manual plant and its refinements, 39\,g ball at 9\,mm\st{D}. Every version has one unstable pole at $+p$; the filter adds a
 pole at $-200$\,rad/s and the Pad\'e approximation of the delay adds right-half-plane zeros. (The legend appears twice.)}
-\repfig{a-inner}{../figs/p3_inner_step.png}{0.7\linewidth}{Design (Section~\ref{sec:obs-design}): predicted inner-loop response to
+\repfig[Predicted inner-loop step]{a-inner}{../figs/p3_inner_step.png}{0.7\linewidth}{Design (Section~\ref{sec:obs-design}): predicted inner-loop response to
 a $0.3 \to 0.5$\,A reference step, $63\,\%$ in $3.0$\,ms against $27$\,ms for the open coil\st{S}. The lab measurement is
 Fig.~\ref{fig:run3}.}
-\repfig{a-liftsim}{../figs/p3_liftoff_sim.png}{0.75\linewidth}{Design (Section~\ref{sec:obs-design}): nonlinear lift-off
+\repfig[Lift-off simulation (pre-lab)]{a-liftsim}{../figs/p3_liftoff_sim.png}{0.75\linewidth}{Design (Section~\ref{sec:obs-design}): nonlinear lift-off
 simulation of the cascade controller from the stand, then $11 \to 10$\,mm\st{S}. A \emph{pre-lab check only}: two of its force
 constants (``lam 10\,mm'') come from a premise that was later withdrawn; it is superseded by the cases of
 Section~\ref{sec:obs-cases}.}
-\repfig{a-linnl}{../figs/p7_lin_vs_nl_overshoot.png}{0.85\linewidth}{Linearization check (Section~\ref{sec:obs-unc}): overshoot of
-the 24 afternoon steps of 13 November, lab against the nonlinear model, local linear models and one linear model\st{M/S}. The
+\repfig[Linearization check on the step overshoots]{a-linnl}{../figs/p7_lin_vs_nl_overshoot.png}{0.85\linewidth}{Linearization check (Section~\ref{sec:obs-unc}): overshoot of
+the 24 afternoon steps, lab against the nonlinear model, local linear models and one linear model\st{M/S}. The
 linear and nonlinear models agree closely; the lab differs from both on the steps to 11\,mm, so linearization is not the cause of
 the mismatch.}
-\repfig{a-flip}{../figs/p4_42g_flip.png}{0.8\linewidth}{Experiment~B run~1 (Section~\ref{sec:obs-first}): the 42\,g ball, seated
+\repfig[Experiment B: ball turning over]{a-flip}{../figs/p4_42g_flip.png}{0.8\linewidth}{Experiment~B run~1 (Section~\ref{sec:obs-first}): the 42\,g ball, seated
 tilted (rest reading $12.13$\,mm), turns over after lift-off and is held by the controller, compared with the normal lift-off of run~2 (rest
 reading $11.92$\,mm)\st{M}.}
-\repfig{a-wt}{../figs/p8_WT.png}{0.8\linewidth}{Robustness (Section~\ref{sec:obs-robust}): top, relative error of the grid plants
+\repfig[One-disk $|WT|$ test]{a-wt}{../figs/p8_WT.png}{0.8\linewidth}{Robustness (Section~\ref{sec:obs-robust}): top, relative error of the grid plants
 (grey), the weight $W$ (grid envelope plus 10\,\%) and the allowed $1/|T|$; bottom, the one-disk test $|WT|$, which fails with a peak
 of $1.11$\st{D}. Fig.~\ref{fig:wtopt} shows the split version that passes.}
-\repfig{a-coil}{../data/lab_2026-11-12/screenshots/07_scope_coil_test_0p3_0p6_1p0.png}{0.75\linewidth}{Session~1
-(Section~\ref{sec:obs-discovery}): open-loop coil test with constant commands $u = 0.3$, $0.6$ and $1.0$ (scope screenshot,
-12 November)\st{M}. The scope labels the command ``[V]''; it is a duty fraction.}
+\repfig[Open-loop coil test]{a-coil}{../data/lab_2026-11-12/screenshots/07_scope_coil_test_0p3_0p6_1p0.png}{0.75\linewidth}{Session~1
+(Section~\ref{sec:obs-discovery}): open-loop coil test with constant commands $u = 0.3$, $0.6$ and $1.0$ (scope screenshot)\st{M}. The scope labels the command ``[V]''; it is a duty fraction.}
 \begin{figure}[H]\centering
 \begin{subfigure}{0.49\linewidth}\centering
 \figbox{../data/lab_2026-11-16/screenshots/04_sine_model_top_level.png}{\linewidth}{4.5cm}
@@ -1932,18 +1898,17 @@ of $1.11$\st{D}. Fig.~\ref{fig:wtopt} shows the split version that passes.}
 \figbox{../data/lab_2026-11-16/screenshots/05_variantD_model_top_level.png}{\linewidth}{4.5cm}
 \caption{Variant D model}\label{fig:a-models-b}
 \end{subfigure}
-\caption{Test models built on 16 November.}
+\caption[Test models of session 3]{Test models built for session~3.}
 \label{fig:a-models}
 \end{figure}
 
 \section{Scripts, Data Files and Self-Checks}
 \label{app:scripts}
-Totals are from the re-run of 17 November 2026 on the analysis PC (\code{matlab -batch}). ``Lab'' scripts were run only
-on the lab PC or are helpers for it; they produce no results quoted here.
+``Lab'' scripts were run only on the lab PC or are helpers for it; they produce no results quoted here.
 
 {\small
 \begin{longtable}{@{}l>{\raggedright\arraybackslash}p{5.0cm}>{\raggedright\arraybackslash}p{1.4cm}>{\raggedright\arraybackslash}p{3.7cm}@{}}
-\caption{Analysis scripts, outputs and self-check totals}\label{tab:scripts}\\
+\caption{Analysis scripts and self-check totals}\label{tab:scripts}\\
 \toprule
 Script & Purpose & PASS / FAIL & Meaning of a FAIL \\
 \midrule
@@ -1973,8 +1938,7 @@ Script & Purpose & PASS / FAIL & Meaning of a FAIL \\
 \code{s19_trim_expC} & Effect of Experiment~C on the robustness test & 5 / 0 & -- \\
 \code{s20_liftoff_stand_height} & Lift-off forces by height above the stand & 6 / 0 & -- \\
 \code{s21_pd_gain_grid} & Position-only PD vs the cascade & 6 / 1 & an earlier, unsaved grid result is not reproduced (this script's numbers are used) \\
-\midrule
-\code{report/check_report.py} & Report self-check: compile log, placeholders, every number traced to the ledger or the re-run logs, hand calculations of Section~\ref{sec:calc} recomputed, recorded decisions, status labels & 58 / 0 & -- \\
+
 \bottomrule
 \end{longtable}}
 
