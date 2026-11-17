@@ -24,7 +24,7 @@ came from. For the report use these. Details and evidence are in the session REA
 | Sensor noise | x 0.011 mm, i **0.021 A** (std) | 0.018 A in older text is stale |
 | Current-sensor zero | 0.03–0.06 A at the start of a session, falling 0.3–1.2 mA per second of coil-on time | Reached −0.02 A on 16-Nov. Measure with u = 0 before and after each run |
 | Operating range | set points **9–11 mm**, both balls, stand reading ≥ ~0.85 mm below the set point | 11.5 mm on the normal stand excluded; transients within ~0.8 mm of the stand are outside the model |
-| Nominal points | controller designed for i0 = 0.75 A (≈ 9.2 mm, s05); analysis nominal 39 g at **10 mm** (s10, s11, cases, sine); manual comparison 9 mm (s01/s02) | Three different "nominals", each for its purpose |
+| Nominal points | controller designed for i0 = 0.75 A (≈ 9.3 mm for the 39 g ball on the fitted law: 9.27 mm s08, 9.25 mm s07; corrected 2026-11-17 from "≈ 9.2"); analysis nominal 39 g at **10 mm** (s10, s11, cases, sine); manual comparison 9 mm (s01/s02) | Three different "nominals", each for its purpose |
 | Lift-off time | two definitions: "x < rest − 0.2 mm" (s06, s18) and "sweep clock started", i.e. x < 11.5 mm (12.0 mm lowered stand) (s09, s16, s17) | Compare times only within one definition |
 | Step overshoot sim vs lab | s13 metric (33 ms running mean, d 0.5, s07 plant): within 0.10 mm on 21 of 24 steps | s07 "0.16 mm rms" (raw lab x), s08 "0.18 mm rms", s09 "0.14 mm rms" (39 g sweep only) use other definitions or subsets. Overshoot is 100–130 % of the step, a property of the design |
 | Nominal margins | 39 g, 10 mm, d 0.5: Ms 1.59, PM 45.4°, gain range 0.292–3.95, delay margin 5.3 ms | Values at d 0.55 (13-Nov delay section) are superseded |

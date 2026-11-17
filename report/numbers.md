@@ -63,13 +63,16 @@ that differ from an older statement somewhere in the repo (see Section Z).
 | C7 | Coil τ, model nominal | 27 ms (design value); uncertainty range 20–35 ms | D | s05, s10 | |
 | C8 | Coil step test (my_driver, ball on stand 12.9 mm) | u 0.2/0.3/0.4 → i 0.44/0.69/0.93 A | M | 12-Nov README | Ball jumped at u 0.4 |
 | C9 | Open-loop coil 0.3/0.6/1.0 | i ≈ 0.68 / 1.40 / 2.45 A | M | 12-Nov screenshot 07 | |
+| C10 | First PD attempts (12-Nov) | ball on stand at 8.4 mm with set point 10 mm: no lift (ball above set point); stand at 11.8 mm: u 0.345, i 0.87 A, no lift | M | 12-Nov README (screenshots 05, 08); session notes | Added Stage D |
+| C11 | Example PID (my_pid_rt) | P 40, I 40, D 2, U0 0.344 | M | 12-Nov README | Added Stage D |
+| C12 | Coil steps, details | incremental gain 2.33–2.46 A/unit (1.9 for the first step from u = 0); τ 22.5–25 ms with the ball on the stand, 25–29 ms after the ball jumped to the magnet; jump at u 0.4 (0.93 A), not at 0.69 A | M | 12-Nov README (revised 2026-11-16) | Added Stage D |
 
 ## D. Identification (13-Nov morning + afternoon)
 
 | ID | Quantity | Value | St | Source | Note |
 |---|---|---|---|---|---|
 | D1 | Force law (reference) | F = c i² e^(−x/λ), λ = 5.90 mm (5.905), c = 3.29 / 3.02 N/A² (39 / 42 g) | M | s08 §3c; s10 §1; linear_model.mat | 42 drift-corrected hover visits, 9–11 mm |
-| D2 | λ uncertainty | ±0.15 mm (systematic, current-zero model); 95 % CI ±4.3 % | M | data/README; s10 | c CI ±7.4 %, correlation with λ −1.00 |
+| D2 | λ uncertainty | ±0.15 mm (systematic, current-zero model); 95 % CI ±4.3 % | M | data/README; s10 | c CI ±7.4 %, correlation with λ −1.00; hover current at 9–11 mm known to ±0.57 % (39 g) / ±0.50 % (42 g) |
 | D3 | Force-law residual | 5.9 mA rms, max 14.4 mA (42 visits) | M | s08, s10 | |
 | D4 | Morning fit (s07 plant) | λ 5.81 mm, c 3.37 / 3.16 N/A², residual 4.9 mA rms (18 visits) | M | s07 §3c | Used by overshoot comparisons (s07, s13, s16, s17); 1.6 % from D1 in λ |
 | D5 | Morning law predicts afternoon | 27 plateaus within 10.2 mA rms; 39 g at 9 mm: 0.728 measured vs 0.734 A predicted | M | s08 §3a | Out of sample (same day) |
@@ -77,7 +80,8 @@ that differ from an older statement somewhere in the repo (see Section Z).
 | D7 | Manual model vs measured hover current | manual 0.845 A vs fit 0.800 A, 39 g at 10 mm (+5.6 %) | D | s07 §3c | |
 | D8 | 42 g vs 39 g current | +8.1 % at the same gap (mass alone 3.6 %) | M | s08 §3c | s07: 6.9 % (morning) |
 | D9 | Extra loop delay d | 0.5 sample (1.5 ms) nominal; range 0.3–0.6 (0.9–1.8 ms); measured 0.32–0.55 (1.0–1.7 ms) | M | s12 verdict; data/README | s12 prints "ESTIMATE 0.55" (method A); 0.5 is the reference. Sine: 0.5–0.6 |
-| D10 | Delay methods (run 3) | output-error fit 0.55 (95 % 0.50–0.55); noise shaping 0.50 (0.32–0.50 over τ/k_a); d = 0 and d = 1 rejected | M | s12 A, B | |
+| D10 | Delay methods (run 3) | output-error fit 0.55 (95 % 0.50–0.55, too narrow: assumes the coil model exact); noise shaping 0.50 (0.32–0.50 over τ/k_a), resonance near 65 Hz; d = 0 and d = 1 rejected; coil steps: every d 0–0.75 within 0.5 % | M | s12 A, B, C; 13-Nov README | |
+| D15 | Exp A current zero | 0.0405 → 0.0102 A over 61 s of levitation | M | s07 §3 | |
 | D11 | Sensor noise (std, ball on stand) | x 0.011 mm (0.0109), i 0.021 A | M | s07 | s08 prints 0.018 A (stale, Z3) |
 | D12 | Current-sensor zero | 0.03–0.06 A at session start, falling 0.3–1.2 mA per s of coil-on time; reached −0.02 A on 16-Nov | M | data/README; s07, s08, s18 | 13-Nov morning mean −0.52 mA/s; sweeps −0.82/−0.85; s18 −1.16 |
 | D13 | Effect of zero-drift correction | repeat-visit scatter 12.0 → 4.8 mA rms | M | s07 §3b | |
@@ -96,6 +100,8 @@ that differ from an older statement somewhere in the repo (see Section Z).
 | E6 | Transfer functions | G_xi = −24.59/(s² − 1661.4) m/A; G_iu = 2.432/(0.027 s + 1) A/unit | D | s10 §4 | |
 | E7 | ZOH plant poles (T0 3 ms) | 1.1301 (= e^{pT0}), 0.8948, 0.8849 | D | s10 §4 | Fractional delay adds a pole at z = 0 |
 | E8 | Linearization validity | force error ≤ 1.17 % of mg along all 24 steps; local linear vs nonlinear overshoot 0.026 mm rms; one model (39 g, 10 mm) 0.086 mm rms | S | s10 §5 | |
+| E11 | Operating-point table (39 g / 42 g) | x0 9, 9.5, 10, 10.5, 11 mm: i0 0.733/0.765/0.798/0.832/0.868 and 0.792/0.827/0.862/0.900/0.939 A; u0 0.301/0.314/0.328/0.342/0.357 and 0.326/0.340/0.355/0.370/0.386; b 26.77/25.66/24.59/23.57/22.60 and 24.76/23.73/22.75/21.81/20.90 | D | s10 §2 | b over the range −15/+9 % of 24.59 |
+| E12 | Uncertainty justification extras | c: refits moved c by 2–4 %, residual 5.9 mA ≈ 1.4 % of the force; drift case −0.85 mA/s | M/D | s09 uncertainty table | |
 | E9 | Set covers measured hover currents | 42/42 inside, smallest margin 35.9 mA; corner band at 10 mm 0.748–0.856 A (≈5× the scatter) | D | s10 §6 | |
 
 ## F. Uncertainty set (s10, s11, s09)
@@ -119,6 +125,8 @@ that differ from an older statement somewhere in the repo (see Section Z).
 | G6 | Bias and limits | i0 0.75 A, integral clamp ±0.30 A, i_ref 0…2 A, u 0…0.9 | D | s05; models/README | |
 | G7 | Design-time robustness (pre-delay grid, 81 cases) | worst Ms 1.67 (no extra delay), 5.23 (+1 sample) | S | s05 | Pre-lab grid; superseded by H/K |
 | G8 | Inner-loop step, predicted | 63 % in 3.0 ms (open coil 27 ms), steady 0.503 A for 0.5 A | S | s05 | |
+| G10 | Design-time nominal loop | stable, Ms 1.36 (design plant, d 0) | S | s05 | |
+| G11 | Design grid composition | τ 20/27/35 ms × k_a 2.2/2.44/2.7 × λ 5.82/8.3/10 mm × i0 0.65/0.75/0.90 A = 81 plants, at d 0 and +1 sample | S | s05 code §2 | 8.3/10 mm from the withdrawn lift-threshold premise |
 | G9 | Wrong-sign test | all gains negated → unstable (max|eig| 1.33 in s05; 1.303 in s11) | D | s05, s11 | |
 
 ## H. First levitation (13-Nov, s06)
@@ -146,6 +154,7 @@ that differ from an older statement somewhere in the repo (see Section Z).
 | I8 | Exp C integral at kg 0.4 | 0.267 A lab vs 0.280 A model (clamp 0.30) | M/S | s09 §3b | |
 | I9 | Hover jitter source | lab/noise-only sim median 0.98; at 10 mm current noise alone 0.066 mm, position noise 0.014 mm | S | s07 §5 | |
 | I10 | Exp A/B overshoot (d = 0 sim) | 16 steps, rms 0.16 mm (raw lab x) | M/S | s07 §4 | Superseded definition (use M3) |
+| I11 | Excluded run (13-Nov "lowered stand" lift-off) | rest reading 12.00 mm (12.004): stand not really lowered | M | 13-Nov README; s08 | Excluded from all analysis |
 
 ## J. Afternoon sweeps and holds (13-Nov, s08)
 
@@ -329,7 +338,7 @@ that differ from an older statement somewhere in the repo (see Section Z).
 | Z7 | Lift-off time has two definitions (x < rest − 0.2 mm: 27–45 ms; sweep clock started: 36–48 ms) | s06/s18 vs s09/s16/s17 | Name the definition next to every lift time |
 | Z8 | p4_* and p5_* lab-vs-sim figures were simulated with d = 0 (simulator default; s07/s08 do not set d) | figs | State "d = 0" in the captions; quantitative comparisons use M1 (d 0.5) |
 | Z9 | AUDIT 3.19 "third implementation within 0.005 mm" not re-run here | models/README | Drop, or cite as audit result |
-| Z10 | Design bias point: data/README says i0 = 0.75 A is "≈ 9.2 mm"; the s08 law gives 9.27 mm, the s07 law 9.25 mm | data/README | Report says "about 9.3 mm" (T14) |
+| Z10 | Design bias point: data/README says i0 = 0.75 A is "≈ 9.2 mm"; the s08 law gives 9.27 mm, the s07 law 9.25 mm | data/README | Report says "about 9.3 mm" (T14). **data/README corrected 2026-11-17** |
 
 ---
 

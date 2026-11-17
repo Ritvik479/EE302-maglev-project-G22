@@ -667,20 +667,82 @@ its purpose and its totals.
 
 \subsection{Session 1 (12 November): Discovery and Open-Loop Tests}
 \label{sec:proc-1}
-\todo{D}{Model inspection, PD runs, coil step test; safety steps.}
+Ball: 39\,g. Goal: find out how the lab loop is really built, and measure the coil.
+\begin{enumerate}
+\item Before any run: switch on the rig's power supply, load the sensor calibration table into the workspace, work only
+      on copies of the manual's example models, and build them for monitoring (never stand-alone).
+\item Inspect the three example models read-only with a script (\code{s03_lab_discovery}, run on the lab PC): sample time,
+      solver, filter blocks, velocity signal, controller gains and limits.
+\item Try the manual's PD model. With the ball on the stand above the set point, or with the stand at $11.8$\,mm, the ball
+      did not lift; the stand was then lowered and the PD gains raised ($K_p=45$) and the bias $u_0$ stepped up while running
+      (run~4). The ball lifted and oscillated, hitting the stand every cycle.
+\item Open-loop coil tests with the driver model: constant commands $u=0.3$, $0.6$, $1.0$, then steps
+      $0 \to 0.2 \to 0.3 \to 0.4 \to 0.2$ with the ball resting on the stand at $12.9$\,mm, recording $u$ and $i$.
+\end{enumerate}
+After the session the cascade controller was designed offline (Section~\ref{sec:obs-design}) and checked in simulation
+before it was deployed.
 
 \subsection{Session 2 (13 November): First Levitation, Experiments A--C, Sweeps and Holds}
 \label{sec:proc-2}
-\todo{D}{Inner-loop test, first levitation, experiments A, B, C, automatic sweeps, 11.5\,mm holds.}
+Balls: 39\,g and 42\,g. Goal: first levitation, identification data over the operating range, and a gain-margin test.
+\begin{enumerate}
+\item Build \code{my_cascade_rt} (Fig.~\ref{fig:labmodel}) and check its wiring against the design. Runs~1--2 gave no coil
+      current at all: the rig's power supply was off. It was switched on.
+\item Run~3, inner loop only: ball on the stand, test current reference $0.3$ then $0.5$\,A.
+\item Run~4, first levitation: set point $11$\,mm, switch the loop on, let the ball lift; then step the set point to $10$\,mm.
+\item Experiment~A: 39\,g ball, set point typed by hand in $0.5$\,mm steps from $11$\,mm down to $9.5$\,mm and back up to
+      $11.5$\,mm.
+      Experiment~B: 42\,g ball, two runs with a step $11 \to 10$\,mm, then a sweep $11 \to 9 \to 10.5$\,mm. Experiment~C: 39\,g
+      ball at $10$\,mm with a gain $k_g$ on the command (\code{my_cascade_kg_rt}), stepped through
+      $1, 0.8, 0.6, 0.5, 0.4, 1, 1.25, 1.5, 2, 1$.
+\item Afternoon, automatic sweeps (\code{my_cascade_sweep_rt}, $11 \to 9 \to 11$\,mm): 39\,g placed hole-up, 42\,g placed
+      hole-up, 42\,g placed hole-down. Then $11.5$\,mm holds (manual set point): 39\,g hole-up, 42\,g hole-up, 39\,g hole-down.
+\item For every run: note the rest reading on the stand before switch-on (a seating check), and keep recording a few seconds
+      after switch-off so that the current reading at $u=0$ (the current-sensor zero) can be measured.
+\end{enumerate}
+No log sheet was kept on this day; the set points were rebuilt from the recorded data. One more run, meant as a lift-off
+from a lowered stand, had a rest reading of only $12.00$\,mm and is excluded from all analysis.
 
 \subsection{Session 3 (16 November): Stand Tests, Sine Injection and Variant D}
 \label{sec:proc-3}
-\todo{D}{Small steps, slow ramp, lowered stand, sine injection, variant D.}
+Ball: 39\,g (42\,g for one run). Goal: find out why the model misfits near the stand, measure the loop gain while
+levitating, and test the improved start-up (variant~D).
+\begin{enumerate}
+\item The rig did not respond at first: Windows did not recognize the RT-DAC/USB2 board. It was reconnected.
+\item Set the stand so that the 39\,g ball (hole-up) rests at $11.87$--$12.00$\,mm, using the driver model with the command at
+      $0$.
+\item Small steps near the stand (\code{my_cascade_steps_rt}), 39\,g and 42\,g: $11.0 \to 10.8 \to 11.1 \to 10.6 \to 11.0 \to 10.5
+      \to 11.0$\,mm, 5\,s each.
+\item Slow ramp (\code{my_cascade_ramp_rt}): $10.5 \to 11.4 \to 10.5$\,mm at $0.2$\,mm/s. The first attempt ran with jumps
+      instead of a ramp, because the change to linear interpolation was not in the deployed build; it was rebuilt and repeated.
+\item Sine injection (\code{my_cascade_sine_rt}), 39\,g at $10$\,mm: a sine added to the command at $1.5$, $2$, $2.4$, $3$, $4$,
+      $6$, $8$, $12$, $20$ and $40$\,Hz, amplitude $0.01$ (raised to $0.02$, $0.04$ and $0.08$ at $12$, $20$ and $40$\,Hz, after
+      a lower-amplitude segment).
+\item Lowered stand (rest reading $13.13$ and $13.19$\,mm): one run with set-point jumps up to $11.6$\,mm, and the standard
+      sweep $11 \to 9 \to 11$\,mm followed by a hold at $11.5$\,mm.
+\item Variant~D (\code{my_cascade_D_rt}), 39\,g on the normal stand: switch the loop on and off twice (two lift-offs), set
+      point $11$\,mm with typed steps to $10.5$\,mm and back.
+\end{enumerate}
+Not done for lack of time: variant~D from the lowered stand, sine injection at $11$\,mm and with the 42\,g ball, and a static
+sensor check with the stand moved in small steps (dropped).
 
 \subsection{Offline Analysis and Simulation}
 \label{sec:proc-offline}
-\todo{D}{Order of the analysis (identification, linear model, design, robustness, Simulink cases, comparisons) and
-how each script checks itself.}
+The offline work ran alongside the sessions; Table~\ref{tab:scripts} gives the script for each step.
+\begin{enumerate}
+\item Pre-lab: reproduce the manual's model and predict the behaviour of a PD loop (s01, s02).
+\item After session~1: design the cascade controller on the best model then available and check it on a grid of plants
+      and in nonlinear lift-off simulations (s05).
+\item After session~2: analyse the first levitation (s06); fit the force law, the coil gain and the sensor noise from the
+      hover data (s07, s08); estimate the extra loop delay (s12); build the linear model and the uncertainty set (s10).
+\item Check robust stability over the set (s11) and run the Simulink model over the nominal and uncertain cases in the
+      hardware scenario (s09).
+\item Compare simulation and hardware and investigate the misfits (s13, s14); after session~3, analyse the new tests (s16,
+      s17, s18) and the follow-up questions (s19, s20, s21).
+\end{enumerate}
+Each script prints its own PASS/FAIL checks (Section~\ref{sec:scripts}). On 16 November all results were audited
+line by line, the problems found were fixed, and the affected scripts were re-run. For this report everything was run
+once more from the saved data.
 
 % =================== 6 OBSERVATION AND DATA RECORDING ===================
 \section{Observation and Data Recording}
@@ -688,31 +750,273 @@ how each script checks itself.}
 
 \subsection{Lab Discovery and the Actuator}
 \label{sec:obs-discovery}
-\todo{D}{Sample time, absent filters, lab PD and its oscillation, coil gain and time constant.}
+\paragraph{The lab loop.} The inspection of the example models showed a loop different from the manual's
+description\st{M}: sample time $T_0=3$\,ms (fixed step, \code{ode3}) instead of $10$\,ms; no filter blocks in the signal path;
+velocity computed as the unfiltered difference $(x_k-x_{k-1})/T_0$; error convention $e = x - x_{\mathrm{ref}}$, as in the
+manual. The example PD controller had $K_p = 35$, a gain of $450$ on the error difference $e_k - e_{k-1}$, and a bias
+$u_0 = 0.282$; the example PID had $P=40$, $I=40$, $D=2$ and $U_0 = 0.344$.
+
+\paragraph{First PD attempts.} With the ball resting on the stand above the set point (reading $8.4$\,mm, set point
+$10$\,mm) the PD lowered the command and the ball stayed on the stand. With the stand at $11.8$\,mm the command settled at
+$0.345$ and the current at $0.87$\,A, too little to lift the 39\,g ball\st{M}: the example gains are tuned for a lighter ball.
+With $K_p$ raised to $45$ and the bias raised while running, the ball lifted but went into a sustained oscillation at
+$7.3$--$9.3$\,Hz, $2$ to $9$\,mm peak to peak, hitting the stand every cycle (run~4\st{M}). On the linear model of the rig
+built later, this PD sits on the stability boundary (Section~\ref{sec:discussion}); the large cycle itself was nonlinear.
+
+\paragraph{Coil.} Constant commands $u = 0.3$, $0.6$, $1.0$ gave about $0.68$, $1.40$ and $2.45$\,A\st{M}
+(Fig.~\ref{fig:a-coil}). In the step test with the ball on the stand at $12.9$\,mm, $u = 0.2$, $0.3$, $0.4$ gave
+$0.44$, $0.69$ and $0.93$\,A\st{M}: an incremental gain of $2.33$--$2.46$\,A per unit, lower ($1.9$) for the first step from
+$u=0$. The current followed each step as a first-order lag with $\tau = 22.5$--$25$\,ms while the ball rested on the
+stand; after the ball jumped to the magnet at $u=0.4$ ($0.93$\,A; it did not jump at $0.69$\,A), the fitted lag was
+$25$--$29$\,ms\st{M}. The manual's coil time constant, $0.63$\,ms, is therefore far too fast for this rig. The static gain
+used in the model, $k_a = 2.43$\,A per unit\st{M}, was later fitted from the hover data (command against true current);
+the controller's feed-forward uses $\hat k_a = 2.44$, the value available at design time.
 
 \subsection{Identification: Force Law, Loop Delay and Sensor Noise}
 \label{sec:obs-ident}
-\todo{D}{Force-law fit table (ledger D1--D8), delay (D9--D10), noise and current zero (D11--D13).}
-\repfig{forcefit}{../figs/p5_force_fit_all.png}{0.75\linewidth}{Identified force law: true hover current vs gap.
-\capnote{$\lambda=5.90$\,mm, 42 visits; the 11.5\,mm points were not fitted}}
-\repfig{delay}{../figs/p9_delay.png}{0.85\linewidth}{Extra loop delay from the inner-loop test.
-\capnote{extra delay $d\approx0.5$ sample; $d=0$ and $d=1$ rejected}}
+\paragraph{Current-sensor zero.} The current reading is not zero when the coil is off: at the start of a session it read
+$0.03$--$0.06$\,A at $u=0$, and this offset fell by $0.3$--$1.2$\,mA per second of coil-on time, reaching $-0.02$\,A late on
+16 November\st{M}. On 13 November it fell from $0.0405$ to $0.0102$\,A during the 61\,s of Experiment~A\st{M}. The true
+current is therefore the reading minus a drifting zero, measured at $u=0$ before and after each run and interpolated
+linearly in coil-on time. This correction matters: two visits to the same gap in one run differed by $12.0$\,mA rms in the
+raw readings and by $4.8$\,mA rms after correction\st{M}. Runs without a coil-off record use the drift rate of a
+neighbouring run with the same ball, or the mean rate of the session.
+
+\paragraph{Force law.} At each hover plateau the ball is in equilibrium, so the true current and the gap give one
+point of \eqref{eq:hover}. A least-squares fit of \eqref{eq:hover} to these points, with one decay length $\lambda$ for both
+balls and one constant $c$ per ball, gives the force law. It was fitted twice (Table~\ref{tab:forcefit}): on the 18
+morning visits, and on all 42 visits of 13 November at $9$--$11$\,mm. Plateaus with oscillation in the $1.5$--$3.5$\,Hz band
+and the $11.5$\,mm holds were left out (Section~\ref{sec:obs-stand} explains why). The combined fit is the reference
+model of this report (Fig.~\ref{fig:forcefit}).
+
+\begin{table}[H]
+\centering
+\caption{Force-law fits $F = c\,i^2e^{-x/\lambda}$ from the hover data of 13 November}
+\label{tab:forcefit}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ & Morning fit & Combined fit (reference) & Manual \\
+\midrule
+Hover visits used & 18 & 42 & -- \\
+$\lambda$ [mm] & 5.81 & 5.90 & 5.82 \\
+$c$, 39\,g / 42\,g [N/A$^2$] & 3.37 / 3.16 & 3.29 / 3.02 & 3.01 \\
+Residual [mA rms] (max) & 4.9 (10.2) & 5.9 (14.4) & -- \\
+Status & M & M & B \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+$\lambda$ is known to about $\pm0.15$\,mm; this uncertainty is systematic, because it depends on how the current zero is
+modelled. The manual's $5.82$\,mm lies within it. The statistical $95\,\%$ interval of the combined fit is $\pm4.3\,\%$ for
+$\lambda$ and $\pm7.4\,\%$ for $c$, but $c$ and $\lambda$ are almost perfectly correlated (correlation $-1.00$): a larger
+$\lambda$ is compensated by a smaller $c$. What the linear model needs is the hover current at the operating gap, and that
+is known to $\pm0.57\,\%$ over $9$--$11$\,mm\st{D}. Three further checks support the law:
+\begin{itemize}
+\item \emph{Prediction.} The morning law, never fitted at $9$\,mm with the 39\,g ball, predicted all 27 afternoon plateaus
+      within $10.2$\,mA rms, and the 39\,g ball at $9$\,mm within $6$\,mA ($0.728$\,A measured, $0.734$\,A predicted)\st{M}.
+\item \emph{Manual model.} With the manual's constants the 39\,g ball would need $0.845$\,A at $10$\,mm, $5.6\,\%$ more than
+      the $0.800$\,A of the morning fit\st{D}.
+\item \emph{Two balls.} The 42\,g ball needs $8.1\,\%$ more current than the 39\,g ball at the same gap, while the mass ratio
+      alone explains $3.6\,\%$\st{M}; the two balls differ in size and shape (Table~\ref{tab:apparatus}), so they get separate
+      $c$ values.
+\end{itemize}
+
+\repfig{forcefit}{../figs/p5_force_fit_all.png}{0.75\linewidth}{Identified force law: drift-corrected hover current
+against gap for both balls, 42 visits on 13 November (morning: open circles; afternoon sweeps: filled squares), and the
+combined fit $\lambda = 5.90$\,mm\st{M}. The $11.5$\,mm holds (crosses) were not fitted: they lie $0.4$--$0.5$\,mm above the
+stand, where the stand-proximity effect acts (Section~\ref{sec:obs-stand}).}
+
+\paragraph{Extra loop delay.} In run~3 (inner loop only, ball on the stand) the command $u$ and the current $i$ are logged in
+the same sample: the inner-loop law \eqref{eq:inner} holds exactly at lag~0 ($R^2 = 0.9996$) and not at lags $\pm1$. A delay
+between logged $u$ and $i$ is therefore a real delay in the loop. Two methods estimate it (Fig.~\ref{fig:delay}):
+(A) simulate the coil from the logged command for each candidate delay and pick the best fit to the logged current:
+$d = 0.55$ sample, with a $95\,\%$ interval of $0.50$--$0.55$ that is too narrow because it assumes the coil model is
+exact; (B) compare the spectrum of the current noise with the loop closed and
+open with the predicted noise shaping $|S|^2$ of the inner loop: $d = 0.50$, and $0.32$--$0.50$ over the coil's uncertainty
+range\st{M}. Both methods reject $d=0$ and $d=1$. The open-loop coil steps of session~1 cannot tell the delays apart: away from
+the first step every $d$ from $0$ to $0.75$ fits within $0.5\,\%$. The sine injection of session~3, taken while levitating,
+independently supports $d \approx 0.5$--$0.6$ (Section~\ref{sec:obs-simlab}). The model uses $d = 0.5$ sample ($1.5$\,ms) as
+nominal and $0.3$--$0.6$ as its range: the measured $0.32$--$0.55$ rounded outward to tenths, so that the Simulink model can
+apply it exactly.
+
+\repfig{delay}{../figs/p9_delay.png}{0.85\linewidth}{Extra loop delay from run~3\st{M}. (A) Output-error fit of the
+coil model against the delay: minimum at $d = 0.55$; the open-loop coil steps are almost flat in $d$. (B) Noise shaping by the
+inner loop: only a fractional delay ($d \approx 0.5$) reproduces the measured resonance near 65\,Hz. Bottom: the $0.3 \to 0.5$\,A
+step with models for $d = 0$, $0.55$ and $1$.}
+
+\paragraph{Sensor noise.} With the ball resting on the stand and $u = 0$, the readings fluctuate with standard
+deviations of $0.011$\,mm (position) and $0.021$\,A (current)\st{M}. These values are used in the noisy simulation cases
+(Section~\ref{sec:obs-cases}).
+
+\begin{table}[H]
+\centering
+\caption{Identified parameters (reference values)}
+\label{tab:identified}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{4.0cm}>{\raggedright\arraybackslash}p{4.6cm}cX@{}}
+\toprule
+Parameter & Value & St. & From \\
+\midrule
+Force decay length $\lambda$ & $5.90 \pm 0.15$\,mm & M & 42 hover visits \\
+Force constant $c$ & $3.29$ / $3.02$\,N/A$^2$ (39 / 42\,g) & M & 42 hover visits \\
+Coil static gain $k_a$ & $2.43$\,A per unit ($1.9$ near $u=0$) & M & hover data; coil steps \\
+Coil time constant $\tau$ & $22$--$25$\,ms (model nominal $27$\,ms) & M & coil steps; sine injection \\
+Extra loop delay $d$ & $0.5$ sample ($0.32$--$0.55$ measured) & M & run~3, two methods \\
+Sensor noise (std) & $x$: $0.011$\,mm, $i$: $0.021$\,A & M & ball on the stand \\
+Current-sensor zero & $0.03$--$0.06$\,A, falling $0.3$--$1.2$\,mA/s & M & coil-off records \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \subsection{Linear Model and Uncertainty Set}
 \label{sec:obs-unc}
-\todo{D}{Operating points and coefficients (E1--E9); uncertainty set table (F1--F4); kg is not part of the set.}
-\repfig{lincoeffs}{../figs/p7_linear_coeffs.png}{0.85\linewidth}{Hover current and input gain over the operating range.
-\capnote{uncertainty band; 11.5\,mm provisional}}
-\repfig{plantbode}{../figs/p7_plant_bode.png}{0.75\linewidth}{Plant $u\to x$ over the uncertainty set.
-\capnote{192 corners at $d$ 0.3/0.6; colour = nominal at $d$ 0.5}}
+\paragraph{Operating points.} With the identified law, \eqref{eq:hover} and \eqref{eq:lin} give the operating points of
+Table~\ref{tab:oppoints}. $a_{21} = g/\lambda = 1661\,\text{s}^{-2}$ is the same at every point (unstable pole $6.49$\,Hz);
+only $b$ changes, from $20.90$ to $26.77\,\text{m\,s}^{-2}\text{A}^{-1}$ over $9$--$11$\,mm and both balls ($-15$/$+9\,\%$ of the
+nominal $24.59$)\st{D}. At the nominal point (39\,g, $10$\,mm, $\tau = 27$\,ms) the transfer functions \eqref{eq:tf} are
+\begin{equation}
+G_{xi}(s) = \frac{-24.59}{s^2 - 1661.4}\ \ \frac{\text{m}}{\text{A}}, \qquad
+G_{iu}(s) = \frac{2.432}{0.027\,s + 1}\ \ \frac{\text{A}}{\text{unit}} \quad\text{(D)}.
+\label{eq:tfnom}
+\end{equation}
+
+\begin{table}[H]
+\centering
+\caption{Operating points and linear coefficients (identified law; $a_{21}=1661\,\text{s}^{-2}$ everywhere)\st{D}}
+\label{tab:oppoints}
+\begin{tabular}{@{}c|ccc|ccc@{}}
+\toprule
+ & \multicolumn{3}{c|}{39\,g ball} & \multicolumn{3}{c}{42\,g ball} \\
+$x_0$ [mm] & $i_0$ [A] & $u_0$ & $b$ [m\,s$^{-2}$A$^{-1}$] & $i_0$ [A] & $u_0$ & $b$ [m\,s$^{-2}$A$^{-1}$] \\
+\midrule
+9.0  & 0.733 & 0.301 & 26.77 & 0.792 & 0.326 & 24.76 \\
+9.5  & 0.765 & 0.314 & 25.66 & 0.827 & 0.340 & 23.73 \\
+10.0 & 0.798 & 0.328 & 24.59 & 0.862 & 0.355 & 22.75 \\
+10.5 & 0.832 & 0.342 & 23.57 & 0.900 & 0.370 & 21.81 \\
+11.0 & 0.868 & 0.357 & 22.60 & 0.939 & 0.386 & 20.90 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Validity of the linearization.} The linear model was checked against the nonlinear one: its matrices agree with
+a numerical Jacobian at all operating points, and it predicts the response to a small current pulse with the right sign and
+size. Along all 24 simulated set-point steps of 13 November the force error of the local linearization stays below
+$1.17\,\%$ of the weight; the linear and nonlinear step overshoots agree within $0.026$\,mm rms, and a single linear model
+(39\,g, $10$\,mm) for both balls and all gaps within $0.086$\,mm rms\st{S} (Fig.~\ref{fig:a-linnl}). Linearization is therefore
+not the cause of the lab-versus-model differences discussed in Section~\ref{sec:obs-simlab}.
+
+\paragraph{Uncertainty set.} Table~\ref{tab:uncset} lists the parameters that vary, their ranges and the evidence. Each
+range covers the measured values with some margin. Every combination of the extreme and middle values forms a grid of
+$1458$ plants (2 balls $\times$ 3 gaps $\times$ 3 values each of $\lambda$, $c$, $\tau$, $k_a$ and $d$). Mapped onto the linear model,
+the set spans $a_{21} = 1582$--$1749\,\text{s}^{-2}$ (unstable pole $6.33$--$6.66$\,Hz) and $b = 19.40$--$28.44\,\text{m\,s}^{-2}\text{A}^{-1}$
+($-21$/$+16\,\%$)\st{D}. As a check, every one of the 42 measured hover currents lies inside the band of currents the set
+predicts, the closest $35.9$\,mA from its edge; at $10$\,mm (39\,g) the band is $0.748$--$0.856$\,A ($-6.3$/$+7.3\,\%$),
+about five times wider than the measured scatter, as intended (Fig.~\ref{fig:lincoeffs}).
+
+\begin{table}[H]
+\centering
+\caption{The uncertainty set and its justification}
+\label{tab:uncset}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{3.0cm}X@{}}
+\toprule
+Parameter & Nominal & Range & Evidence \\
+\midrule
+Ball mass $m$ & 39.288\,g & 39.288 / 42.137\,g & the two lab balls \\
+Operating gap $x_0$ & 10\,mm & 9--11\,mm & validated hover range, both balls; stand $\geq 0.85$\,mm below the set point \\
+Decay length $\lambda$ & 5.90\,mm & $\pm5\,\%$ (5.6--6.2\,mm) & fits 5.81 / 5.90\,mm, manual 5.82; covers the 95\,\% interval $\pm4.3\,\%$ \\
+Force constant $c$ & 3.29 / 3.02\,N/A$^2$ & $\pm5\,\%$ & refits on different data moved $c$ by 2--4\,\%; residual 5.9\,mA $\approx 1.4\,\%$ of the force \\
+Coil time constant $\tau$ & 27\,ms & 20--35\,ms & measured 22--25\,ms (steps, sine), up to 29\,ms with the ball at the magnet; widened for heating and gap-dependent inductance \\
+Coil gain $k_a$ & 2.43\,A/unit & 2.2--2.7\,A/unit & incremental 2.33--2.46 (coil steps), 2.43 (hover data) \\
+Extra delay $d$ & 0.5 sample & 0.3--0.6 sample & measured 0.32--0.55 (two methods), rounded outward \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Simulation cases only (not in the robust-stability grid):}} \\
+Sensor noise & 0 & $x$ 0.011\,mm, $i$ 0.021\,A & readings on the stand \\
+Current-zero drift & 0 & $-0.85$\,mA/s & coil-off records of the long sweeps \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Outside the set:}} \\
+Gain error $k_g$ on $u$ & 1 & 0.4 and 2.0 & hardware gain-margin test (Experiment~C); see Section~\ref{sec:obs-robust} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The actuator gain error $k_g$ of Experiment~C is kept out of the set on purpose. Applied to the whole grid, $k_g = 0.4$ makes
+some extreme corners unstable; since the hardware stayed stable at $k_g = 0.4$, the real plant is not at those corners, and
+Experiment~C is a test of the nominal loop's gain margin, not a part of the uncertainty (Section~\ref{sec:obs-robust}).
+
+\paragraph{Unmodelled effects.} Effects not in the parametric set: the stand-proximity effect (within about $0.7$--$0.8$\,mm
+of the stand; Section~\ref{sec:obs-stand}), which the claimed range avoids by keeping the stand at least $0.85$\,mm below
+the set point; the cause of the extra delay (its size is in the set); back-EMF and gap-dependent inductance of the coil
+(small, and the inner loop rejects them); the lower coil gain near $u = 0$ (only at lift-off); the current-zero drift and the
+sensor noise (simulation cases; the integral removes the drift); and the kinks of the 33-point position calibration table.
+How much room the controller leaves for such effects is quantified in Section~\ref{sec:obs-robust}.
+
+\repfig{lincoeffs}{../figs/p7_linear_coeffs.png}{0.85\linewidth}{Left: hover current against gap from the identified law,
+with the 42 lab visits (dots) and the band covered by the uncertainty set (shaded); star = analysis nominal. Right: input gain
+$b = 2g/i_0$; $a_{21}$ is the same at every gap\st{D}. The $11.5$\,mm region (grey) is outside the claimed range.}
+\repfig{plantbode}{../figs/p7_plant_bode.png}{0.75\linewidth}{Frequency response of the plant $u \to x$ (ZOH, $T_0 = 3$\,ms):
+the nominal 39\,g and 42\,g plants at $10$\,mm with $d = 0.5$ (colour) and 192 corners of the set at $d = 0.3$ and $0.6$
+(grey)\st{D}. The dashed line marks the unstable pole at $6.5$\,Hz.}
 
 \subsection{Controller Design}
 \label{sec:obs-design}
-\todo{D}{Gains and limits (G1--G9); predicted inner-loop step; design-time grid.}
+\paragraph{Design model.} The controller was designed after session~1, before the force law, the delay or the hover current
+were known. The design therefore used the manual's decay length ($a_{21} = g/P_2 = 1684.7\,\text{s}^{-2}$), a bias current
+$i_0^c = 0.75$\,A ($b = 2g/0.75 = 26.16$), a coil with $\tau = 27$\,ms and $k_a = 2.44$\,A per unit from the coil steps, and
+$T_0 = 3$\,ms with no extra delay. These differ from the later identified values by a few per cent; the robustness analysis
+(Section~\ref{sec:obs-robust}) re-checks the \emph{deployed} gains against the identified set, so the design values do not
+need to be exact.
+
+\paragraph{Choices.} The inner loop was given a closed-loop time constant $\tau_{\mathrm{in}} = 3$\,ms, one sample, about nine
+times faster than the coil. The outer poles were placed at $\omega_n = 40$\,rad/s with $\zeta = 0.7$ and the integral pole at
+$\omega_i = 12$\,rad/s. The closed-loop pair, at $-28 \pm j28.6$\,rad/s, then has a natural frequency close to the speed of the
+unstable pole ($p = 40.76$\,rad/s) and good damping, and the integral pole is slow enough not to disturb the transient. A sweep of
+$\omega_n$, $\zeta$ and $\tau_{\mathrm{in}}$ against the design grid (below) preceded the choice; it found $\tau_{\mathrm{in}}=3$\,ms
+best for the worst-case $M_s$. That sweep was not saved, so no numbers are quoted from it.
+
+\paragraph{Gains.} Equations \eqref{eq:kc} and \eqref{eq:gains} give the gains of Table~\ref{tab:gains} (arithmetic in
+Section~\ref{sec:calc}). They were deployed unchanged on all three lab days; a regression of the logged $i_{\mathrm{ref}}$ on
+the logged error and velocity during the sweeps recovers $K_p = 151.6$\,A/m and $K_d = 2.53$\,A\,s/m\st{M}, which confirms
+both the values and the sign convention on the hardware.
+
+\begin{table}[H]
+\centering
+\caption{Controller gains and limits (deployed)}
+\label{tab:gains}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Quantity & Design value & Deployed & Unit \\
+\midrule
+Inner-loop gain $K_c$ & 2.054 & 2.05 & 1/A \\
+Feed-forward $1/\hat k_a$ & $1/2.44$ & $1/2.44$ & 1/A \\
+$K_p$ & 151.25 & 151.2 & A/m \\
+$K_d$ & 2.599 & 2.6 & A\,s/m \\
+$K_i$ & 733.9 & 734 & A/(m\,s) \\
+Bias $i_0^c$ & 0.75 & 0.75 & A \\
+Integral clamp & $\pm0.30$ & $\pm0.30$ & A (contribution to $i_{\mathrm{ref}}$) \\
+Limits & $i_{\mathrm{ref}}$ 0--2, $u$ 0--0.9 & same & A, -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Checks at design time.} Before the gains went to the hardware they were checked on the linear sampled loop and in
+nonlinear simulation\st{S}:
+\begin{itemize}
+\item The nominal design loop is stable with $M_s = 1.36$. Negating all gains makes it unstable (the sign test).
+\item A grid of 81 plants ($\tau$ $20$/$27$/$35$\,ms $\times$ $k_a$ $2.2$/$2.44$/$2.7$ $\times$ three force-decay lengths $\times$ $i_0$
+      $0.65$/$0.75$/$0.90$\,A) is stable everywhere, with worst $M_s = 1.67$; with one extra sample of delay it is still stable,
+      but the worst $M_s$ rises to $5.23$. This showed early that the loop delay matters, and it was measured on 13 November
+      (Section~\ref{sec:obs-ident}). Two of the three decay lengths (8.3 and 10\,mm) came from a pre-lab reading of the stand
+      lift-off thresholds that was later withdrawn; the grid was a design-time check only and is superseded by the analysis of
+      Section~\ref{sec:obs-robust}.
+\item The inner loop was predicted to reach $63\,\%$ of a $0.3 \to 0.5$\,A step in $3.0$\,ms, against $27$\,ms for the open coil
+      (Fig.~\ref{fig:a-inner}); the lab measured 2 samples (Section~\ref{sec:obs-first}).
+\item Nonlinear lift-off simulations from the stand, with the integral wound up, lifted the ball in every case without
+      touching the magnet; they also used the withdrawn force constants and are shown only as a pre-lab check
+      (Fig.~\ref{fig:a-liftsim}).
+\end{itemize}
 
 \subsection{First Levitation and Experiments A--C}
 \label{sec:obs-first}
-\todo{D}{Run 3 and run 4 (H1--H5); experiments A, B, C (I1--I9).}
+\todo{E}{Run 3 and run 4 (H1--H5); experiments A, B, C (I1--I9).}
 \repfig{run3}{../figs/p3_lab_run3.png}{0.75\linewidth}{Run 3: measured inner current loop, ball on the stand.}
 \repfig{run4}{../figs/p3_lab_run4.png}{0.85\linewidth}{Run 4: first levitation with the cascade controller.
 \capnote{``simulation (Phase 3)'' uses the pre-identification plant}}
@@ -723,7 +1027,7 @@ how each script checks itself.}
 
 \subsection{Automatic Sweeps and \texorpdfstring{11.5\,mm}{11.5 mm} Holds}
 \label{sec:obs-sweeps}
-\todo{D}{Validated range (J1--J7).}
+\todo{E}{Validated range (J1--J7).}
 \repfig{sweeps}{../figs/p5_sweeps_lab_vs_sim.png}{0.85\linewidth}{Automatic sweeps 11--9--11\,mm, lab vs simulation.
 \capnote{simulation with $d=0$, morning-fitted plant}}
 \repfig{roll}{../figs/p5_42g_roll.png}{0.8\linewidth}{Lift-offs: the 42\,g ball placed hole-up rolls over.}
