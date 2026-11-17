@@ -1,0 +1,468 @@
+% =============================================================================
+% EE302 Final Project (PS9, deliverable D6): MagLev report, Group 22
+% Layout: single-column A4 (IEEE two-column made optional by the instructor,
+% 2026-11-17); section order follows the instructor's format (Introduction ...
+% Precautions, References). Numbers come only from report/numbers.md.
+% Compile from this folder:  latexmk -pdf main.tex
+% =============================================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=2.5cm,headheight=14pt]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows.meta,positioning,calc}
+\usepackage{siunitx}
+\sisetup{detect-all, range-phrase={--}, range-units=single}
+\usepackage{float}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{url}
+\def\UrlBreaks{\do\/\do\.\do\-\do\_\do\?\do\=\do\&}
+\usepackage[hidelinks]{hyperref}
+
+% ------------------------------------------------------------------
+% Page style
+% ------------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small EE302 Final Project (PS9), Group 22}
+\rhead{\small Magnetic Levitation: Robust Control}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\setlength{\parskip}{3pt}
+\setlist{itemsep=2pt,topsep=3pt}
+
+% ------------------------------------------------------------------
+% Helper macros
+% ------------------------------------------------------------------
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+% Status labels (Section 4): M measured, S simulated, D derived, N not obtained, B manual benchmark
+\newcommand{\st}[1]{\,\textup{(#1)}}
+% Figure box: shows the image if the file exists, otherwise a labelled placeholder.
+% usage: \figbox{file}{width}{placeholder height}
+\newcommand{\figbox}[3]{%
+  \IfFileExists{#1}{\includegraphics[width=#2]{#1}}{%
+    \fbox{\parbox[c][#3][c]{\dimexpr#2-2\fboxsep-2\fboxrule\relax}{\centering\footnotesize\textsf{[Insert image]}\\[2pt]\texttt{\detokenize{#1}}}}}}
+% One report figure: \repfig{label}{file}{width}{caption}
+\newcommand{\repfig}[4]{%
+  \begin{figure}[H]\centering\figbox{#2}{#3}{5cm}\caption{#4}\label{fig:#1}\end{figure}}
+% Placeholder for text still to be written: \todo{stage}{what goes here}
+\newcommand{\todo}[2]{\par\noindent\fcolorbox{orange!80!black}{orange!8}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\small\textbf{[Stage #1]} #2}}\par}
+% Caption obligation from numbers.md (kept visible until the caption is written)
+\newcommand{\capnote}[1]{\textcolor{orange!70!black}{[caption must say: #1]}}
+
+\begin{document}
+
+% =============================== COVER PAGE ===============================
+\pagenumbering{alph}% title page: unique link anchor
+\begin{titlepage}
+\thispagestyle{empty}
+
+\begin{center}
+{\LARGE\bfseries ROBUST CONTROL DESIGN AND EXPERIMENTAL VALIDATION\\[4pt] OF A MAGNETIC LEVITATION SYSTEM}\\[14pt]
+{\large Final Project --- Problem Statement 9}
+\end{center}
+
+\vspace{1.4cm}
+\noindent
+\begin{tabular}{@{}p{3.8cm}l@{}}
+Course Code & : EE302 \\[4pt]
+Course Name & : Control Systems Laboratory \\[4pt]
+Department & : School of Computing and Electrical Engineering \\[4pt]
+Institute & : Indian Institute of Technology Mandi \\[4pt]
+Course Instructor & : Dr. Yanumula Venkata Karteek \\[4pt]
+Teaching Assistant & : \\[4pt]
+Date of Experiment & : 12\textsuperscript{th}--16\textsuperscript{th} November, 2026 \\[4pt]
+Submission Date & : 17\textsuperscript{th} November, 2026 \\[4pt]
+Group Number & : 22 \\
+\end{tabular}
+
+\vspace{1.6cm}
+\begin{center}
+{\bfseries GROUP MEMBER DETAILS}\\[8pt]
+\begin{tabular}{@{}clll@{}}
+\toprule
+S.No. & Name & Roll No. & Signature \\
+\midrule
+1 & Neil Bakshi & B24344 & \hspace{3cm} \\[8pt]
+2 & Ritvik Garg & B24349 & \\[8pt]
+3 & Saurabh Gopal & B24352 & \\[8pt]
+4 & Snehal Narendra Patil & B24353 & \\[8pt]
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vfill
+\begin{center}
+August--December 2026
+\end{center}
+
+\end{titlepage}
+
+% ================================ ABSTRACT ================================
+\pagenumbering{roman}
+\begin{abstract}
+\todo{F}{Abstract, written last: plant and goal; identified model (force law, coil, delay); cascade design;
+robust stability over the uncertainty set (worst $M_s$ above the target, stated); simulation cases; hardware results
+(range, kg test, variant D); simulation vs hardware; the stand-proximity effect; what was not obtained.}
+
+\medskip
+\noindent\textbf{Keywords:} magnetic levitation, cascade control, robust stability, multiplicative uncertainty,
+sensitivity peak, system identification, loop delay, INTECO MLS1EM.
+\end{abstract}
+
+\tableofcontents
+\listoffigures
+\listoftables
+\clearpage
+\pagenumbering{arabic}
+
+% ============================== 1 INTRODUCTION ==============================
+\section{Introduction}
+\label{sec:intro}
+\todo{C}{Why magnetic levitation is a hard control problem (open-loop unstable, nonlinear, fast). Problem
+Statement~9 and its requirements R1--R5 and deliverables D1--D6, with a table mapping each deliverable to the
+section of this report that answers it. Scope: what was built (model, uncertainty set, cascade controller, Simulink
+models, three lab sessions) and the honesty rules (status labels, unconfirmed items in Section~\ref{sec:discussion}).}
+
+% =========================== 2 LEARNING OBJECTIVES ===========================
+\section{Learning Objectives}
+\label{sec:objectives}
+\todo{C}{About five objectives: model and linearize an unstable nonlinear plant; identify its parameters and an
+uncertainty set from lab data; design a controller that is robust over that set and check it (margins,
+$|WT|<1$); validate in nonlinear simulation and on hardware; explain the differences between simulation and hardware.}
+
+% ================================ 3 THEORY ================================
+\section{Theory}
+\label{sec:theory}
+
+\subsection{The Magnetic Levitation Plant and its Nonlinear Model}
+\label{sec:th-model}
+\todo{C}{Rig principle (coil, steel ball, optical gap sensor). Newton's law with the force law
+$F=c\,i^2 e^{-x/\lambda}$; every symbol defined; manual's form $P_1/P_2$; gap $x$ measured downward from the magnet;
+coil as a first-order lag from the duty command $u$.}
+
+\subsection{Equilibrium and Linearization}
+\label{sec:th-lin}
+\todo{C}{Hover current $i_0$; linear model $\ddot{\delta x}=a_{21}\,\delta x-b\,\delta i$ with $a_{21}=g/\lambda$,
+$b=2g/i_0$ (why the gap enters only through $b$); transfer functions $G_{xi}$, $G_{iu}$; the unstable pole.}
+
+\subsection{Sampling, Zero-Order Hold and Loop Delay}
+\label{sec:th-delay}
+\todo{C}{$T_0=3$\,ms, ZOH discretization, fractional extra delay $d$ and its phase lag.}
+
+\subsection{Cascade Control Structure}
+\label{sec:th-cascade}
+\todo{C}{Inner current loop with feed-forward; outer PID by pole placement on the ideal-current model; integral clamp;
+sign convention $e=x-x_{\mathrm{ref}}$ and the test that catches a wrong sign.}
+
+\subsection{Robustness Measures}
+\label{sec:th-robust}
+\todo{C}{Loop $L$, sensitivity $S$, complementary sensitivity $T$; $M_s$; gain, phase and delay margins; multiplicative
+uncertainty and the sufficient test $|W T|<1$; why grid checks plus a bound between grid points are evidence, not proof.}
+
+\subsection{Pre-Lab Predictions from the Manual's Model}
+\label{sec:th-prelab}
+\todo{C}{Manual model reproduced; pre-lab PD prediction with filters and delay; what the lab later showed (filters absent,
+$T_0=3$\,ms). Status B/S.}
+
+\repfig{p2bode}{../figs/p2_bode.png}{0.75\linewidth}{Bode diagram of the manual's plant and its refinements (pre-lab).
+\capnote{pre-lab, manual model; the 5\,ms filters were later found absent}}
+
+\repfig{p2nyq}{../figs/p2_nyquist.png}{0.7\linewidth}{Nyquist plot of the reduced manual plant with P and PD control.
+\capnote{one counter-clockwise encirclement of $-1$ is required (one unstable open-loop pole)}}
+
+% ========================== 4 EXPERIMENTAL SETUP ==========================
+\section{Experimental Setup}
+\label{sec:setup}
+
+\subsection{Apparatus and Software}
+\label{sec:apparatus}
+\begin{table}[H]
+\centering
+\caption{Apparatus used}
+\label{tab:apparatus}
+\begin{tabularx}{\linewidth}{@{}clXc@{}}
+\toprule
+S.No. & Equipment & Details & Quantity \\
+\midrule
+1 & \textit{[Stage C]} & \textit{MLS1EM rig, interface box, RT-DAC/USB2 board, balls, caliper, lab PC, analysis PC} & \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Block Diagram of the Control Loop}
+\label{sec:blockdiag}
+\todo{C}{TikZ block diagram (replaces the format's ``circuit diagram''): set point, outer PID, $i_{\mathrm{ref}}$ limit,
+inner current loop with feed-forward $1/2.44$, $u$ limit $0$--$0.9$, delay $d$, coil, ball, current and position
+sensors; sign convention marked.}
+\begin{figure}[H]\centering
+\figbox{blockdiagram-to-be-drawn}{0.9\linewidth}{5cm}
+\caption{Cascade control loop (to be drawn in TikZ, Stage~C).}
+\label{fig:blockdiag}
+\end{figure}
+
+\subsection{Experimental Setup}
+\label{sec:photo}
+\begin{figure}[H]\centering
+\begin{subfigure}{0.56\linewidth}\centering
+\figbox{../data/lab_2026-11-16/screenshots/01_rig_front_panel_photo.jpeg}{\linewidth}{5cm}
+\caption{Rig and interface box}\label{fig:rig-a}
+\end{subfigure}\hfill
+\begin{subfigure}{0.42\linewidth}\centering
+\figbox{../data/lab_2026-11-12/screenshots/00_rig_photo_calibration_stand.jpeg}{\linewidth}{5cm}
+\caption{Ball resting on the calibration stand}\label{fig:rig-b}
+\end{subfigure}
+\caption{The INTECO MLS1EM magnetic levitation rig.}
+\label{fig:rig}
+\end{figure}
+
+\subsection{Lab Models and Signal Chain}
+\label{sec:labmodels}
+\todo{C}{Lab PC models (copies of the manual templates; Build for Monitoring, external mode), scope channels, units
+(u is a PWM duty fraction, not volts), sensor table, velocity signal; the deployed cascade model.}
+\begin{figure}[H]\centering
+\begin{subfigure}{0.49\linewidth}\centering
+\figbox{../data/lab_2026-11-13/screenshots/01_cascade_top_level.png}{\linewidth}{4.5cm}
+\caption{Top level of \code{my_cascade_rt}}\label{fig:labmodel-a}
+\end{subfigure}\hfill
+\begin{subfigure}{0.49\linewidth}\centering
+\figbox{../data/lab_2026-11-13/screenshots/02_cascade_controller_inside.png}{\linewidth}{4.5cm}
+\caption{Inside the cascade controller block}\label{fig:labmodel-b}
+\end{subfigure}
+\caption{The deployed lab model.}
+\label{fig:labmodel}
+\end{figure}
+
+\subsection{Status Labels, Conventions and Settings}
+\label{sec:status}
+\todo{C}{Status labels M, S, D, N (and B for manual benchmark values), as in the Lab~9 report. Sign and unit conventions.
+Settings table ($T_0$, solver, limits, gains as deployed). Three different ``nominal'' points and two lift-off-time
+definitions, named once here.}
+
+\subsection{Analysis Scripts and Data Files}
+\label{sec:scripts}
+\todo{C}{Short table: script, purpose, output, self-check total (full list in Appendix~\ref{app:scripts}).}
+
+% ======================== 5 EXPERIMENTAL PROCEDURE ========================
+\section{Experimental Procedure}
+\label{sec:procedure}
+
+\subsection{Session 1 (12 November): Discovery and Open-Loop Tests}
+\label{sec:proc-1}
+\todo{D}{Model inspection, PD runs, coil step test; safety steps.}
+
+\subsection{Session 2 (13 November): First Levitation, Experiments A--C, Sweeps and Holds}
+\label{sec:proc-2}
+\todo{D}{Inner-loop test, first levitation, experiments A, B, C, automatic sweeps, 11.5\,mm holds.}
+
+\subsection{Session 3 (16 November): Stand Tests, Sine Injection and Variant D}
+\label{sec:proc-3}
+\todo{D}{Small steps, slow ramp, lowered stand, sine injection, variant D.}
+
+\subsection{Offline Analysis and Simulation}
+\label{sec:proc-offline}
+\todo{D}{Order of the analysis (identification, linear model, design, robustness, Simulink cases, comparisons) and
+how each script checks itself.}
+
+% =================== 6 OBSERVATION AND DATA RECORDING ===================
+\section{Observation and Data Recording}
+\label{sec:obs}
+
+\subsection{Lab Discovery and the Actuator}
+\label{sec:obs-discovery}
+\todo{D}{Sample time, absent filters, lab PD and its oscillation, coil gain and time constant.}
+
+\subsection{Identification: Force Law, Loop Delay and Sensor Noise}
+\label{sec:obs-ident}
+\todo{D}{Force-law fit table (ledger D1--D8), delay (D9--D10), noise and current zero (D11--D13).}
+\repfig{forcefit}{../figs/p5_force_fit_all.png}{0.75\linewidth}{Identified force law: true hover current vs gap.
+\capnote{$\lambda=5.90$\,mm, 42 visits; the 11.5\,mm points were not fitted}}
+\repfig{delay}{../figs/p9_delay.png}{0.85\linewidth}{Extra loop delay from the inner-loop test.
+\capnote{extra delay $d\approx0.5$ sample; $d=0$ and $d=1$ rejected}}
+
+\subsection{Linear Model and Uncertainty Set}
+\label{sec:obs-unc}
+\todo{D}{Operating points and coefficients (E1--E9); uncertainty set table (F1--F4); kg is not part of the set.}
+\repfig{lincoeffs}{../figs/p7_linear_coeffs.png}{0.85\linewidth}{Hover current and input gain over the operating range.
+\capnote{uncertainty band; 11.5\,mm provisional}}
+\repfig{plantbode}{../figs/p7_plant_bode.png}{0.75\linewidth}{Plant $u\to x$ over the uncertainty set.
+\capnote{192 corners at $d$ 0.3/0.6; colour = nominal at $d$ 0.5}}
+
+\subsection{Controller Design}
+\label{sec:obs-design}
+\todo{D}{Gains and limits (G1--G9); predicted inner-loop step; design-time grid.}
+
+\subsection{First Levitation and Experiments A--C}
+\label{sec:obs-first}
+\todo{D}{Run 3 and run 4 (H1--H5); experiments A, B, C (I1--I9).}
+\repfig{run3}{../figs/p3_lab_run3.png}{0.75\linewidth}{Run 3: measured inner current loop, ball on the stand.}
+\repfig{run4}{../figs/p3_lab_run4.png}{0.85\linewidth}{Run 4: first levitation with the cascade controller.
+\capnote{``simulation (Phase 3)'' uses the pre-identification plant}}
+\repfig{expAB}{../figs/p4_sweep_lab_vs_sim.png}{0.85\linewidth}{Experiments A and B: gap sweeps, lab vs simulation.
+\capnote{simulation with $d=0$; the set-point typo is inferred, not confirmed}}
+\repfig{kgtest}{../figs/p4_kg_test.png}{0.85\linewidth}{Experiment C: actuator gain $k_g$ from 0.4 to 2.0.
+\capnote{$k_g$ is a hardware gain-margin test, not part of the robust set}}
+
+\subsection{Automatic Sweeps and \texorpdfstring{11.5\,mm}{11.5 mm} Holds}
+\label{sec:obs-sweeps}
+\todo{D}{Validated range (J1--J7).}
+\repfig{sweeps}{../figs/p5_sweeps_lab_vs_sim.png}{0.85\linewidth}{Automatic sweeps 11--9--11\,mm, lab vs simulation.
+\capnote{simulation with $d=0$, morning-fitted plant}}
+\repfig{roll}{../figs/p5_42g_roll.png}{0.8\linewidth}{Lift-offs: the 42\,g ball placed hole-up rolls over.}
+\repfig{hold115}{../figs/p5_hold115_rocking.png}{0.85\linewidth}{11.5\,mm holds on the normal stand: the 2.4\,Hz rocking.
+\capnote{the title's ``$\sim$20$\times$'' is 14$\times$ in std and 19$\times$ in band rms}}
+
+\subsection{Robustness Analysis}
+\label{sec:obs-robust}
+\todo{E}{Nominal and grid-worst margins, $M_s$ target missed, $|WT|$ options, room for unmodelled error, Exp~C trimming
+(K1--K15).}
+\repfig{margins}{../figs/p8_margins.png}{0.9\linewidth}{Margins over the 1458-point uncertainty grid.
+\capnote{worst $M_s$ 2.23 exceeds the target 2}}
+\repfig{wtopt}{../figs/p8_WT_options.png}{0.85\linewidth}{Robust stability test $|WT|<1$: one disk, Option~1, Option~2.
+\capnote{Options 1 and 2 were added after the one-disk test failed}}
+
+\subsection{Nonlinear Simulation Cases}
+\label{sec:obs-cases}
+\todo{E}{77 cases, 69 in the set: 51 fully OK, 18 within 0.1\,mm of the stand, none lost (L1--L8).}
+\repfig{corners}{../figs/p6_cases_corners.png}{0.9\linewidth}{Simulated sweeps at the corners of the uncertainty set.
+\capnote{the grey trace held at about 11.2\,mm is the clamp-limited corner (204\,\textmu m steady error)}}
+\repfig{special}{../figs/p6_cases_special.png}{0.9\linewidth}{Simulated special cases.
+\capnote{$k_g$ tests are outside the set; the 11.5\,mm cases are stress cases}}
+
+\subsection{Simulation versus Hardware}
+\label{sec:obs-simlab}
+\todo{E}{Step overshoot (M1--M6), sine injection (P1--P6), lift-off (Q7, Q8, R1--R3).}
+\repfig{mismatch}{../figs/p10_overshoot_mismatch.png}{0.9\linewidth}{Down-step overshoot mismatch and the braking spike.
+\capnote{H-force curve = rejected hypothesis; panel (d) title predates the stand-tied finding}}
+\repfig{sine}{../figs/p13_sine_loop.png}{0.9\linewidth}{Loop gain measured by sine injection (39\,g, 10\,mm).
+\capnote{1.5--2.4\,Hz points too noisy}}
+
+\subsection{The Stand-Proximity Effect and the \texorpdfstring{2.4\,Hz}{2.4 Hz} Rocking}
+\label{sec:obs-stand}
+\todo{E}{Static deficit, braking spike (11 spikes, 0.67--0.89\,mm), rocking, lowered stand, lift-off zone test
+(N1--N13, O1--O7). Never ``shadowing'', never ``rotation''.}
+\repfig{steps3a}{../figs/p12_3a_steps.png}{0.9\linewidth}{Small steps near the stand (16 November).}
+\repfig{standprox}{../figs/p14_stand_proximity.png}{0.9\linewidth}{Braking spike vs stand position.
+\capnote{the spike moves with the stand}}
+\repfig{rocking}{../figs/p11_rocking.png}{0.9\linewidth}{Bounds on the 2.4\,Hz rocking.
+\capnote{panel (d) ``$\geq0.19$'' holds only for an unstructured error}}
+\repfig{liftzone}{../figs/p16_liftoff_stand_height.png}{0.75\linewidth}{Force factor near the stand: slow ramp vs lift-offs.
+\capnote{lift-offs cross the zone too fast: they neither confirm nor refute the static effect}}
+
+\subsection{Controller Improvement: Variant D}
+\label{sec:obs-varD}
+\todo{E}{Clamp/bias options in simulation; variant D on the hardware (Q1--Q8, L8, L9).}
+\repfig{clampfix}{../figs/p8_clamp_fix.png}{0.85\linewidth}{Lift-off with the integral wound up: options A--D (simulation).}
+\repfig{varD}{../figs/p15_variantD_ramp.png}{0.95\linewidth}{Variant D on the hardware and the slow ramp.
+\capnote{$n=2$ vs 3 lift-offs, 39\,g, normal stand}}
+
+\subsection{Practical Issues Log}
+\label{sec:issues}
+\todo{E}{Rig power off (13 Nov runs 1--2), USB board not recognized (16 Nov), Flat vs Linear table, missing coil-off
+tails, ball seating, no log sheet on 13 Nov.}
+
+% ============================== 7 CALCULATIONS ==============================
+\section{Calculations}
+\label{sec:calc}
+\todo{F}{Worked examples T1--T12 of numbers.md: hover current, linear coefficients, controller gains, delay in ms, stand
+deficit as a fraction of the weight, Exp~A set-point bound.}
+
+% ================================ 8 RESULTS ================================
+\section{Results}
+\label{sec:results}
+\todo{F}{Summary table: each requirement R1--R5 / deliverable D1--D6, the result with its status label, and where it is
+shown.}
+
+% =============================== 9 DISCUSSION ===============================
+\section{Discussion}
+\label{sec:discussion}
+\todo{F}{Comparison with theory and simulation; why a cascade (Fig.~\ref{fig:pdgrid}); sources of error; unresolved items;
+unconfirmed items stated openly (Exp~A set-point typo inferred from the data; conversion of $u$ to volts not verified);
+the missed $M_s$ target; limitations.}
+\repfig{pdgrid}{../figs/p17_pd_gain_grid.png}{0.95\linewidth}{Position-only PD on the linear model vs the cascade.
+\capnote{best PD for all 9 corners: worst $M_s$ 10.4; cascade 1.99 at the same corners}}
+
+% =============================== 10 CONCLUSION ===============================
+\section{Conclusion}
+\label{sec:conclusion}
+\todo{F}{Major findings and whether the objectives were achieved.}
+
+% =============================== 11 PRECAUTIONS ===============================
+\section{Precautions}
+\label{sec:precautions}
+\todo{F}{Rig power and USB check; SensorData before building; Build for Monitoring; stand height and seating check;
+coil-off tails; step size near the stand; verify the deployed build (Flat vs Linear); integral reset.}
+
+% ================================ REFERENCES ================================
+\begin{thebibliography}{99}
+
+\bibitem{ps9}
+Dr. Y. V. Karteek, ``Problem Statement 9: Magnetic levitation,'' \textit{EE302 Control Systems Laboratory, Final
+Project}, Indian Institute of Technology Mandi, Aug.--Dec. 2026.
+
+\bibitem{mlsmanual}
+INTECO, \textit{Magnetic Levitation System MLS1EM USB2: User's Manual}, Krak\'ow, Poland.
+
+\bibitem{ogata}
+K. Ogata, \textit{Modern Control Engineering}, 5th ed. Upper Saddle River, NJ, USA: Prentice Hall, 2010.
+
+\bibitem{franklin}
+G. F. Franklin, J. D. Powell, and A. Emami-Naeini, \textit{Feedback Control of Dynamic Systems}, 8th ed. New York,
+NY, USA: Pearson, 2019.
+
+\bibitem{skogestad}
+S. Skogestad and I. Postlethwaite, \textit{Multivariable Feedback Control: Analysis and Design}, 2nd ed. Chichester,
+UK: Wiley, 2005.
+
+\end{thebibliography}
+
+% ================================ APPENDICES ================================
+\clearpage
+\appendix
+\section{Additional Figures}
+\label{app:figs}
+\todo{F}{One-line context for each appendix figure.}
+\repfig{a-force}{../figs/p1_force_curves.png}{0.75\linewidth}{Manual force model, 57.1\,g ball (benchmark).}
+\repfig{a-sweep}{../figs/p1_sweep.png}{0.8\linewidth}{Manual model: equilibrium and linearization vs gap.
+\capnote{manual model; $u$ in volts, not the duty $u$ of this report}}
+\repfig{a-polemap}{../figs/p2_polemap.png}{0.85\linewidth}{Open-loop poles and zeros of the manual plant (pre-lab).}
+\repfig{a-inner}{../figs/p3_inner_step.png}{0.7\linewidth}{Predicted inner-loop step response.}
+\repfig{a-liftsim}{../figs/p3_liftoff_sim.png}{0.75\linewidth}{Pre-lab lift-off simulation of the cascade controller.
+\capnote{pre-lab check only; force constants from a withdrawn premise}}
+\repfig{a-linnl}{../figs/p7_lin_vs_nl_overshoot.png}{0.85\linewidth}{Overshoot of the 24 afternoon steps: lab, nonlinear and
+linear models.}
+\repfig{a-flip}{../figs/p4_42g_flip.png}{0.8\linewidth}{Experiment B: the 42\,g ball turning over after lift-off.}
+\repfig{a-wt}{../figs/p8_WT.png}{0.8\linewidth}{Multiplicative uncertainty and the one-disk $|WT|$ test.}
+\repfig{a-coil}{../data/lab_2026-11-12/screenshots/07_scope_coil_test_0p3_0p6_1p0.png}{0.75\linewidth}{Open-loop coil test,
+$u=0.3$, 0.6, 1.0 (scope screenshot, 12 November).}
+\begin{figure}[H]\centering
+\begin{subfigure}{0.49\linewidth}\centering
+\figbox{../data/lab_2026-11-16/screenshots/04_sine_model_top_level.png}{\linewidth}{4.5cm}
+\caption{Sine-injection model}\label{fig:a-models-a}
+\end{subfigure}\hfill
+\begin{subfigure}{0.49\linewidth}\centering
+\figbox{../data/lab_2026-11-16/screenshots/05_variantD_model_top_level.png}{\linewidth}{4.5cm}
+\caption{Variant D model}\label{fig:a-models-b}
+\end{subfigure}
+\caption{Test models built on 16 November.}
+\label{fig:a-models}
+\end{figure}
+
+\section{Scripts, Data Files and Self-Checks}
+\label{app:scripts}
+\todo{C}{Table: script, purpose, inputs, outputs, PASS/FAIL total of the 2026-11-17 re-run, and the meaning of each
+intended FAIL.}
+
+\end{document}
