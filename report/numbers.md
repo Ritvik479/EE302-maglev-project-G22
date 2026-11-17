@@ -35,6 +35,9 @@ that differ from an older statement somewhere in the repo (see Section Z).
 | A12 | Velocity signal | (x[k] − x[k−1])/T0, unfiltered | M | 12-Nov discovery | |
 | A13 | Lab sessions | 12, 13 and 16 Nov 2026 (offline analysis 14–15 Nov) | M | data/README | Cover: "experiments 12–16 Nov 2026" |
 | A14 | Lab models used | my_cascade_rt, my_cascade_sweep_rt, my_cascade_kg_rt, my_cascade_steps_rt, my_cascade_ramp_rt, my_cascade_sine_rt, my_cascade_D_rt | M | models/README | |
+| A15 | Test-model settings | sweep table 11, 10.5, 10, 9.5, 9, 9.5, 10, 10.5, 11 mm (5 s each, clock runs while x < 11.5 mm); steps 11.0→10.8→11.1→10.6→11.0→10.5→11.0 mm; ramp 10.5→11.4→10.5 mm at 0.2 mm/s | M | 13-Nov README (sweep); 16-Nov README (steps, ramp) | Added in Stage C |
+| A16 | Driver PWM | 12-bit duty, driver gain 4095 | M | `maglev_params.m` header (from the 12-Nov model inspection) | Added in Stage C |
+| A17 | Nyquist frequency | 1/(2 T0) = 166.7 Hz | D | from A3 | s11 band edge 166 Hz |
 
 ## B. Manual model and pre-lab predictions (s01, s02)
 
@@ -87,7 +90,8 @@ that differ from an older statement somewhere in the repo (see Section Z).
 | E1 | Hover current i0, nominal | 0.798 A (0.79779) | D | linear_model.mat `nom.i0` | i0 = √(m g e^{x0/λ}/c) |
 | E2 | Hover command u0 | 0.328 (= i0/k_a) | D | `nom.u0` | |
 | E3 | a21 = g/λ | 1661 s⁻² (1661.4); range 1582–1749 (−4.8/+5.3 %) | D | s10 §2, §6 | Independent of gap and ball for this law |
-| E4 | Unstable pole | p = 40.76 rad/s = 6.49 Hz; range 6.33–6.66 Hz | D | s10 | |
+| E4 | Unstable pole | p = 40.76 rad/s = 6.49 Hz; range 6.33–6.66 Hz; doubling time ln2/p = 17.0 ms | D | s10; ln2/40.76 = 0.01700 s | |
+| E10 | Phase lag of the extra delay | d 0.5: 0.54° / 5.4° / 27.0° at 1 / 10 / 50 Hz (gain unchanged) | D | s10 §4 | = 360° f d T0 |
 | E5 | Input gain b = 2g/i0 | 24.59 m s⁻² A⁻¹; over 9–11 mm both balls 20.90–26.77; over the set 19.40–28.44 (−21/+16 %) | D | s10 §2, §6 | |
 | E6 | Transfer functions | G_xi = −24.59/(s² − 1661.4) m/A; G_iu = 2.432/(0.027 s + 1) A/unit | D | s10 §4 | |
 | E7 | ZOH plant poles (T0 3 ms) | 1.1301 (= e^{pT0}), 0.8948, 0.8849 | D | s10 §4 | Fractional delay adds a pole at z = 0 |
@@ -290,6 +294,9 @@ that differ from an older statement somewhere in the repo (see Section Z).
 | T10 | Stand deficit as weight | (1 − 0.065/0.898)² = 0.860 → 14 %; with 58.5 mA: 12.6 % | N2 |
 | T11 | Exp A set-point bound | i_ref = 0 with the integral at −0.30 A needs e < −(0.75 − 0.30)/151.2 = −2.98 mm → x_ref > 14.9 mm | s07 |
 | T12 | Cascade outer stability floor | b Kp > a21 → Kp > 1661.4/24.59 = 67.6 A/m (deployed 151.2) | D, new; check in Stage G |
+| T13 | M_s target meaning | M_s ≤ 2 ⇒ gain margin ≥ M_s/(M_s − 1) = 2, PM ≥ 2 arcsin(1/(2 M_s)) = 28.96° ≈ 29° | textbook (Skogestad) |
+| T14 | Design bias point | i0 = 0.75 A on the s08 law (39 g): e^{x/λ} = 0.5625 × 3.2936 / 0.38542 = 4.8069 → x = 5.9046 × ln 4.8069 = 9.27 mm ≈ 9.3 mm (s07 law: 9.25 mm) | D; data/README says "≈ 9.2 mm" (Z10) |
+| T15 | Inner loop vs coil | τ/τ_in = 27/3 = 9 ("about nine times faster") | D |
 
 ## U. Not obtained (N) and open items
 
@@ -322,6 +329,7 @@ that differ from an older statement somewhere in the repo (see Section Z).
 | Z7 | Lift-off time has two definitions (x < rest − 0.2 mm: 27–45 ms; sweep clock started: 36–48 ms) | s06/s18 vs s09/s16/s17 | Name the definition next to every lift time |
 | Z8 | p4_* and p5_* lab-vs-sim figures were simulated with d = 0 (simulator default; s07/s08 do not set d) | figs | State "d = 0" in the captions; quantitative comparisons use M1 (d 0.5) |
 | Z9 | AUDIT 3.19 "third implementation within 0.005 mm" not re-run here | models/README | Drop, or cite as audit result |
+| Z10 | Design bias point: data/README says i0 = 0.75 A is "≈ 9.2 mm"; the s08 law gives 9.27 mm, the s07 law 9.25 mm | data/README | Report says "about 9.3 mm" (T14) |
 
 ---
 

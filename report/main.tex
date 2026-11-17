@@ -131,17 +131,64 @@ sensitivity peak, system identification, loop delay, INTECO MLS1EM.
 % ============================== 1 INTRODUCTION ==============================
 \section{Introduction}
 \label{sec:intro}
-\todo{C}{Why magnetic levitation is a hard control problem (open-loop unstable, nonlinear, fast). Problem
-Statement~9 and its requirements R1--R5 and deliverables D1--D6, with a table mapping each deliverable to the
-section of this report that answers it. Scope: what was built (model, uncertainty set, cascade controller, Simulink
-models, three lab sessions) and the honesty rules (status labels, unconfirmed items in Section~\ref{sec:discussion}).}
+A magnetic levitation system holds a steel ball in the air below an electromagnet. The pull of the magnet grows as
+the ball comes closer, so any small error grows by itself: if the ball rises slightly, the pull increases and lifts
+it further; if it drops, the pull weakens and it falls. Without feedback the ball either sticks to the magnet or
+falls, which makes the plant \emph{open-loop unstable}. The force also depends nonlinearly on both the gap and the
+coil current, the unstable motion is fast (it doubles in about $17$\,ms, Section~\ref{sec:th-lin}), and the
+controller acts only through a coil whose current lags the command. A controller must therefore be fast, must work
+over a range of operating points, and must tolerate the difference between any model and the real rig.
+
+Problem Statement~9~\cite{ps9} asks for such a controller for the INTECO MLS1EM rig~\cite{mlsmanual}: identify a
+linearized operating model, characterize parametric and unstructured uncertainty, design a robust controller that
+accommodates operating-point changes, verify stability and robustness in MATLAB/Simulink, and demonstrate stable
+levitation on the hardware. Its five requirements (R1--R5) and six deliverables (D1--D6) are listed in
+Table~\ref{tab:deliverables} with the parts of this report that answer them.
+
+\begin{table}[H]
+\centering
+\caption{Problem Statement~9: requirements, deliverables and where they are answered}
+\label{tab:deliverables}
+\begin{tabularx}{\linewidth}{@{}lXl@{}}
+\toprule
+Item & Requirement / deliverable & Sections \\
+\midrule
+R1, D1 & Operating point, linearized model, assumptions, operating range & \ref{sec:th-model}, \ref{sec:th-lin}, \ref{sec:obs-ident}, \ref{sec:obs-unc} \\
+R2, D1 & Parametric and unstructured uncertainty, justified by data & \ref{sec:obs-ident}, \ref{sec:obs-unc}, \ref{sec:obs-stand} \\
+R3, D3 & Robust control law, design approach, stability and robustness criteria & \ref{sec:th-cascade}, \ref{sec:th-robust}, \ref{sec:obs-design}, \ref{sec:discussion} \\
+R4, D2, D4 & Simulink models of the nominal and uncertain cases; margins over the uncertainty range; simulation plots & \ref{sec:scripts}, \ref{sec:obs-robust}, \ref{sec:obs-cases}, App.~\ref{app:scripts} \\
+R5, D5 & Hardware implementation, recorded data, simulation versus hardware & \ref{sec:obs-first}--\ref{sec:obs-varD} \\
+D6 & Technical report and presentation & this report (presentation separate) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The work was done in three lab sessions (12, 13 and 16 November 2026) with offline analysis between them. It
+produced an identified nonlinear model, an uncertainty set built from the measurements, a cascade controller
+(an inner coil-current loop inside an outer position loop), a Simulink model run over 77 cases, and hardware runs with
+two balls. The controller was designed once and deployed unchanged; one improvement (``variant~D'', a different
+start-up of the integral action) was designed in simulation and tested on the hardware on the last day.
+
+Two rules are kept throughout. Every number carries a status label (measured, simulated, derived or not obtained;
+Section~\ref{sec:status}), and every number comes from a script that checks itself and can be re-run
+(Appendix~\ref{app:scripts}). Results that missed their targets, items that were not obtained, and statements that
+could not be confirmed are reported as such, mainly in Section~\ref{sec:discussion}.
 
 % =========================== 2 LEARNING OBJECTIVES ===========================
 \section{Learning Objectives}
 \label{sec:objectives}
-\todo{C}{About five objectives: model and linearize an unstable nonlinear plant; identify its parameters and an
-uncertainty set from lab data; design a controller that is robust over that set and check it (margins,
-$|WT|<1$); validate in nonlinear simulation and on hardware; explain the differences between simulation and hardware.}
+\begin{itemize}
+\item To model an open-loop unstable, nonlinear plant from first principles, find its equilibrium, and linearize it
+      about an operating point, stating the assumptions and the range in which the model holds.
+\item To identify the model's parameters (force law, coil gain and lag, loop delay, sensor noise) from measured data,
+      and to turn the spread of the evidence into a bounded uncertainty set.
+\item To choose and justify a controller structure, design it, and check its stability and robustness over the whole
+      uncertainty set with stability margins, the sensitivity peak and a multiplicative-uncertainty test.
+\item To implement the plant, the uncertainty cases and the controller in MATLAB/Simulink and run them through the same
+      scenario as the hardware.
+\item To levitate the ball on the real rig, record the response, compare it with simulation, and explain the
+      differences, including effects the model does not contain.
+\end{itemize}
 
 % ================================ 3 THEORY ================================
 \section{Theory}
@@ -149,39 +196,243 @@ $|WT|<1$); validate in nonlinear simulation and on hardware; explain the differe
 
 \subsection{The Magnetic Levitation Plant and its Nonlinear Model}
 \label{sec:th-model}
-\todo{C}{Rig principle (coil, steel ball, optical gap sensor). Newton's law with the force law
-$F=c\,i^2 e^{-x/\lambda}$; every symbol defined; manual's form $P_1/P_2$; gap $x$ measured downward from the magnet;
-coil as a first-order lag from the duty command $u$.}
+The rig (Fig.~\ref{fig:rig}) has an electromagnet at the top of a frame, a hollow ferromagnetic ball below it, and an
+optical position sensor (a light source and a detector on either side of the ball's path). A calibration stand, a
+threaded rod with a cup, can be raised or lowered under the ball; the ball rests on it when the coil is off. The
+controller reads the ball position and the coil current and sets the command $u$ to the coil's power stage.
+
+\paragraph{Variables.} The \emph{gap} $x$ is the distance from the magnet face to the ball, measured \emph{downward}:
+a larger $x$ means the ball is lower. $i$ is the coil current, $m$ the ball mass and $g=9.81\,\text{m/s}^2$.
+The command $u$ is a PWM duty fraction between $0$ and $1$ (Section~\ref{sec:labmodels}).
+
+\paragraph{Ball.} Only vertical motion is modelled. Gravity pulls the ball down (increasing $x$) and the magnetic force
+$F$ pulls it up, so Newton's second law gives
+\begin{equation}
+m\,\ddot{x} = m g - F(x,i), \qquad F(x,i) = c\, i^2\, e^{-x/\lambda}.
+\label{eq:newton}
+\end{equation}
+The force law is the manual's~\cite{mlsmanual}: the force grows with the square of the current and decays
+exponentially with the gap. The \emph{decay length} $\lambda$ [m] is the gap increase that reduces the force by a factor
+$e$, and $c$ [N/A$^2$] is the force per ampere squared at zero gap. The manual writes the same law as
+$F=i^2(P_1/P_2)e^{-x/P_2}$, so $c=P_1/P_2$ and $\lambda=P_2$. Both constants are identified from hover data in
+Section~\ref{sec:obs-ident}.
+
+\paragraph{Coil.} The current does not follow the command at once, because the coil is an inductance. It is
+modelled as a first-order lag,
+\begin{equation}
+\tau\,\frac{di}{dt} = -i + k_a\,u ,
+\label{eq:coil}
+\end{equation}
+where $k_a$ [A per unit of $u$] is the static gain (the steady current for a constant command) and $\tau$ [s] is the
+time constant (the time to reach $63\,\%$ of a step). The manual writes this as $i = k_i u + c_i$ in steady state with
+a time constant $f_i$, and $u$ in volts; on this rig $u$ is a duty fraction (Section~\ref{sec:status}).
+
+\paragraph{Assumptions.} (i) The ball moves only vertically and behaves as a point mass; it does not rotate or swing.
+(ii) The force depends only on $x$ and $i$, as in \eqref{eq:newton}; no magnetic saturation, no eddy currents, no
+dependence on the ball's orientation. (iii) The coil is the first-order lag \eqref{eq:coil}; back-EMF from the moving
+ball and gap-dependent inductance are neglected. (iv) The position and current sensors are exact apart from noise.
+(v) Nothing else touches the ball. Section~\ref{sec:obs-stand} shows where assumption (v) fails: within about
+$0.7$--$0.8$\,mm of the calibration stand. The model is intended for set points from $9$ to $11$\,mm, with the stand at
+least about $0.85$\,mm below the set point (Section~\ref{sec:obs-unc}).
 
 \subsection{Equilibrium and Linearization}
 \label{sec:th-lin}
-\todo{C}{Hover current $i_0$; linear model $\ddot{\delta x}=a_{21}\,\delta x-b\,\delta i$ with $a_{21}=g/\lambda$,
-$b=2g/i_0$ (why the gap enters only through $b$); transfer functions $G_{xi}$, $G_{iu}$; the unstable pole.}
+\paragraph{Equilibrium.} The ball hovers at a gap $x_0$ when the magnetic force equals its weight, $F(x_0,i_0)=mg$.
+Solving \eqref{eq:newton} for the current gives the \emph{hover current} and, from \eqref{eq:coil} in steady state,
+the hover command:
+\begin{equation}
+i_0 = \sqrt{\frac{m g\, e^{x_0/\lambda}}{c}}, \qquad u_0 = \frac{i_0}{k_a}.
+\label{eq:hover}
+\end{equation}
+A lower ball (larger $x_0$) needs more current, because the force decays with the gap.
+
+\paragraph{Linearization.} A linear controller design needs a linear model, valid for small deviations from the
+equilibrium. Write $\delta x = x - x_0$ and $\delta i = i - i_0$ (deviation variables: zero at the equilibrium) and
+expand $F$ to first order. From \eqref{eq:newton}, $\partial F/\partial x = -F/\lambda$ and
+$\partial F/\partial i = 2F/i$; at the equilibrium $F=mg$, so
+\begin{equation}
+m\,\delta\ddot{x} = -\frac{\partial F}{\partial x}\,\delta x - \frac{\partial F}{\partial i}\,\delta i
+= \frac{m g}{\lambda}\,\delta x - \frac{2 m g}{i_0}\,\delta i
+\quad\Longrightarrow\quad
+\delta\ddot{x} = a_{21}\,\delta x - b\,\delta i, \qquad a_{21}=\frac{g}{\lambda}, \quad b=\frac{2g}{i_0}.
+\label{eq:lin}
+\end{equation}
+The name $a_{21}$ follows the manual's state matrix. Two features matter for the design. First,
+$a_{21}=g/\lambda$ does not depend on the gap or on the ball: for this force law an operating-point shift changes
+\emph{only} the input gain $b$, through $i_0$. Second, the minus sign in front of $b$ says that more current moves the ball
+up (smaller $x$); a controller with the wrong sign would push the ball the wrong way, and every script tests this.
+
+\paragraph{Transfer functions.} Taking Laplace transforms of \eqref{eq:lin} and \eqref{eq:coil} (deviations, zero
+initial conditions):
+\begin{equation}
+G_{xi}(s)=\frac{\delta X(s)}{\delta I(s)} = \frac{-b}{s^2 - a_{21}}, \qquad
+G_{iu}(s)=\frac{\delta I(s)}{\delta U(s)} = \frac{k_a}{\tau s + 1}, \qquad
+G_{xu}(s) = G_{xi}(s)\,G_{iu}(s).
+\label{eq:tf}
+\end{equation}
+$G_{xi}$ has poles at $s=\pm p$ with $p=\sqrt{a_{21}}$. The pole at $+p$ is in the right half-plane: a deviation grows
+as $e^{pt}$ and doubles every $\ln 2/p$. For the identified law ($\lambda = 5.90$\,mm, Section~\ref{sec:obs-ident}),
+$a_{21}=1661\,\text{s}^{-2}$, $p=40.76$\,rad/s ($6.49$\,Hz) and the doubling time is $17.0$\,ms\st{D}. At the analysis
+nominal point (39\,g ball at $10$\,mm), $i_0 = 0.798$\,A and $b = 24.59\,\text{m\,s}^{-2}\text{A}^{-1}$\st{D}
+(worked in Section~\ref{sec:calc}).
 
 \subsection{Sampling, Zero-Order Hold and Loop Delay}
 \label{sec:th-delay}
-\todo{C}{$T_0=3$\,ms, ZOH discretization, fractional extra delay $d$ and its phase lag.}
+The controller runs on the lab PC with a fixed sample time $T_0 = 3$\,ms\st{M}. It reads $x$ and $i$ at each sample
+and holds its output $u$ constant until the next sample (a \emph{zero-order hold}, ZOH). A sampled loop can only
+control frequencies below the Nyquist frequency $1/(2T_0)=166.7$\,Hz. Sampling maps a continuous pole $s$ to
+$z=e^{sT_0}$, so the unstable pole of the ball becomes $z=e^{pT_0}=1.1301$, outside the unit circle\st{D}.
+
+The hold itself delays the command by half a sample on average. On top of that, the measurements show an \emph{extra}
+loop delay of $d$ samples between the logged command and the coil (Section~\ref{sec:obs-ident}; nominal $d=0.5$, i.e.
+$1.5$\,ms). Its cause (computation time, PWM or a filter in the current measurement) cannot be separated with these
+data. A delay of $dT_0$ seconds leaves the gain unchanged and adds a phase lag of $360^\circ f\,dT_0$ at frequency $f$:
+$5.4^\circ$ at $10$\,Hz for $d=0.5$\st{D}. Phase lag near the crossover frequency is what erodes stability margins, which
+is why $d$ is part of the uncertainty set. In the models a fractional delay is applied as an exact delay of
+$10d$ steps of $T_0/10$ (Simulink) or as an equivalent discrete-time element (linear analysis).
 
 \subsection{Cascade Control Structure}
 \label{sec:th-cascade}
-\todo{C}{Inner current loop with feed-forward; outer PID by pole placement on the ideal-current model; integral clamp;
-sign convention $e=x-x_{\mathrm{ref}}$ and the test that catches a wrong sign.}
+\paragraph{Why two loops.} The coil lag \eqref{eq:coil} ($\tau$ of $22$--$25$\,ms measured) sits in series with an
+unstable pole that doubles the error every $17$\,ms. A controller that only sees the position must work through
+this lag, which costs phase exactly where the loop needs it; Section~\ref{sec:discussion} shows that a
+position-only PD on this plant is at best fragile. The rig also measures the coil current. A \emph{cascade} uses it: a
+fast inner loop forces the current to follow a reference $i_{\mathrm{ref}}$, so that the outer loop sees an almost ideal
+current source and only has to stabilize the ball. The block diagram is Fig.~\ref{fig:blockdiag}.
+
+\paragraph{Inner current loop.} The inner law combines a feed-forward term, which supplies the current the coil
+needs in steady state, and a proportional correction on the current error:
+\begin{equation}
+u = \frac{i_{\mathrm{ref}}}{\hat k_a} + K_c\,\bigl(i_{\mathrm{ref}} - i\bigr),
+\label{eq:inner}
+\end{equation}
+with $\hat k_a = 2.44$\,A per unit the controller's estimate of $k_a$. Sampling \eqref{eq:coil} with the ZOH gives
+$i[k+1] = a\,i[k] + b_d\,u[k]$ with $a=e^{-T_0/\tau}$ and $b_d=k_a(1-a)$. Substituting \eqref{eq:inner} (and
+$\hat k_a = k_a$) moves the coil pole from $a$ to $a-b_dK_c$. $K_c$ is chosen to place it at $e^{-T_0/\tau_{\mathrm{in}}}$,
+i.e.\ a closed inner loop with time constant $\tau_{\mathrm{in}}=3$\,ms, about nine times faster than the coil:
+\begin{equation}
+K_c = \frac{a - e^{-T_0/\tau_{\mathrm{in}}}}{b_d}.
+\label{eq:kc}
+\end{equation}
+The feed-forward makes the steady current error small without an integrator in the inner loop.
+
+\paragraph{Outer position loop.} The outer controller sets the current reference from the position error
+$e = x - x_{\mathrm{ref}}$ (measured minus desired, the manual's convention), the measured velocity $v$ and the
+integral of $e$:
+\begin{equation}
+i_{\mathrm{ref}} = i_0^{c} + K_p\,e + K_d\,v + K_i \int e\,dt ,
+\label{eq:outer}
+\end{equation}
+where $i_0^{c}$ is a fixed bias near the hover current. The signs are positive: if the ball is too low ($x>x_{\mathrm{ref}}$,
+$e>0$) the current rises and the ball is pulled up. The integral removes the steady error left by a wrong bias or a
+wrong force constant. For the design the inner loop is taken as ideal ($i = i_{\mathrm{ref}}$) and $x_{\mathrm{ref}}$ as
+constant. Substituting \eqref{eq:outer} into \eqref{eq:lin} (with $\delta x = e$, $\dot e = v$) and differentiating once
+to remove the integral gives the closed-loop characteristic polynomial,
+\begin{equation}
+s^3 + b K_d\, s^2 + \bigl(b K_p - a_{21}\bigr)\, s + b K_i = 0 .
+\label{eq:charpoly}
+\end{equation}
+All coefficients must be positive, so $K_p > a_{21}/b$: the proportional gain must overcome the ``negative spring'' $a_{21}$
+of the magnet. \emph{Pole placement} chooses the three closed-loop poles: a real pole at $-\omega_i$ for the integral
+action and a complex pair with natural frequency $\omega_n$ and damping ratio $\zeta$. Matching
+\eqref{eq:charpoly} with $(s+\omega_i)(s^2+2\zeta\omega_n s+\omega_n^2)$ coefficient by coefficient gives
+\begin{equation}
+K_d = \frac{\omega_i + 2\zeta\omega_n}{b}, \qquad
+K_p = \frac{\omega_n^2 + 2\zeta\omega_n\omega_i + a_{21}}{b}, \qquad
+K_i = \frac{\omega_i\,\omega_n^2}{b}.
+\label{eq:gains}
+\end{equation}
+The chosen values ($\omega_n = 40$\,rad/s, $\zeta=0.7$, $\omega_i = 12$\,rad/s) and the resulting gains are in
+Section~\ref{sec:obs-design}; the arithmetic is in Section~\ref{sec:calc}.
+
+\paragraph{Limits and anti-windup.} The command is limited to $0 \le u \le 0.9$ and the reference to
+$0 \le i_{\mathrm{ref}} \le 2$\,A. The integral term is clamped so that its contribution to $i_{\mathrm{ref}}$ stays within
+$\pm0.30$\,A; without a clamp the integral would grow without bound while the ball rests on the stand and the error
+cannot be removed (\emph{windup}), and the lift-off would be violent. A second variant, which holds the integral at
+zero until the loop is switched on, is studied in Section~\ref{sec:obs-varD}.
 
 \subsection{Robustness Measures}
 \label{sec:th-robust}
-\todo{C}{Loop $L$, sensitivity $S$, complementary sensitivity $T$; $M_s$; gain, phase and delay margins; multiplicative
-uncertainty and the sufficient test $|W T|<1$; why grid checks plus a bound between grid points are evidence, not proof.}
+\paragraph{Loop transfer function.} To measure robustness the loop is broken at one point and the signal is
+followed once around. Here it is broken at the coil command $u$, where the actuator uncertainty enters: $L(e^{j\omega T_0})$
+is the transfer function from a signal injected at $u$, through delay, coil, ball, sensors and both controller loops, back
+to $u$ (with the sign that makes negative feedback). This is also where the hardware loop gain was measured by sine
+injection (Section~\ref{sec:obs-simlab}).
+
+\paragraph{Sensitivity.} The \emph{sensitivity} $S = 1/(1+L)$ and the \emph{complementary sensitivity}
+$T = L/(1+L)$ satisfy $S+T=1$. $|S(j\omega)|$ is the factor by which feedback changes a disturbance at frequency $\omega$;
+its peak
+\begin{equation}
+M_s = \max_\omega |S(j\omega)| = \frac{1}{\min_\omega |1 + L(j\omega)|}
+\label{eq:ms}
+\end{equation}
+is the inverse of the closest distance of the Nyquist curve to the critical point $-1$. A small $M_s$ means a large
+distance and so a robust loop. A common target is $M_s \le 2$, which guarantees a gain margin of at least $2$ and a phase
+margin of at least $29^\circ$~\cite{skogestad}.
+
+\paragraph{Margins.} Because the plant is unstable, the loop is stable only for a \emph{range} of loop gain: too little gain
+cannot hold the unstable pole. The \emph{stable gain range} $[k_{\mathrm{low}},k_{\mathrm{high}}]$ is the range of a factor $k$
+multiplying $L$ for which the closed loop stays stable; the nominal design has $k=1$ inside it. The \emph{phase margin} (PM)
+is the extra phase lag at the crossover frequency ($|L|=1$) that would make the loop marginally stable, and the
+\emph{delay margin} is the same expressed as an extra time delay. Stability itself is checked by the eigenvalues of the
+discrete closed loop (all inside the unit circle).
+
+\paragraph{Robust stability with multiplicative uncertainty.} A grid of plants can be checked one by one, but that says
+nothing about the plants between the grid points. Describe every possible plant $G_p$ as the nominal $G$ times a
+relative error,
+\begin{equation}
+G_p(j\omega) = G(j\omega)\bigl(1 + \Delta(j\omega)\bigr), \qquad |\Delta(j\omega)| \le |W(j\omega)| ,
+\label{eq:multunc}
+\end{equation}
+where the weight $W$ bounds the relative error at each frequency. If the nominal loop is stable and every $G_p$ has the
+same number of unstable poles as $G$ (true here: every plant in the set has exactly one), then the closed loop is stable
+for \emph{every} such plant if
+\begin{equation}
+|W(j\omega)\,T(j\omega)| < 1 \quad \text{for all } \omega .
+\label{eq:wt}
+\end{equation}
+The reason: with \eqref{eq:multunc}, $1+L_p = (1+L)(1+\Delta T)$, and $|\Delta T|<1$ means the factor $1+\Delta T$ can never
+reach zero, so the Nyquist curve of $L_p$ cannot cross $-1$~\cite{skogestad}. The test is sufficient, not necessary: it may
+fail although every real plant is stable, because the disk of radius $|W|$ also contains plants that do not exist. In this
+work $W$ is the envelope of the relative errors of all grid plants plus $10\,\%$, and random plants between the grid
+points are checked to lie inside it. Stability at every grid point plus \eqref{eq:wt} is therefore strong evidence for
+robust stability over the set, but not a mathematical proof: the parameter set is sampled, and $W$ is fitted to the
+samples. The margin $1/|T| - |W|$ that remains at each frequency is the room left for errors \emph{not} in the parametric
+set (unmodelled dynamics).
 
 \subsection{Pre-Lab Predictions from the Manual's Model}
 \label{sec:th-prelab}
-\todo{C}{Manual model reproduced; pre-lab PD prediction with filters and delay; what the lab later showed (filters absent,
-$T_0=3$\,ms). Status B/S.}
+Before the first lab session the manual's model~\cite{mlsmanual} was implemented and checked against the manual's own
+numbers. For its 57.1\,g reference ball at $9$\,mm the script reproduces the hover current $0.9345$\,A, the command
+$1.6525$\,V, $a_{21}=1684.67\,\text{s}^{-2}$ and the unstable pole $p = 41.045$\,rad/s, with all 36 checks passed\st{D}.
+The manual's force constants are $P_1 = 0.017521$\,N and $P_2 = 5.8231$\,mm ($c = P_1/P_2 = 3.01$\,N/A$^2$), and its
+coil model has $k_i = 0.5433$\,A/V, $c_i = 0.0368$\,A and a time constant $f_i = 0.63$\,ms\st{B}. For the group's 39\,g
+ball at $9$\,mm the manual model gives $i_0 = 0.775$\,A and $u_0 = 1.359$\,V\st{D}; its unstable pole, $6.53$\,Hz, doubles
+an error every $16.9$\,ms.
 
-\repfig{p2bode}{../figs/p2_bode.png}{0.75\linewidth}{Bode diagram of the manual's plant and its refinements (pre-lab).
-\capnote{pre-lab, manual model; the 5\,ms filters were later found absent}}
+The manual also describes the digital loop: a $10$\,ms sample time and three $5$\,ms filters on the measured signals.
+With these, a pre-lab analysis predicted that a PD controller (designed as $1.5$ times the minimum stabilizing proportional
+gain, $K_p = 183.8$\,V/m, $K_d=0.50$\,V\,s/m) is stable on the reduced and on the third-order plant (largest real part of the
+closed-loop poles $-3.44$ and $-2.65$\,rad/s), but unstable once the position filter is included ($+3.50$), with the hold
+delay ($+8.99$) and with one extra sample ($+16.31$\,rad/s)\st{S}. Fig.~\ref{fig:p2bode} shows why: the filter and the
+delay add phase lag that grows with frequency. Fig.~\ref{fig:p2nyq} shows the Nyquist criterion for this plant: with one
+unstable open-loop pole, the closed loop is stable only if the Nyquist curve encircles $-1$ once counter-clockwise; a
+pure P controller only touches the real axis and cannot do it, while the derivative term opens the curve into a loop
+around $-1$.
 
-\repfig{p2nyq}{../figs/p2_nyquist.png}{0.7\linewidth}{Nyquist plot of the reduced manual plant with P and PD control.
-\capnote{one counter-clockwise encirclement of $-1$ is required (one unstable open-loop pole)}}
+The first session (Section~\ref{sec:obs-discovery}) showed that the real loop differs: the sample time is $3$\,ms, the
+filter blocks are absent, the coil time constant is about $22$--$25$\,ms instead of $0.63$\,ms, and $u$ is a duty fraction,
+not volts. The pre-lab results are therefore kept only as predictions, labelled as such. The manual-model figures for the
+force law and the equilibrium are in Appendix~\ref{app:figs}.
+
+\repfig{p2bode}{../figs/p2_bode.png}{0.75\linewidth}{Bode diagram of the manual's sign-absorbed plant $-G(s)$ and its
+refinements, 39.288\,g ball at 9\,mm (pre-lab prediction with the manual's model\st{S}). The filter and the hold delay
+leave the magnitude almost unchanged but add phase lag. The lab later showed that the filters are absent and the sample
+time is 3\,ms.}
+
+\repfig{p2nyq}{../figs/p2_nyquist.png}{0.7\linewidth}{Nyquist plot of $L=G_sC$ for the reduced manual plant (one unstable
+open-loop pole), with P control and with PD control (pre-lab\st{S}). Stability requires one counter-clockwise
+encirclement of $-1$: the P loop only runs along the real axis, the PD loop encircles $-1$.}
 
 % ========================== 4 EXPERIMENTAL SETUP ==========================
 \section{Experimental Setup}
@@ -193,23 +444,94 @@ $T_0=3$\,ms). Status B/S.}
 \centering
 \caption{Apparatus used}
 \label{tab:apparatus}
-\begin{tabularx}{\linewidth}{@{}clXc@{}}
+\begin{tabularx}{\linewidth}{@{}c>{\raggedright\arraybackslash}p{3.6cm}Xc@{}}
 \toprule
-S.No. & Equipment & Details & Quantity \\
+S.No. & Equipment & Details & Qty \\
 \midrule
-1 & \textit{[Stage C]} & \textit{MLS1EM rig, interface box, RT-DAC/USB2 board, balls, caliper, lab PC, analysis PC} & \\
+1 & Magnetic levitation rig, INTECO MLS1EM & Frame with electromagnet, optical position sensor (lamp and detector), calibration stand (threaded rod with cup and wing nut) & 1 \\
+2 & Power interface, MLS1EM USB2 & Coil, Em and Sensor connectors; coil power stage driven by a PWM duty command; current measurement & 1 \\
+3 & I/O board, RT-DAC/USB2 & Connects the interface to the lab PC over USB (digital and analog I/O ribbon cables) & 1 \\
+4 & Balls & Hollow balls with a hole and an equatorial seam: $39.288$\,g (diameter $62.7$\,mm) and $42.137$\,g ($55.7$\,mm) & 2 \\
+5 & Lab PC & MATLAB/Simulink R2024a with the rig's real-time toolbox (RT-CON, external mode, ``Build for Monitoring'') & 1 \\
+6 & Analysis PC & MATLAB R2026a: Simulink, Control System Toolbox, System Identification Toolbox (no Robust Control Toolbox) & 1 \\
+7 & Vernier caliper & Least count $0.02$\,mm; ball diameters read from photos, $\pm0.1$\,mm & 1 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \subsection{Block Diagram of the Control Loop}
 \label{sec:blockdiag}
-\todo{C}{TikZ block diagram (replaces the format's ``circuit diagram''): set point, outer PID, $i_{\mathrm{ref}}$ limit,
-inner current loop with feed-forward $1/2.44$, $u$ limit $0$--$0.9$, delay $d$, coil, ball, current and position
-sensors; sign convention marked.}
+The rig's power stage and sensors are fixed by the manufacturer, so the report's ``circuit'' is the signal loop of
+Fig.~\ref{fig:blockdiag}. The upper part runs on the lab PC every $T_0=3$\,ms; the lower part is the rig. Signals: $x$
+gap, $x_{\mathrm{ref}}$ set point, $e=x-x_{\mathrm{ref}}$, $v$ velocity, $i$ current, $i_{\mathrm{ref}}$ current reference,
+$u$ command (duty fraction).
+
 \begin{figure}[H]\centering
-\figbox{blockdiagram-to-be-drawn}{0.9\linewidth}{5cm}
-\caption{Cascade control loop (to be drawn in TikZ, Stage~C).}
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[>=Latex, font=\small,
+  blk/.style={draw, thick, rectangle, rounded corners=1pt, minimum height=9mm, minimum width=14mm, align=center, fill=white},
+  sum/.style={draw, thick, circle, inner sep=0pt, minimum size=5mm, fill=white},
+  sat/.style={draw, thick, rectangle, minimum height=9mm, minimum width=11mm, fill=white,
+     path picture={\draw[thin] ([xshift=-3.5mm,yshift=-2.5mm]path picture bounding box.center) -- ([xshift=-1.5mm,yshift=-2.5mm]path picture bounding box.center) -- ([xshift=1.5mm,yshift=2.5mm]path picture bounding box.center) -- ([xshift=3.5mm,yshift=2.5mm]path picture bounding box.center);}},
+  lab/.style={font=\footnotesize}]
+% ---------------- controller (lab PC) ----------------
+\node (xr) at (0,0) {$x_{\mathrm{ref}}$};
+\node[sum] (s1) at (1.6,0) {};
+\node[blk] (pid) at (4.4,0) {Outer PID\\$K_p e + K_d v + K_i\!\int\! e$\\{\footnotesize integral clamp $\pm0.30$\,A}};
+\node[sum] (s2) at (7.1,0) {};
+\node (i0) at (7.1,1.3) {$i_0^{c}=0.75$\,A};
+\node[sat] (satI) at (8.6,0) {};
+\node[lab] at (8.6,-0.75) {$0$--$2$\,A};
+\coordinate (iref) at (9.9,0);
+\node[sum] (s3) at (9.9,-2.2) {};
+\node[blk] (kc) at (11.5,-2.2) {$K_c$};
+\node[blk] (ff) at (13.1,0) {$1/\hat k_a$\\{\footnotesize $\hat k_a=2.44$}};
+\node[sum] (s4) at (13.1,-2.2) {};
+\node[sat] (satU) at (14.7,-2.2) {};
+\node[lab] at (14.7,-1.45) {$0$--$0.9$};
+\node[blk] (vel) at (3.2,-2.2) {$\dfrac{x_k - x_{k-1}}{T_0}$};
+% ---------------- rig ----------------
+\node[blk] (dly) at (14.7,-5.0) {extra delay\\$d\,T_0$, $d\approx0.5$};
+\node[blk] (coil) at (11.6,-5.0) {coil\\$\dfrac{k_a}{\tau s+1}$};
+\node[blk] (ball) at (7.4,-5.0) {ball\\$m\ddot x = mg - c\,i^2e^{-x/\lambda}$};
+\node[blk] (psens) at (3.2,-5.0) {optical sensor\\+ calibration table};
+\node[blk] (isens) at (9.9,-3.95) {current\\sensor};
+% ---------------- wires ----------------
+\draw[->] (xr) -- node[pos=0.75,above,lab]{$-$} (s1);
+\draw[->] (s1) -- node[above,lab]{$e$} (pid);
+\draw[->] (pid) -- (s2);
+\draw[->] (i0) -- node[pos=0.8,right,lab]{$+$} (s2);
+\draw[->] (s2) -- (satI);
+\draw (satI) -- node[above,lab]{$i_{\mathrm{ref}}$} (iref);
+\draw[->] (iref) -- (ff);
+\draw[->] (iref) -- node[pos=0.85,right,lab]{$+$} (s3);
+\draw[->] (s3) -- (kc);
+\draw[->] (kc) -- (s4);
+\draw[->] (ff) -- node[pos=0.85,right,lab]{$+$} (s4);
+\draw[->] (s4) -- (satU);
+\draw[->] (satU) -- node[right,lab]{$u$} (dly);
+\draw[->] (dly) -- (coil);
+\draw[->] (coil) -- node[above,lab]{$i$} (ball);
+\draw[->] (ball) -- node[above,lab]{$x$} (psens);
+\fill (9.9,-5.0) circle (1.2pt);
+\draw[->] (9.9,-5.0) -- (isens);
+\draw[->] (isens) -- node[pos=0.8,right,lab]{$-$} (s3);
+\draw (psens.west) -- (0.9,-5.0) -- (0.9,-1.2) coordinate (xm);
+\draw[->] (xm) -- (1.6,-1.2) -- node[pos=0.7,right,lab]{$+$} (s1);
+\fill (1.6,-1.2) circle (1.2pt);
+\draw[->] (1.6,-1.2) -- (1.6,-2.2) -- (vel);
+\draw[->] (vel) -- node[above,lab,pos=0.35]{$v$} (4.4,-2.2) -- (pid);
+\node[lab, anchor=east, align=right] at (0.85,-3.4) {$x$\\(measured)};
+% ---------------- regions ----------------
+\draw[dashed, gray] (0.55,1.85) rectangle (16.0,-3.0);
+\node[gray, anchor=north east, font=\footnotesize] at (16.0,1.85) {lab PC, sample time $T_0=3$\,ms};
+\draw[dashed, gray] (1.3,-3.25) rectangle (16.0,-5.85);
+\node[gray, anchor=north west, font=\footnotesize] at (1.3,-3.25) {MLS1EM rig};
+\end{tikzpicture}}
+\caption{The cascade control loop as deployed. The outer PID turns the position error $e=x-x_{\mathrm{ref}}$ and the
+velocity $v$ into a current reference; the inner loop (feed-forward $1/\hat k_a$ plus $K_c$ on the current error) makes
+the coil current follow it. Gap $x$ is measured downward from the magnet; positive gains raise the current when the ball
+is too low. Limits: integral contribution $\pm0.30$\,A, $i_{\mathrm{ref}}$ $0$--$2$\,A, $u$ $0$--$0.9$.}
 \label{fig:blockdiag}
 \end{figure}
 
@@ -230,8 +552,35 @@ sensors; sign convention marked.}
 
 \subsection{Lab Models and Signal Chain}
 \label{sec:labmodels}
-\todo{C}{Lab PC models (copies of the manual templates; Build for Monitoring, external mode), scope channels, units
-(u is a PWM duty fraction, not volts), sensor table, velocity signal; the deployed cascade model.}
+The lab PC runs Simulink models in \emph{external mode}: the model is compiled for the rig's real-time target (``Build
+for Monitoring''), runs at $T_0=3$\,ms with a fixed-step solver, and streams its scope signals to the PC. All models are
+copies of the manual's templates; the original driver was never edited. The driver part of each model converts the
+sensor voltage to a gap through a 33-point calibration table (\code{group22_sensor.mat}, points $0.7$\,mm apart, linear
+interpolation; it must be loaded into the workspace before building), computes the velocity as
+$v=(x_k-x_{k-1})/T_0$ without filtering, and sends the command to the coil as a 12-bit PWM duty (driver gain $4095$).
+The command $u$ is therefore a duty fraction from $0$ to $1$; the scope labels it ``[V]'', which is not its unit.
+
+The controller block of the manual's PD model was replaced by the cascade controller of Fig.~\ref{fig:blockdiag}
+(\code{my_cascade_rt}, Fig.~\ref{fig:labmodel}): three inputs ($e$, $v$, $i$), two outputs ($u$, $i_{\mathrm{ref}}$), and a
+manual test/run switch that either sends a constant test current reference (to check the inner loop with the ball on the
+stand) or closes the full loop. The outer loop runs all the time, so while the ball rests on the stand the integral
+winds up to its $+0.30$\,A clamp; the lift-off starts from that state. Further copies were built for the tests:
+\begin{itemize}
+\item \code{my_cascade_sweep_rt}: an automatic set-point sweep. A sweep clock integrates time only while $x<11.5$\,mm, so
+      it starts at lift-off and pauses if the ball drops; it drives a lookup table (flat steps, 5\,s each)
+      $11, 10.5, 10, 9.5, 9, 9.5, 10, 10.5, 11$\,mm. A switch selects this or a manual set point.
+\item \code{my_cascade_kg_rt}: a gain $k_g$ multiplying the controller output before the $u$ limit (hardware gain-margin test).
+\item \code{my_cascade_steps_rt}: small steps near the stand, $11.0 \to 10.8 \to 11.1 \to 10.6 \to 11.0 \to 10.5 \to 11.0$\,mm.
+\item \code{my_cascade_ramp_rt}: a slow ramp $10.5 \to 11.4 \to 10.5$\,mm at $0.2$\,mm/s (linear interpolation).
+\item \code{my_cascade_sine_rt}: a sine $A\sin(2\pi f t)$ added to the controller output before the $u$ limit, to measure
+      the loop gain while levitating.
+\item \code{my_cascade_D_rt}: variant~D (Section~\ref{sec:obs-varD}): a run switch holds the integral at zero while the
+      coil is off; bias $0.85$\,A, integral clamp $\pm0.45$\,A.
+\end{itemize}
+Each run was saved from the scopes (``Print to Figure'', \code{.fig}) and read on the analysis PC with
+\code{read_scope_fig.m}. The scope keeps every 3\,ms sample (it stores each one twice, as stairs; the reader removes the
+copies). Logged signals: position, velocity, current and command on the main scope; current, $i_{\mathrm{ref}}$ and, in the
+test models, $x_{\mathrm{ref}}$, the sweep clock, $k_g$ or the injected sine on a second scope.
 \begin{figure}[H]\centering
 \begin{subfigure}{0.49\linewidth}\centering
 \figbox{../data/lab_2026-11-13/screenshots/01_cascade_top_level.png}{\linewidth}{4.5cm}
@@ -247,13 +596,70 @@ sensors; sign convention marked.}
 
 \subsection{Status Labels, Conventions and Settings}
 \label{sec:status}
-\todo{C}{Status labels M, S, D, N (and B for manual benchmark values), as in the Lab~9 report. Sign and unit conventions.
-Settings table ($T_0$, solver, limits, gains as deployed). Three different ``nominal'' points and two lift-off-time
-definitions, named once here.}
+\paragraph{Status labels.} Every number in this report carries a status. \textbf{M} (measured) is a quantity read from
+hardware data or a model fitted to hardware data. \textbf{S} (simulated) is the output of the group's MATLAB scripts or
+Simulink simulations. \textbf{D} (derived) is obtained by calculation from stated values, including linear-model margins
+and recalculations made while preparing this report. \textbf{N} (not obtained) marks a result that was required or
+planned but not produced. \textbf{B} (benchmark) marks a value taken from the manual~\cite{mlsmanual}, not measured by the
+group. The label follows the number, e.g.\ $0.798$\,A\st{D}. Where several numbers in one sentence share a label, it is
+given once at the end.
+
+\paragraph{Conventions.} The gap $x$ is measured downward from the magnet face (larger $x$ = lower ball). The position
+error is $e = x - x_{\mathrm{ref}}$, and all controller gains are positive. The command $u$ is a duty fraction, not a
+voltage; values of the manual's model (Section~\ref{sec:th-prelab}) are in volts and cannot be compared with lab gains.
+The ball with the hole facing the magnet is called ``hole-up''; both balls were normally placed hole-up, and the rest
+reading on the stand (Table~\ref{tab:settings}) was used to check the seating. ``39\,g'' and ``42\,g'' name the
+$39.288$\,g and $42.137$\,g balls.
+
+\paragraph{Three nominal points.} Three operating points appear, each for its purpose: the controller was \emph{designed}
+for a bias current of $0.75$\,A, which the fitted force law gives at about $9.3$\,mm for the 39\,g ball; the
+\emph{analysis} nominal (linear model, robustness, simulation cases, sine injection) is the 39\,g ball at $10$\,mm; and the
+\emph{manual comparison} (Section~\ref{sec:th-prelab}) is at $9$\,mm, as in the manual.
+
+\paragraph{Two plant fits.} The force law was fitted twice on 13 November (Section~\ref{sec:obs-ident}). ``The model''
+means the combined fit ($\lambda=5.90$\,mm, 42 hover visits), used for the linear model, the robustness analysis and the
+Simulink cases. The step-overshoot comparisons use the morning fit ($\lambda=5.81$\,mm, 18 visits), because they were set up
+before the afternoon data existed; the two differ by $1.6\,\%$ in $\lambda$, and the text names the fit where it matters.
+
+\paragraph{Two lift-off times.} ``Lift-off time'' is measured from the switch-on in two ways: until the reading falls
+$0.2$\,mm below the rest reading (first levitation, variant~D), or until the sweep clock starts, i.e.\ until $x<11.5$\,mm
+($12.0$\,mm on the lowered stand; sweeps, small steps). Times are compared only within one definition.
+
+\begin{table}[H]
+\centering
+\caption{Settings of the lab models and runs}
+\label{tab:settings}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{3.8cm}X@{}}
+\toprule
+Item & Value \\
+\midrule
+Sample time, solver & $T_0=3$\,ms, fixed step (\code{ode3}), external mode \\
+Position measurement & 33-point calibration table, linear interpolation; driver limits $0$--$0.02$\,m \\
+Velocity & $(x_k-x_{k-1})/T_0$, unfiltered \\
+Command & PWM duty fraction $u$, limited to $0$--$0.9$ by the controller \\
+Inner loop & $K_c = 2.05$\,/A, feed-forward $1/\hat k_a$ with $\hat k_a = 2.44$\,A per unit \\
+Outer loop & $K_p = 151.2$\,A/m, $K_d = 2.6$\,A\,s/m, $K_i = 734$\,A/(m\,s), bias $i_0^c = 0.75$\,A \\
+Limits & integral contribution $\pm0.30$\,A, $i_{\mathrm{ref}}$ $0$--$2$\,A \\
+Variant~D & bias $0.85$\,A, integral clamp $\pm0.45$\,A, integral held at $0$ while the coil is off \\
+Set points & $9$--$11$\,mm in $0.5$\,mm steps; $11.5$\,mm holds as tests only \\
+Stand (rest reading) & normal $11.78$--$12.00$\,mm for hole-up seatings (39\,g hole-up $11.92$\,mm); lowered $13.13$--$13.19$\,mm \\
+Recording & scope ``Print to Figure'' \code{.fig}, every $3$\,ms sample; coil-off tail after each run to measure the current-sensor zero \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \subsection{Analysis Scripts and Data Files}
 \label{sec:scripts}
-\todo{C}{Short table: script, purpose, output, self-check total (full list in Appendix~\ref{app:scripts}).}
+All analysis is done by MATLAB scripts named \code{sNN_*.m}, run in order, each reading the saved lab records or the
+results of earlier scripts. Every script checks itself: it prints PASS or FAIL lines for physical sanity checks, sign
+tests (a controller with the wrong sign must fail) and agreement with independent calculations. A FAIL is kept when it
+reports a real finding (for example, a target that was missed) and is explained where the result is used. Shared
+functions provide the parameters (\code{maglev_params}), the equilibrium and linearization (\code{maglev_equilibrium},
+\code{maglev_plant}), the fitted plant and uncertainty cases (\code{maglev_cases}), an independent MATLAB simulation
+(\code{maglev_cascade_sim}), the Simulink model builder (\code{build_maglev_cl_sim}) and the scope-file reader
+(\code{read_scope_fig}). For this report all eighteen analysis scripts were re-run on 17 November 2026; every PASS/FAIL total
+matched the earlier runs and every saved result was numerically identical. Appendix~\ref{app:scripts} lists each script,
+its purpose and its totals.
 
 % ======================== 5 EXPERIMENTAL PROCEDURE ========================
 \section{Experimental Procedure}
@@ -462,7 +868,42 @@ $u=0.3$, 0.6, 1.0 (scope screenshot, 12 November).}
 
 \section{Scripts, Data Files and Self-Checks}
 \label{app:scripts}
-\todo{C}{Table: script, purpose, inputs, outputs, PASS/FAIL total of the 2026-11-17 re-run, and the meaning of each
-intended FAIL.}
+Totals are from the re-run of 17 November 2026 on the analysis PC (\code{matlab -batch}). ``Lab'' scripts were run only
+on the lab PC or are helpers for it; they produce no results quoted here.
+
+{\small
+\begin{longtable}{@{}l>{\raggedright\arraybackslash}p{5.0cm}>{\raggedright\arraybackslash}p{1.4cm}>{\raggedright\arraybackslash}p{3.7cm}@{}}
+\caption{Analysis scripts, outputs and self-check totals}\label{tab:scripts}\\
+\toprule
+Script & Purpose & PASS / FAIL & Meaning of a FAIL \\
+\midrule
+\endfirsthead
+\toprule
+Script & Purpose & PASS / FAIL & Meaning of a FAIL \\
+\midrule
+\endhead
+\code{s01_verify_model} & Reproduce the manual's model numbers & 36 / 0 & -- \\
+\code{s02_plant_analysis} & Pre-lab plant analysis and PD prediction (manual model) & 39 / 0 & -- \\
+\code{s03_lab_discovery} & Inspect the lab models on the lab PC & lab & -- \\
+\code{s04_save_scope_traces} & Save scope traces on the lab PC & lab & -- \\
+\code{s05_cascade_design} & Cascade controller design and design-time grid & 28 / 0 & -- \\
+\code{s06_analyze_cascade_run} & First levitation (runs 3, 4) & 7 / 0 & -- \\
+\code{s07_analyze_experiments} & Experiments A, B, C; morning force-law fit & 10 / 0 & -- \\
+\code{s08_analyze_sweeps} & Sweeps and 11.5\,mm holds; combined force-law fit & 21 / 0 & -- \\
+\code{s09_sim_models} & Simulink model, 77 nominal and uncertain cases, variant~D & 16 / 1 & 18 cases in the set come within 0.1\,mm of the stand \\
+\code{s10_linear_model} & Linear model, linearization checks, uncertainty table & 12 / 0 & -- \\
+\code{s11_robustness} & Margins over the grid, $|WT|$ tests, integral clamp options & 12 / 4 & $M_s$ target missed; one-disk and Option~1 tests fail; options A--C bring the ball within 6\,mm of the magnet \\
+\code{s12_delay_estimate} & Extra loop delay & 7 / 0 & -- \\
+\code{s13_overshoot_mismatch} & Down-step overshoot mismatch, braking spike & 13 / 1 & a rejected hypothesis does not explain the mismatch \\
+\code{s14_rocking} & 2.4\,Hz rocking & 11 / 0 & -- \\
+\code{s15_rebuild_lab_models} & Backup rebuilder of the lab models & lab & -- \\
+\code{s16_analyze_3a} & Small steps near the stand (16 Nov) & 9 / 2 & two runs without a coil-off tail \\
+\code{s17_analyze_1116} & Sine injection, stand position, lowered-stand lift-off & 10 / 2 & one step came within 0.03\,mm of the stand; lowered-stand lift-offs outside the simulated range \\
+\code{s18_analyze_D_ramp} & Variant~D on the hardware, slow ramp & 5 / 0 & -- \\
+\code{s19_trim_expC} & Effect of Experiment~C on the robustness test & 5 / 0 & -- \\
+\code{s20_liftoff_stand_height} & Lift-off forces by height above the stand & 6 / 0 & -- \\
+\code{s21_pd_gain_grid} & Position-only PD vs the cascade & 6 / 1 & an earlier, unsaved grid result is not reproduced (this script's numbers are used) \\
+\bottomrule
+\end{longtable}}
 
 \end{document}
