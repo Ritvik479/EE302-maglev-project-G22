@@ -276,4 +276,10 @@ Original plan:
 
 - [ ] s13 §5b redone, binned by height above the stand, with the lowered-stand lift-offs (4.8).
 - [ ] Position-only PD gain-grid figure (2.15).
-- [ ] D2 follow-up: does Exp C trimming lower the Option-2 \|WT\| peak? (scratch s11 run)
+- [x] D2 follow-up: does Exp C trimming lower the Option-2 \|WT\| peak? **No.** 2026-11-17, `scripts/s19_trim_expC.m`
+      (new, console only, writes nothing; 5 PASS / 0 FAIL). Rule A (stable at kg 0.4) and rule B (stable at kg 0.4
+      and 2.0) remove the same plants: 260/1458 grid points (worst Ms 2.230 unchanged, PM min 29.3° -> 31.3°) and
+      505/2916 Option-2 region plants. Peaks per region unchanged to 4 decimals: 0.9570 / 0.9667 / 0.9511 /
+      **0.9973**; W itself is unchanged at every frequency, because the plant that sets the envelope (τ 20 ms,
+      k_a 2.70, d 0.3, λ +5 %) is kept. Room for unmodelled error unchanged (22 / 0 / 2 / 13 %). Untrimmed run
+      reproduces s11's stored peaks exactly. Caveat: Exp C was at 39 g, 10 mm only; the rule is extended to the grid.
