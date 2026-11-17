@@ -70,7 +70,7 @@ that differ from an older statement somewhere in the repo (see Section Z).
 | D3 | Force-law residual | 5.9 mA rms, max 14.4 mA (42 visits) | M | s08, s10 | |
 | D4 | Morning fit (s07 plant) | λ 5.81 mm, c 3.37 / 3.16 N/A², residual 4.9 mA rms (18 visits) | M | s07 §3c | Used by overshoot comparisons (s07, s13, s16, s17); 1.6 % from D1 in λ |
 | D5 | Morning law predicts afternoon | 27 plateaus within 10.2 mA rms; 39 g at 9 mm: 0.728 measured vs 0.734 A predicted | M | s08 §3a | Out of sample (same day) |
-| D6 | Force law across days (16-Nov, lowered stand) | 13-Nov law predicts 16-Nov hover current within ±1 % force (×0.994–1.011, 11 plateaus, 9–11.5 mm, 1.7–4.2 mm above the stand) | D | **AUDIT 4.14 (audit scratch computation)** | **Not produced by a repo script** — see Z1 |
+| D6 | ~~Force law across days (16-Nov)~~ | **NOT USED** (decision 2026-11-17: exists only in audit scratch work, no repo script) | — | AUDIT 4.14 | Report must not claim a cross-day force-law check |
 | D7 | Manual model vs measured hover current | manual 0.845 A vs fit 0.800 A, 39 g at 10 mm (+5.6 %) | D | s07 §3c | |
 | D8 | 42 g vs 39 g current | +8.1 % at the same gap (mass alone 3.6 %) | M | s08 §3c | s07: 6.9 % (morning) |
 | D9 | Extra loop delay d | 0.5 sample (1.5 ms) nominal; range 0.3–0.6 (0.9–1.8 ms); measured 0.32–0.55 (1.0–1.7 ms) | M | s12 verdict; data/README | s12 prints "ESTIMATE 0.55" (method A); 0.5 is the reference. Sine: 0.5–0.6 |
@@ -208,7 +208,7 @@ that differ from an older statement somewhere in the repo (see Section Z).
 | N2 | Static deficit (slow ramp) | −65 mA at 0.48 mm above the stand (−58…−65 mA, two methods; 10 se) ≈ 13–14 % of the weight | M | s18 §B; 16-Nov README | Hand check: (1 − 0.065/0.898)² = 0.86 |
 | N3 | Near-stand slope | current decreases 35 mA over the last 0.35 mm where the law needs +27 mA | M | 16-Nov README | |
 | N4 | Ramp hysteresis | up − down median −1.4 mA (none significant) | M | s18 §B | Not contact/friction |
-| N5 | Braking spike position | 0.67–0.89 mm above the stand (13-Nov and 16-Nov, both balls, normal and lowered stand) | M | AUDIT 6A; s16; s17 | Count: see Z5 |
+| N5 | Braking spike position | 0.67–0.89 mm above the stand; 11 spikes (3 on 13-Nov, 6 on 16-Nov normal stand, 2 in s17: one normal, one lowered stand), both balls | M | s13 §4, s16 §2, s17 B (distances: s17 B; 13-Nov from s13 x minus rest reading) | Each counted with its script's own threshold |
 | N6 | Spike size (h = 5) | −1.75 to −2.01 m/s² (13-Nov 10.5 → 11), 1.7–2.3× the worst control step; table-kink artefact ≤ 0.11 m/s² | M | s13 §4 | |
 | N7 | Lowered stand, no spike | steps through 11.0–11.2 mm > 0.9 mm above the lowered stand: no spike (r −0.79/−0.67 m/s²) | M | s17 B | |
 | N8 | 11.5 mm hold, lowered stand | band rms 0.048 mm (vs 0.250 normal stand) | M | s14 §1 | One run each |
@@ -313,11 +313,11 @@ that differ from an older statement somewhere in the repo (see Section Z).
 
 | # | What | Where | Proposed handling |
 |---|---|---|---|
-| Z1 | D6 (16-Nov out-of-sample force-law check, ×0.994–1.011) exists only in AUDIT 4.14; no repo script prints it | AUDIT.md, 16-Nov README | Quote it as "checked during the audit" **or** add a short check to the Stage-G script so it is reproducible. Recommended: add the check |
+| Z1 | D6 (16-Nov out-of-sample force-law check, ×0.994–1.011) exists only in AUDIT 4.14; no repo script prints it | AUDIT.md, 16-Nov README | **DECIDED 2026-11-17: not used, no new script.** Knock-on: the "×1.011 at 11.5 mm with the stand lowered" behind "H-force rejected" (s13 text, READMEs) comes from the same audit work. The report rejects H-force only with repo evidence: rocking gone with the stand lowered (N8, s14) and the spike moving with the stand (N5, N7, s17); the 13-Nov ×1.04–1.08 hold excess is then attributed to the stand, not quoted as a force-law value |
 | Z2 | Interior coverage |δ|/W: s11 prints 0.77–0.88 per region, s19 prints 0.81 everywhere (different random sample) | s11, s19 | Quote s11's "≤ 0.88" |
 | Z3 | s08 console: i-noise 0.018 A and "20× smaller" rocking | s08 printout | Not quoted; report uses 0.021 A and 14× / 19× |
 | Z4 | Run-4 hover current at 10 mm: 0.830 A (force-law window) vs 0.824 A (hover window) | s06 | Quote 0.830 A (README), raw reading |
-| Z5 | Braking-spike count: 16-Nov README says "9 spikes"; logs give 3 (13-Nov) + 6 (s16; 5 at the 13-Nov threshold) + 2 (s17) = 10–11 | 16-Nov README | Quote the range 0.67–0.89 mm without a count, or "every spike seen (11)". README line to correct |
+| Z5 | Braking-spike count: 16-Nov README said "9 spikes"; logs give 3 (13-Nov) + 6 (s16) + 2 (s17) = 11 | 16-Nov README | **DECIDED 2026-11-17: quote 11 (N5); README line corrected.** (AUDIT.md left as the audit record) |
 | Z6 | s16 prints "POSITION-TIED"; superseded by s17 "STAND-TIED" | s16 console | Report uses stand-tied only |
 | Z7 | Lift-off time has two definitions (x < rest − 0.2 mm: 27–45 ms; sweep clock started: 36–48 ms) | s06/s18 vs s09/s16/s17 | Name the definition next to every lift time |
 | Z8 | p4_* and p5_* lab-vs-sim figures were simulated with d = 0 (simulator default; s07/s08 do not set d) | figs | State "d = 0" in the captions; quantitative comparisons use M1 (d 0.5) |
@@ -327,37 +327,39 @@ that differ from an older statement somewhere in the repo (see Section Z).
 
 ## Figure list (proposed)
 
-All figures in `figs/` were viewed. Section numbers follow the instructor's format (I Introduction … XI Precautions).
-"Use" = goes in the report; "Opt" = optional/appendix; "No" = not used. Caption obligations are part of the decision.
+All figures in `figs/` were viewed. Section names follow the instructor's section order (Introduction … Precautions);
+the IEEE two-column layout is optional (prof, 2026-11-17), so the report uses a single-column layout with appendices.
+"Use" = in the main text; "Appendix" = optional figure, placed in the appendices (decision 2026-11-17); "No" = not used.
+Caption obligations are part of the decision.
 
 | # | File | Section | Decision | Caption must say |
 |---|---|---|---|---|
 | 1 | lab_2026-11-12/screenshots/00_rig_photo_calibration_stand.jpeg or lab_2026-11-16/screenshots/01_rig_front_panel_photo.jpeg | IV Setup (Fig. "Experimental setup") | Use | Rig, stand, ball |
 | 2 | (new) block diagram of the cascade loop: coil, ball, sensor, inner/outer loop, delay | III Theory / IV Setup ("Circuit diagram") | Use — **to be drawn** (TikZ in Stage C) | Sign convention e = x − x_ref |
 | 3 | lab_2026-11-13/screenshots/01_cascade_top_level.png + 02_cascade_controller_inside.png | IV Setup | Use | Deployed lab model |
-| 4 | p1_force_curves.png | III Theory | Opt | Manual model, 57.1 g ball (benchmark) |
-| 5 | p1_sweep.png | III Theory | Opt | Manual model, u in volts (not our duty u) |
+| 4 | p1_force_curves.png | III Theory | Appendix | Manual model, 57.1 g ball (benchmark) |
+| 5 | p1_sweep.png | III Theory | Appendix | Manual model, u in volts (not our duty u) |
 | 6 | p2_bode.png | III Theory | Use | Pre-lab, manual model; filters later found absent |
-| 7 | p2_polemap.png | III Theory | Opt | Pre-lab; (cosmetic: legend shown twice) |
+| 7 | p2_polemap.png | III Theory | Appendix | Pre-lab; (cosmetic: legend shown twice) |
 | 8 | p2_nyquist.png | III Theory | Use | Reduced manual plant; one CCW encirclement needed |
 | 9 | p9_delay.png | VI Obs. (identification) | Use | Extra delay d ≈ 0.5 sample |
-| 10 | p3_inner_step.png | VI Obs. (design) | Opt | Predicted inner-loop step |
+| 10 | p3_inner_step.png | VI Obs. (design) | Appendix | Predicted inner-loop step |
 | 11 | p3_lab_run3.png | VI Obs. (first levitation) | Use | Measured inner loop |
 | 12 | p3_lab_run4.png | VI Obs. (first levitation) | Use | "simulation (Phase 3)" = pre-identification plant |
-| 13 | p3_liftoff_sim.png | VI Obs. (design) | Opt — **only as a labelled pre-lab check** | Force constants from a withdrawn premise (title says so) |
+| 13 | p3_liftoff_sim.png | VI Obs. (design) | Appendix — **only as a labelled pre-lab check** | Force constants from a withdrawn premise (title says so) |
 | 14 | p4_force_fit.png | — | No (superseded by #15) | |
 | 15 | p5_force_fit_all.png | VI Obs. (identification) | Use | λ 5.90 mm, 42 visits; 11.5 mm points not fitted |
 | 16 | p7_linear_coeffs.png | VI Obs. (uncertainty) | Use | Uncertainty band; 11.5 mm provisional |
 | 17 | p7_plant_bode.png | VI Obs. (uncertainty) | Use | 192 corners at d 0.3/0.6 |
-| 18 | p7_lin_vs_nl_overshoot.png | VII Calc. / VI Obs. | Opt | Linearization is not the cause of the mismatch |
+| 18 | p7_lin_vs_nl_overshoot.png | VII Calc. / VI Obs. | Appendix | Linearization is not the cause of the mismatch |
 | 19 | p4_sweep_lab_vs_sim.png | VI Obs. (hardware) | Use | Exp A/B; sim with d = 0; "set point typo" is **inferred** |
 | 20 | p5_sweeps_lab_vs_sim.png | VI Obs. (hardware) | Use | Sim with d = 0 (morning plant) |
 | 21 | p4_kg_test.png | VI Obs. (robustness on hardware) | Use | kg is a hardware gain-margin test, not in the set |
-| 22 | p4_42g_flip.png | VI Obs. (hardware) | Opt | Ball turned over (rested at 12.13 mm) |
+| 22 | p4_42g_flip.png | VI Obs. (hardware) | Appendix | Ball turned over (rested at 12.13 mm) |
 | 23 | p5_42g_roll.png | VI Obs. (hardware) | Use | Placement matters (hole-up roll) |
 | 24 | p5_hold115_rocking.png | VI Obs. (stand effect) | Use | Title says "~20×": caption gives 14× (std) / 19× (band) |
 | 25 | p8_margins.png | VI Obs. (robustness) | Use | Worst Ms 2.23 > 2 target |
-| 26 | p8_WT.png | — | Opt (subsumed by #27) | |
+| 26 | p8_WT.png | — | Appendix (subsumed by #27) | |
 | 27 | p8_WT_options.png | VI Obs. (robustness) | Use | Options 1/2 added after the one-disk test failed |
 | 28 | p8_clamp_fix.png | VI Obs. (design improvement → variant D) | Use | Simulation |
 | 29 | p6_cases_corners.png | VI Obs. (simulation cases) | Use | Grey trace stuck at ~11.2 mm = clamp-limited corner (204 µm steady error) |
@@ -370,7 +372,7 @@ All figures in `figs/` were viewed. Section numbers follow the instructor's form
 | 36 | p16_liftoff_stand_height.png | VI Obs. (stand effect) | Use | Lift-offs too fast to test the zone (neither confirm nor refute) |
 | 37 | p13_sine_loop.png | VI Obs. (sim vs lab) | Use | 1.5–2.4 Hz points too noisy |
 | 38 | p17_pd_gain_grid.png | IX Discussion (why a cascade) | Use | s21 numbers (10.4 vs 1.99) |
-| 39 | lab_2026-11-12/screenshots/07_scope_coil_test_0p3_0p6_1p0.png | IV Setup / VI Obs. | Opt | Open-loop coil test |
-| 40 | lab_2026-11-16/screenshots/04_sine_model_top_level.png, 05_variantD_model_top_level.png | IV Setup | Opt | Test models |
+| 39 | lab_2026-11-12/screenshots/07_scope_coil_test_0p3_0p6_1p0.png | IV Setup / VI Obs. | Appendix | Open-loop coil test |
+| 40 | lab_2026-11-16/screenshots/04_sine_model_top_level.png, 05_variantD_model_top_level.png | IV Setup | Appendix | Test models |
 
-Summary: 29 "Use" rows (2 of them lab screenshots/photos and 1 new block diagram), 10 "Opt", 1 "No" (40 rows).
+Summary: 29 "Use" rows (2 of them lab screenshots/photos and 1 new block diagram), 10 "Appendix", 1 "No" (40 rows).

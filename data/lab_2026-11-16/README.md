@@ -48,8 +48,9 @@ Not done (no time): variant D from the lowered stand, sine at 11 mm, 42 g sine, 
      stand, to −58 … −65 mA at 0.48 mm (two methods; 10 standard errors), i.e. ≈ 13–14 % of the weight is carried by
      something other than the magnet. Closer than ~0.75 mm the current even **decreases** as the set point moves
      toward the stand (−35 mA over the last 0.35 mm, where the force law needs +27 mA).
-  2. *Fast approach* (s16, s17): a braking spike in the acceleration 0.67–0.89 mm above the stand (9 spikes, both balls,
-     13-Nov and 16-Nov, normal and lowered stand).
+  2. *Fast approach* (s13, s16, s17): a braking spike in the acceleration 0.67–0.89 mm above the stand (11 spikes, both
+     balls, 13-Nov and 16-Nov, normal and lowered stand: 3 on 13-Nov (s13), 6 on 16-Nov normal stand (s16), 2 in s17
+     (one normal, one lowered stand); each counted with its script's own threshold. Corrected 2026-11-17 from "9").
   3. *Hover 0.4 mm above the stand* (13-Nov, 39 g at 11.5 mm): a 2.4 Hz limit cycle (1.5–3.5 Hz band rms 0.25 mm).
 
   All three move with the stand or vanish when it is lowered (one lowered-stand session). What it is not, and what is
