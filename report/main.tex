@@ -161,7 +161,7 @@ Table~\ref{tab:deliverables} with the parts of this report that answer them.
 \centering
 \caption{Problem Statement~9: requirements, deliverables and where they are answered}
 \label{tab:deliverables}
-\begin{tabularx}{\linewidth}{@{}lXl@{}}
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{3.6cm}@{}}
 \toprule
 Item & Requirement / deliverable & Sections \\
 \midrule
@@ -249,9 +249,10 @@ least about $0.85$\,mm below the set point (Section~\ref{sec:obs-unc}).
 
 \subsection{Equilibrium and Linearization}
 \label{sec:th-lin}
-\paragraph{Equilibrium.} The ball hovers at a gap $x_0$ when the magnetic force equals its weight, $F(x_0,i_0)=mg$.
-Solving \eqref{eq:newton} for the current gives the \emph{hover current} and, from \eqref{eq:coil} in steady state,
-the hover command:
+\paragraph{Equilibrium.} The ball hovers at a gap $x_0$ when the magnetic force $F(x_0,i_0)$ equals the
+weight $mg$.
+Solving \eqref{eq:newton} for the current gives the \emph{hover current}; the steady state of \eqref{eq:coil} then
+gives the hover command:
 \begin{equation}
 i_0 = \sqrt{\frac{m g\, e^{x_0/\lambda}}{c}}, \qquad u_0 = \frac{i_0}{k_a}.
 \label{eq:hover}
@@ -1972,6 +1973,8 @@ Script & Purpose & PASS / FAIL & Meaning of a FAIL \\
 \code{s19_trim_expC} & Effect of Experiment~C on the robustness test & 5 / 0 & -- \\
 \code{s20_liftoff_stand_height} & Lift-off forces by height above the stand & 6 / 0 & -- \\
 \code{s21_pd_gain_grid} & Position-only PD vs the cascade & 6 / 1 & an earlier, unsaved grid result is not reproduced (this script's numbers are used) \\
+\midrule
+\code{report/check_report.py} & Report self-check: compile log, placeholders, every number traced to the ledger or the re-run logs, hand calculations of Section~\ref{sec:calc} recomputed, recorded decisions, status labels & 58 / 0 & -- \\
 \bottomrule
 \end{longtable}}
 

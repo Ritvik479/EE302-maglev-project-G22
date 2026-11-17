@@ -102,7 +102,7 @@ that differ from an older statement somewhere in the repo (see Section Z).
 | E8 | Linearization validity | force error ≤ 1.17 % of mg along all 24 steps; local linear vs nonlinear overshoot 0.026 mm rms; one model (39 g, 10 mm) 0.086 mm rms | S | s10 §5 | |
 | E11 | Operating-point table (39 g / 42 g) | x0 9, 9.5, 10, 10.5, 11 mm: i0 0.733/0.765/0.798/0.832/0.868 and 0.792/0.827/0.862/0.900/0.939 A; u0 0.301/0.314/0.328/0.342/0.357 and 0.326/0.340/0.355/0.370/0.386; b 26.77/25.66/24.59/23.57/22.60 and 24.76/23.73/22.75/21.81/20.90 | D | s10 §2 | b over the range −15/+9 % of 24.59 |
 | E12 | Uncertainty justification extras | c: refits moved c by 2–4 %, residual 5.9 mA ≈ 1.4 % of the force; drift case −0.85 mA/s | M/D | s09 uncertainty table | |
-| E9 | Set covers measured hover currents | 42/42 inside, smallest margin 35.9 mA; corner band at 10 mm 0.748–0.856 A (≈5× the scatter) | D | s10 §6 | |
+| E9 | Set covers measured hover currents | 42/42 inside, smallest margin 35.9 mA; corner band at 10 mm 0.748–0.856 A (−6.3/+7.3 % of 0.798 A; ≈5× the scatter) | D | s10 §6 | Percentages added Stage G (0.748/0.798, 0.856/0.798) |
 
 ## F. Uncertainty set (s10, s11, s09)
 
@@ -145,7 +145,7 @@ that differ from an older statement somewhere in the repo (see Section Z).
 | ID | Quantity | Value | St | Source | Note |
 |---|---|---|---|---|---|
 | I1 | Exp A (39 g sweep) | held 11, 10.5, 10, 9.5 mm; drop at 37.2 s (i_ref → 0 in one sample); re-lift at 42.4 s | M | s07 §2 | |
-| I2 | Exp A cause | consistent with a mistyped set point > 14.9 mm (e.g. 0.09), then 0.0095 | D | s07 §2 | **Inferred, not confirmed** by the student |
+| I2 | Exp A cause | consistent with a mistyped set point > 14.9 mm (e.g. 0.09 for 0.009 m), then 0.0095 | D | s07 §2 | **Inferred, not confirmed** by the student |
 | I3 | Exp B run 1 (42 g) | rested 12.13 mm, turned over, reading 8.71–12.28 mm for ~3.5 s, never lost | M | s07 §2 | |
 | I4 | Exp B hover after the turn | run 1 0.975/0.902 A vs run 2 0.971/0.897 A at 11/10 mm | M | s07 | |
 | I5 | Exp C (39 g, 10 mm) | stable at every kg 0.4, 0.5, 0.6, 0.8, 1.0, 1.25, 1.5, 2.0 | M | s07 §6 | |
@@ -300,7 +300,7 @@ that differ from an older statement somewhere in the repo (see Section Z).
 | T7 | Delay in ms | 0.5 × 3 ms = 1.5 ms; 0.3–0.6 → 0.9–1.8 ms | |
 | T8 | ZOH unstable pole | e^{40.76 × 0.003} = 1.1301 | s10 |
 | T9 | Mass-only current ratio | √(42.137/39.288) = 1.0356 (3.6 %) | s07/s08 |
-| T10 | Stand deficit as weight | (1 − 0.065/0.898)² = 0.860 → 14 %; with 58.5 mA: 12.6 % | N2 |
+| T10 | Stand deficit as weight | (1 − 0.065/0.898)² = 0.860 (86 %) → 14 %; with 58.5 mA: 12.6 % | N2 |
 | T11 | Exp A set-point bound | i_ref = 0 with the integral at −0.30 A needs e < −(0.75 − 0.30)/151.2 = −2.98 mm → x_ref > 14.9 mm | s07 |
 | T12 | Cascade outer stability floor | b Kp > a21 → Kp > 1661.4/24.59 = 67.6 A/m (deployed 151.2) | D, new; check in Stage G |
 | T13 | M_s target meaning | M_s ≤ 2 ⇒ gain margin ≥ M_s/(M_s − 1) = 2, PM ≥ 2 arcsin(1/(2 M_s)) = 28.96° ≈ 29° | textbook (Skogestad) |
