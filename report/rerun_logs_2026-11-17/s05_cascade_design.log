@@ -1,0 +1,55 @@
+Force decay length: manual P2 = 5.82 mm, lab data need lam > 8.25 mm
+  -> manual model is INCONSISTENT with the lift data (one-sided bound, 2 points only)
+  [SUPERSEDED 2026-11-13: lift thresholds from the stand are not an equilibrium, so this bound is void; the
+   hover fits give lam ~5.9 mm, consistent with the manual (data/README.md). The lift-off sims below and
+   figs/p3_liftoff_sim.png use force constants built on this premise: pre-lab design check only.]
+Predicted hover current at 10 mm (39 g): [0.702 0.756 0.779] A for lam = [5.82 8.3 10] mm
+
+Gains: Kc = 2.054 /A | Kp = 151.2 A/m, Kd = 2.599 A s/m, Ki = 734 A/(m s)
+       integral clamp |z| <= 0.000409 m s  (= +-0.30 A)
+
+Nominal: max|eig| = 0.9659, Ms = 1.36
+Grid (81 cases, no extra delay): worst max|eig| = 0.9787, worst Ms = 1.67
+Grid (81 cases, +1 sample)    : worst max|eig| = 0.9787, worst Ms = 5.23
+  worst case: tau 20 ms, ka 2.70, a21 981, i0 0.65 A
+PASS: nominal cascade loop is stable
+PASS: stable over the whole grid (no extra delay)
+PASS: stable over the whole grid (+1 sample delay; the coil test showed none)
+PASS: worst Ms < 2.0 without extra delay (got 1.67)
+NOTE: with +1 sample the worst Ms is 5.23: stable but fragile, so re-check the delay in the lab.
+PASS: WRONG sign (all gains negated) is unstable (max|eig| = 1.33)
+PASS: lab x-only PD (Kp 45, Kd_raw 450) is unstable with tau = 27 ms (max|eig| = 1.005; linear model, manual force law; the 7-9 Hz of run 4 was a nonlinear cycle, see WHY)
+
+[39 g, manual lam] lift-off sim:
+PASS:   ball leaves the stand
+PASS:   never closer than 1 mm to the magnet (min x = 9.06 mm)
+PASS:   |x - 10 mm| < 0.1 mm after 3 s (got 0.000 mm)
+PASS:   peak current 0.90 A < 2.2 A
+PASS:   command saturated 0.2 % of the time (< 5 %)
+
+[39 g, lam 10 mm] lift-off sim:
+PASS:   ball leaves the stand
+PASS:   never closer than 1 mm to the magnet (min x = 9.29 mm)
+PASS:   |x - 10 mm| < 0.1 mm after 3 s (got 0.000 mm)
+PASS:   peak current 0.95 A < 2.2 A
+PASS:   command saturated 0.2 % of the time (< 5 %)
+
+[42 g, slow coil] lift-off sim:
+PASS:   ball leaves the stand
+PASS:   never closer than 1 mm to the magnet (min x = 8.96 mm)
+PASS:   |x - 10 mm| < 0.1 mm after 3 s (got 0.000 mm)
+PASS:   peak current 0.91 A < 2.2 A
+PASS:   command saturated 0.3 % of the time (< 5 %)
+
+[39 g, fast coil] lift-off sim:
+PASS:   ball leaves the stand
+PASS:   never closer than 1 mm to the magnet (min x = 9.15 mm)
+PASS:   |x - 10 mm| < 0.1 mm after 3 s (got 0.000 mm)
+PASS:   peak current 0.92 A < 2.2 A
+PASS:   command saturated 0.2 % of the time (< 5 %)
+
+Inner-loop step 0.3 -> 0.5 A: steady 0.503 A, 63% rise 3.0 ms (open coil: 27 ms), u peak 0.61
+PASS: inner loop at least 3x faster than the open coil
+PASS: inner loop steady error < 20 mA (feed-forward)
+
+Saved data/phase3_cascade.mat, figs/p3_liftoff_sim.png, figs/p3_inner_step.png

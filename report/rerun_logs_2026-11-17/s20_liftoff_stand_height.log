@@ -1,0 +1,232 @@
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+Loaded 21 runs (2 on the lowered stand).
+
+==== 1. Lift-offs (h = 3): run, stand, rest reading, baseline samples ====
+  lift  1  cascade_run4                     normal   rest 11.94 mm, baseline n = 49 | fx/base per bin [NaN 0.907 NaN NaN 1.038]
+  lift  2  expA_39g_sweep_main              normal   rest 11.95 mm, baseline n = 52 | fx/base per bin [NaN NaN NaN NaN 1.004]
+  lift  3  expB_42g_step_main1              normal   rest 12.13 mm, baseline n = 57 | fx/base per bin [NaN NaN NaN NaN NaN]
+  lift  4  expB_42g_step_main2              normal   rest 11.92 mm, baseline n = 61 | fx/base per bin [NaN NaN 0.949 NaN 0.998]
+  lift  5  expB_42g_sweep_main              normal   rest 11.91 mm, baseline n = 61 | fx/base per bin [NaN 1.013 NaN NaN 1.024]
+  lift  6  expC_39g_kg_main                 normal   rest 11.99 mm, baseline n = 52 | fx/base per bin [NaN NaN NaN NaN 0.986]
+  lift  7  sweep_39g_holeup_main            normal   rest 11.92 mm, baseline n = 52 | fx/base per bin [NaN NaN NaN NaN 1.016]
+  lift  8  sweep_42g_holeup_main            normal   rest 11.87 mm, baseline n = 56 | fx/base per bin [NaN NaN NaN 0.98 1.002]
+  lift  9  sweep_42g_holedown_main          normal   rest 11.68 mm, baseline n = 30 | fx/base per bin [NaN 1.008 1.012 1.006 1.005]
+  lift 10  hold115_39g_holeup_main          normal   rest 11.92 mm, baseline n = 16 | fx/base per bin [NaN 1.048 NaN 1.087 1.061]
+  lift 11  hold115_42g_holeup_main          normal   rest 12.00 mm, baseline n = 26 | fx/base per bin [NaN 1.07 0.973 1.104 1.097]
+  lift 12  hold115_39g_holedown_main        normal   rest 12.18 mm, baseline n = 13 | fx/base per bin [NaN NaN NaN 1.024 1.027]
+  lift 13  liftoff_39g_SUSPECT_main         normal   rest 12.01 mm, baseline n = 55 | fx/base per bin [NaN NaN NaN NaN 1]
+  lift 14  steps_39g_main                   normal   rest 11.90 mm, baseline n = 51 | fx/base per bin [NaN NaN NaN NaN 1.015]
+  lift 15  steps_42g_main                   normal   rest 11.89 mm, baseline n = 33 | fx/base per bin [NaN NaN NaN 0.987 1.002]
+  lift 16  rampFLAT_39g_main                normal   rest 11.85 mm, baseline n = 54 | fx/base per bin [NaN NaN NaN NaN 1.002]
+  lift 17  ramp_39g_main                    normal   rest 11.85 mm, baseline n = 56 | fx/base per bin [NaN NaN 0.951 NaN 1.003]
+  lift 18  sine_39g_10mm_main               normal   rest 11.82 mm, baseline n = 52 | fx/base per bin [NaN NaN NaN NaN 1.006]
+  lift 19  variantD_39g_main                normal   rest 11.78 mm, baseline n = 36 | fx/base per bin [0.987 0.995 0.969 1.017 1.011]
+  lift 20  variantD_39g_main                normal   rest 11.79 mm, baseline n = 51 | fx/base per bin [NaN 1.012 0.98 1.01 1.008]
+  lift 21  ramp116FLAT_39g_lowstand_main    LOWERED  rest 13.13 mm, baseline n = 53 | fx/base per bin [NaN NaN NaN NaN NaN]
+  lift 22  sweep_39g_lowstand_main          LOWERED  rest 13.19 mm, baseline n = 45 | fx/base per bin [NaN NaN NaN NaN NaN]
+  bins of height above the stand [mm]: [0.1 0.3 0.5 0.7 0.9 1.2]
+  samples per bin (h = 3), summed over lift-offs: normal [6 26 27 113 572] | lowered [0 0 1 2 2]
+PASS: every lift-off has its own baseline (>= 3 samples at 10.3-10.9 mm, >= 0.95 mm above the stand; 22 lift-offs)
+PASS: no detectable current-to-force lag at 9.5-10.75 mm (slope -1.0 ms)
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+
+==== 2. Static reference: slow ramp, 39 g, normal stand (rest 11.85 mm) ====
+  height above stand [mm]: [1.33 1.28 1.23 1.18 1.13 1.08 1.03 0.98 0.93 0.88 0.83 0.78 0.73 0.68 0.63 0.58 0.53 0.48]
+  fx_static             : [1.004 0.997 0.999 1.001 0.995 0.997 1.013 0.994 1.006 1.005 1.003 1.011 1.03 1.053 1.079 1.104 1.129 1.151]
+PASS: ramp reproduces s18: fx_static 1.151 at 0.4-0.5 mm above the stand (> 1.05)
+
+==== 3. Lift-offs vs the ramp, by height above the stand ====
+  bin [mm]   | ramp fx | normal stand h=3: mean +- se (n) | h=5            | lowered stand h=3 (n) | h=5
+  0.1-0.3    |   -     | 0.987 +- 0.000 ( 1)            | NaN +- NaN   |   -   (0)           |   -  
+  0.3-0.5    | 1.151   | 1.008 +- 0.019 ( 7)            | 0.970 +- 0.000   |   -   (0)           |   -  
+  0.5-0.7    | 1.091   | 0.972 +- 0.009 ( 6)            | 0.979 +- 0.008   |   -   (0)           |   -  
+  0.7-0.9    | 1.012   | 1.027 +- 0.016 ( 8)            | 1.027 +- 0.012   |   -   (0)           |   -  
+  0.9-1.2    | 1.001   | 1.016 +- 0.006 (19)            | 1.013 +- 0.005   |   -   (0)           |   -  
+PASS: [record] normal stand, bins [0.3 0.7] mm above the stand (>= 3 lift-offs each): per-sample Newton values do NOT show the ramp's extra force (ramp [1.151 1.091] vs lift-offs [1.008 0.972], n = [7 6]; difference [7.4 12.7] se; h = 5: [0.97 0.979]) -- BUT see 3b: blurred by the stencil
+PASS: [record] lowered stand (2 lift-offs): lift-offs with a value per bin [0 0 0 0 0] -> too few to compare (and those bins lie at x 12.3-13.0 mm, beyond the checked force law)
+
+==== 3b. Crossing 0.3-0.7 mm above the stand: time, and the effect a static extra force would have ====
+  cascade_run4                     normal    9.0 ms | law acceleration  12.1 m/s^2 | extra force x1.103 would add    51 um
+  expA_39g_sweep_main              normal    6.0 ms | law acceleration  12.6 m/s^2 | extra force x1.103 would add    23 um
+  expB_42g_step_main1              normal    6.0 ms | law acceleration  10.3 m/s^2 | extra force x1.103 would add    19 um
+  expB_42g_step_main2              normal    9.0 ms | law acceleration  10.7 m/s^2 | extra force x1.103 would add    45 um
+  expB_42g_sweep_main              normal    9.0 ms | law acceleration  10.9 m/s^2 | extra force x1.103 would add    46 um
+  expC_39g_kg_main                 normal    6.0 ms | law acceleration  12.5 m/s^2 | extra force x1.103 would add    23 um
+  sweep_39g_holeup_main            normal    6.0 ms | law acceleration  12.1 m/s^2 | extra force x1.103 would add    23 um
+  sweep_42g_holeup_main            normal    9.0 ms | law acceleration  10.5 m/s^2 | extra force x1.103 would add    44 um
+  sweep_42g_holedown_main          normal   12.0 ms | law acceleration  10.3 m/s^2 | extra force x1.103 would add    76 um
+  hold115_39g_holeup_main          normal    9.0 ms | law acceleration  11.0 m/s^2 | extra force x1.103 would add    46 um
+  hold115_42g_holeup_main          normal   12.0 ms | law acceleration   9.7 m/s^2 | extra force x1.103 would add    72 um
+  hold115_39g_holedown_main        normal    6.0 ms | law acceleration  11.1 m/s^2 | extra force x1.103 would add    21 um
+  liftoff_39g_SUSPECT_main         normal    3.0 ms | law acceleration  11.3 m/s^2 | extra force x1.103 would add     5 um
+  steps_39g_main                   normal    6.0 ms | law acceleration  13.0 m/s^2 | extra force x1.103 would add    24 um
+  steps_42g_main                   normal    6.0 ms | law acceleration  10.9 m/s^2 | extra force x1.103 would add    20 um
+  rampFLAT_39g_main                normal    6.0 ms | law acceleration  11.8 m/s^2 | extra force x1.103 would add    22 um
+  ramp_39g_main                    normal    9.0 ms | law acceleration  11.8 m/s^2 | extra force x1.103 would add    49 um
+  sine_39g_10mm_main               normal    9.0 ms | law acceleration  11.7 m/s^2 | extra force x1.103 would add    49 um
+  variantD_39g_main                normal   18.0 ms | law acceleration   9.9 m/s^2 | extra force x1.103 would add   165 um
+  variantD_39g_main                normal   12.0 ms | law acceleration   9.9 m/s^2 | extra force x1.103 would add    73 um
+  ramp116FLAT_39g_lowstand_main    LOWERED   6.0 ms | law acceleration  15.4 m/s^2 | extra force x1.103 would add    29 um
+  sweep_39g_lowstand_main          LOWERED   6.0 ms | law acceleration  13.8 m/s^2 | extra force x1.103 would add    26 um
+PASS: [record] RESOLUTION: 22 lift-offs cross 0.3-0.7 mm above the stand in 3-18 ms (median 7); 21 of them faster than the h = 3 Newton stencil (18 ms). So each Newton value in that zone averages over heights up to ~1 mm above the stand, where the ramp shows no effect: the per-sample test of section 3 is blurred toward 1 and CANNOT reject a static force of the ramp's size (x1.103), which would move the ball only 5-165 um (median 36) per crossing, 0.5-15x the 11 um noise std. Lift-offs neither confirm nor refute the static stand effect.
+
+TOTAL: 6 PASS, 0 FAIL

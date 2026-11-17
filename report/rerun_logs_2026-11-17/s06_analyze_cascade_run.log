@@ -1,0 +1,52 @@
+{Unrecognized function or variable 'tileGrid'.
+
+Error in s06_analyze_cascade_run>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using s06_analyze_cascade_run>read_scope_fig (line 152)
+Error while evaluating UIContainer SizeChangedFcn.
+
+RUN 3 inner loop: i_test 0.3 -> mean i 0.294 A (std 0.030); i_test 0.5 -> mean i 0.497 A (std 0.030)
+  step 0.3 -> 0.5 A: 63% reached 2 sample(s) after the command jump
+PASS: inner loop steady error < 20 mA
+PASS: inner loop reaches 63 % within 3 samples (design: ~1, open coil: 9)
+  current noise in the loop: std 0.030 A -> command noise ~Kc*std = 0.06
+{Unrecognized function or variable 'tileGrid'.
+
+Error in s06_analyze_cascade_run>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using s06_analyze_cascade_run>read_scope_fig (line 152)
+Error while evaluating UIContainer SizeChangedFcn.
+
+
+RUN 4 levitation: switched on at 3.60 s, ball on stand at 11.94 mm
+  lift-off 45 ms after switch-on, highest point 8.89 mm, inside +-0.25 mm of 11 mm after 588 ms
+  step 11 -> 10 mm at 14.43 s: highest point 8.88 mm (overshoot 1.12 mm), inside +-0.25 mm after 126 ms
+  hover 11 mm: mean 10.999 mm, std 0.071 mm, p-p 0.47 mm | i 0.898 A | u 0.354 | u at 0 or 0.9: 0.0 %
+  hover 10 mm: mean 9.999 mm, std 0.068 mm, p-p 0.42 mm | i 0.824 A | u 0.332 | u at 0 or 0.9: 0.0 %
+PASS: zero steady error at 10 mm (integral action works)
+PASS: hover jitter std < 0.1 mm
+PASS: ball never closer than 5 mm to the magnet
+PASS: peak current 1.23 A < 2.2 A
+  jitter spectrum at 10 mm: broad peak near 7.0 Hz; 74 % of the power is in 2-10 Hz
+
+Force law from hover: i(11 mm) 0.898 A, i(10 mm) 0.830 A
+  decay length lam = 6.34 mm (raw) / 5.97 mm (minus 0.05 A sensor offset); manual P2 = 5.82 mm
+  manual model hover current at 10 mm (39.288 g): 0.845 A; measured 0.830 A raw, 0.780 A offset-corrected
+PASS: hover data agree with the manual force decay length (within 25 %)
+  simulation (manual force law) for the same step: highest point 9.06 mm (lab 8.88 mm)
+{Unrecognized function or variable 'tileGrid'.
+
+Error in s06_analyze_cascade_run>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using matlab.ui.internal.controller.FigureController/handleClientEvent (line 861)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in s06_analyze_cascade_run>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using matlab.ui.internal.controller.FigureController/handleClientEvent (line 861)
+Error while evaluating UIContainer SizeChangedFcn.
+
+
+Saved figs/p3_lab_run4.png, figs/p3_lab_run3.png, data/lab_2026-11-13/run34_metrics.mat

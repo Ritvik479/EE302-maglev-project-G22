@@ -1,0 +1,188 @@
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+Loaded 6 records (3 holds at 11.5 mm, 3 sweeps 11 -> 9 -> 11 mm).
+
+==== 1. Rocking band (1.5-3.5 Hz) of x per hover plateau ====
+ gap [mm] | band rms [mm] per record (min-max over visits)                       | peak [Hz]
+   9.0    | s 39 g hole-up: 0.022-0.022; s 42 g hole-up (rolled): 0.015-0.015; s 42 g hole-down: 0.051-0.051;  | 2.0-2.7
+   9.5    | s 39 g hole-up: 0.024-0.041; s 42 g hole-up (rolled): 0.013-0.021; s 42 g hole-down: 0.037-0.044;  | 1.6-3.1
+  10.0    | s 39 g hole-up: 0.020-0.029; s 42 g hole-up (rolled): 0.022-0.026; s 42 g hole-down: 0.027-0.035;  | 1.8-3.3
+  10.5    | s 39 g hole-up: 0.020-0.028; s 42 g hole-up (rolled): 0.022-0.038; s 42 g hole-down: 0.020-0.026;  | 1.8-2.7
+  11.0    | s 39 g hole-up: 0.026-0.026; s 42 g hole-up (rolled): 0.023-0.023; s 42 g hole-down: 0.015-0.015;  | 1.5-3.4
+  11.5    | h 39 g hole-up: 0.250-0.250; h 42 g hole-up: 0.013-0.013; h 39 g hole-down: 0.133-0.133;  | 2.3-2.5
+PASS: record: at 9-11 mm the rocking band stays small in every plateau (max 0.051 mm rms, 24 plateaus)
+PASS: record: at 11.5 mm it is much larger for the 39 g ball ([0.25 0.013 0.133] mm rms vs <= 0.051 at 9-11 mm)
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+ 39 g at 11.5 mm, stand LOWERED (rest 13.19 mm, 16-Nov, 9.5 s): band rms 0.048 mm (peak 2.8 Hz) vs 0.250 mm with the normal stand (13-Nov, 0.43 mm above it)
+PASS: record: with the stand lowered the 11.5 mm rocking is gone (0.048 mm, within the 9-11 mm range of normal plateaus, <= 0.051): it is tied to the STAND, not to the gap (one run each)
+
+==== 2. Limit cycle or noise-driven damped mode? (11.5 mm holds) ====
+  39 g hole-up   : 2.48 Hz, band rms 0.250 mm, envelope CV 0.04 | after lift: envelope 0.315 -> 0.354 mm, zeta +0.000
+  42 g hole-up   : 2.47 Hz, band rms 0.013 mm, envelope CV 0.56 | after lift: envelope 0.177 -> 0.062 mm, zeta +0.067
+  39 g hole-down : 2.32 Hz, band rms 0.133 mm, envelope CV 0.13 | after lift: envelope 0.169 -> 0.172 mm, zeta -0.006
+PASS: 39 g hole-up at 11.5 mm is a LIMIT CYCLE: constant envelope (CV 0.04 << 0.52) that neither grows nor decays (zeta +0.000)
+PASS: 42 g at 11.5 mm is a DAMPED mode kept alive by noise: envelope CV 0.56 (noise-like), ringing after lift decays with zeta = 0.067
+
+==== 3. Is the oscillation inside the feedback loop? (current vs x at the peak frequency) ====
+  39 g hole-up   : measured i/x 154 A/m at -6 deg | controller 151 A/m at -2.4 deg
+  42 g hole-up   : measured i/x 183 A/m at -14 deg | controller 151 A/m at -2.6 deg
+  39 g hole-down : measured i/x 154 A/m at -8 deg | controller 152 A/m at -4.7 deg
+PASS: the 2.4 Hz current is the controller's response to the measured x (gain and phase as the controller prescribes)
+  -> the oscillation is SUSTAINED through the loop: the only power source is the coil, and the coil's
+     2.4 Hz current is produced by the controller from the measured x (a free mechanical mode would
+     decay, as the 42 g ringing does).
+
+==== 4. Can the VERTICAL model produce a 2.4 Hz mode? ====
+ a21 [1/s^2] | slowest oscillatory mode (d = 0.3 / 0.5 / 0.6): f [Hz] (zeta)
+     1661    |   6.6 (0.56)    6.7 (0.56)    6.7 (0.56)  
+     1200    |   8.3 (0.48)    8.3 (0.49)    8.4 (0.49)  
+      900    |   9.1 (0.44)    9.2 (0.45)    9.2 (0.45)  
+      700    |   9.5 (0.42)    9.6 (0.42)    9.7 (0.43)  
+      516    |  10.0 (0.40)   10.1 (0.40)   10.1 (0.41)  
+      400    |  10.2 (0.39)   10.3 (0.39)   10.4 (0.40)  
+      300    |  10.4 (0.38)   10.5 (0.39)   10.6 (0.39)  
+      200    |  10.6 (0.37)   10.7 (0.38)   10.8 (0.38)  
+PASS: the vertical loop has no mode below 6.6 Hz (all zeta >= 0.37) even with a21 cut to 200: the 2.4 Hz rocking is not a mode of the vertical loop with its NOMINAL sensor gain (a sensor-gain loss near the stand can produce it; rotation not supported, see data/lab_2026-11-16/README.md)
+
+ 4b. Stand mechanisms at 11.5 mm (39 g, d = 0.5):
+   stand spring, a21_eff [1/s^2]: [1661.42195588333 0 -1000 -3000 -10000] -> slowest oscillatory mode [6.7 11.1 12.9 15.6 22.2] Hz (zeta [0.56 0.36 0.3 0.22 0.09])
+PASS: a stand SPRING cannot produce 2.4 Hz: it moves the slowest mode UP (to 11-22 Hz for a21_eff 0 .. -10000 1/s^2)
+   sensor gain s | least-damped mode below 10 Hz: f [Hz] (zeta; < 0 = unstable)
+     1.00        |  6.68 (+0.563)
+     0.80        |  4.34 (+0.367)
+     0.70        |  3.59 (+0.171)
+     0.60        |  3.07 (-0.059)
+     0.50        |  2.64 (-0.321)
+     0.45        |  2.44 (-0.470)
+     0.40        |  2.25 (-0.634)
+PASS: a position-sensor GAIN LOSS near the stand reproduces the rocking: s [0.6 0.5 0.45 0.4] gives an undamped or unstable mode at [3.1 2.6 2.4 2.3] Hz in the vertical loop itself (candidate mechanism, not observed directly; it does not explain the static current deficit of 16-Nov)
+
+==== 5. Robustness at the rocking frequency ====
+PASS: loop model reproduces s11's nominal |T| (max difference 8.9e-16)
+  at 2.39 Hz: |T| and the relative loop error needed for a sustained oscillation (1/|T|):
+    39 g, 11.5 mm (limit cycle seen)     |T| 1.19 -> needs |delta| >= 0.84
+    42 g, 11.5 mm (damped, zeta ~0.07)   |T| 1.23 -> needs |delta| >= 0.81
+    39 g, 10 mm (nominal)                |T| 1.15 -> needs |delta| >= 0.87
+    39 g, 11 mm                          |T| 1.18 -> needs |delta| >= 0.85
+    42 g, 11 mm                          |T| 1.21 -> needs |delta| >= 0.83
+  s11 Option-2 regions at 2.39 Hz: parametric W and the EXTRA error still tolerated, Wu:
+    39 g 9-10 mm: W 0.52, Wu 0.24
+    39 g 10-11 mm: W 0.55, Wu 0.20
+    42 g 9-10 mm: W 0.54, Wu 0.21
+    42 g 10-11 mm: W 0.57, Wu 0.17
+  39 g at 11.5 mm: total error needed 0.84, parametric part <= 0.55 (W, 39 g 10-11 mm region) ->
+    the UNMODELLED (rocking) part there is >= 0.19; the 9-11 mm result tolerates 0.17-0.24 on top of W
+PASS: record: IF the rocking is an unstructured extra error, it is about as large as the WHOLE remaining margin at 2.4 Hz (>= 0.19 vs 0.17-0.24 tolerated). (2026-11-16, AUDIT.md 4.13: if it is a sensor-gain loss near the stand, see 4b, this number does not describe it; the conclusion "keep 11.5 mm out" stands either way)
+
+==== 6. Bounds on the rocking (for the report: unmodelled dynamics) ====
+  frequency           2.3-2.5 Hz (all records)
+  amplitude, 9-11 mm  <= 0.051 mm rms in the 1.5-3.5 Hz band (every plateau, both balls; an upper bound:
+                      the band also holds sensor noise and the tail of the 4-7 Hz wobble)
+  amplitude, 11.5 mm  39 g: 0.250 (hole-up, limit cycle) / 0.133 mm (hole-down); 42 g: 0.013 mm
+  damping             42 g: zeta ~ 0.07; 39 g at 11.5 mm: none (self-sustained)
+  nature              sustained through the loop; tied to the stand (gone with the stand lowered); mechanism open
+                      (candidate: position-sensor gain loss near the stand; not a demonstrated rotation)
+  stand lowered       39 g at 11.5 mm: 0.048 mm (vs 0.250 with the normal stand): the rocking is tied to the stand
+  consequence         the effect lives within ~0.7 mm of the stand: claimed range = set points 9-11 mm with the
+                      stand reading >= ~0.85 mm below the set point; 11.5 mm on the normal stand stays OUT.
+                      (As an unstructured error it would need >= 0.19 at 2.4 Hz vs 0.17-0.24 left at 9-11 mm.)
+  still open          L(jw) at 1.5-2.4 Hz: the 16-Nov sine injection (10 mm) was too noisy there (> 20 % error,
+                      s17); 11 mm and the 42 g ball were not measured
+
+Saved data/rocking.mat, figs/p11_rocking.png
+SUMMARY: 11 PASS / 0 FAIL

@@ -1,0 +1,133 @@
+==== A. Sine injection (39 g, 10 mm) ====
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+PASS: wiring: command sent = u_c + d_inj whenever u is inside its limits
+PASS: model: the loop closed with negative feedback is stable for d = 0.3, 0.5, 0.6 (sign check of L)
+ f [Hz] | A    | cyc | u lim | |L| meas (+-se) | model d.5 [d.3-.6] | phase L meas / model [deg] | |S| meas | |X| [mm] | G_iu meas/model | G_xu meas/model
+   1.5  | 0.01 |   7 |   0   | 10.694 (7.251)  |  8.604 [8.604-8.604] |   127.2 /   133.7        |  0.10    | 0.036    | 1.19   +25 deg  | 1.11    +1 deg
+   2.0  | 0.01 |  12 |   0   |  9.304 (4.079)  |  7.100 [7.100-7.100] |    95.9 /   143.0        |  0.11    | 0.034    | 1.13   +16 deg  | 1.00   -27 deg
+   2.4  | 0.01 |  33 |   4   |  5.894 (1.579)  |  6.312 [6.312-6.312] |   124.0 /   149.0        |  0.18    | 0.060    | 1.35   -16 deg  | 1.10   -19 deg
+   3.0  | 0.01 |  22 |   1   |  6.277 (1.140)  |  5.445 [5.445-5.445] |   167.5 /   156.7        |  0.19    | 0.065    | 1.55    -4 deg  | 1.30    +3 deg
+   4.0  | 0.01 |  35 |   1   |  6.212 (0.840)  |  4.411 [4.411-4.411] |   147.4 /   167.2        |  0.18    | 0.042    | 0.61   +21 deg  | 1.05    -3 deg
+   6.0  | 0.01 |  71 |   4   |  3.715 (0.427)  |  3.128 [3.128-3.128] |  -168.8 /  -175.2        |  0.37    | 0.061    | 1.43    -9 deg  | 1.21    -6 deg
+   8.0  | 0.01 |  68 |   2   |  2.420 (0.292)  |  2.435 [2.435-2.435] |  -161.0 /  -161.2        |  0.66    | 0.056    | 1.01    +1 deg  | 1.01    +0 deg
+  12.0  | 0.01 |  24 |   0   |  1.591 (0.148)  |  1.758 [1.759-1.760] |  -120.6 /  -144.3        |  0.72    | 0.032    | 1.44   +15 deg  | 1.23    -3 deg
+  12.0  | 0.02 |  77 |   2   |  1.778 (0.238)  |  1.758 [1.759-1.760] |  -125.6 /  -144.3        |  0.69    | 0.048    | 1.19    +6 deg  | 0.97    +2 deg
+  20.0  | 0.02 |  38 |   0   |  1.207 (0.183)  |  1.160 [1.161-1.163] |  -138.5 /  -134.8        |  1.24    | 0.023    | 0.95    -5 deg  | 0.95    +3 deg
+  20.0  | 0.04 | 104 |   4   |  1.435 (0.123)  |  1.160 [1.161-1.163] |  -125.3 /  -134.8        |  0.84    | 0.034    | 1.27    +2 deg  | 1.06    +1 deg
+  40.0  | 0.04 |  80 |   4   |  0.749 (0.092)  |  0.598 [0.601-0.606] |  -138.3 /  -143.1        |  1.50    | 0.008    | 1.20    +2 deg  | 1.00    +6 deg
+  40.0  | 0.08 | 258 |  21   |  0.812 (0.031)  |  0.598 [0.601-0.606] |  -139.0 /  -143.1        |  1.51    | 0.016    | 1.30    -1 deg  | 0.98    +3 deg
+PASS: the command hit its 0 / 0.9 limits in < 1 % of each analysed window (max 0.98 %)
+PASS: consistency: S = U/D agrees with 1/(1 + L) within 5 % at every f (max 1.1 %; differs only through the limit hits)
+ two amplitudes at the same f: relative difference of L [0.13 0.26 0.08] at [12 20 40] Hz
+ max |S| at the measured points: lab 1.51 at 40.0 Hz | model (d 0.5) 1.58 at the same points; model peak 1.59 at 45 Hz (not measured)
+ crossover |L| = 1 at ~29.4 Hz (model 23.6 Hz); phase there -133 deg -> phase margin ~47 deg (interpolated between 20 and 40 Hz)
+ model error |Delta| = |L_meas - L_model|/|L_model| : [0.27 0.97 0.42 0.25 0.58 0.22 0.01 0.4 0.33 0.08 0.3 0.27 0.37]
+ |Delta * T_model| (robust stability needs < 1)     : [0.3 1.08 0.49 0.3 0.74 0.33 0.01 0.64 0.52 0.11 0.41 0.25 0.35]
+ points measured to < 20 % (se/|L|): [3 4 6 8 12 12 20 20 40 40] Hz | too noisy: [1.5 2 2.4] Hz
+PASS: at the points where L is measured to < 20 %, the model error is below the robust-stability bound (|Delta T| max 0.74 < 1); not tested at 1.5-2.4 Hz or at the model's |S| peak
+ 12-40 Hz (good points): |L| lab/model [0.9 1.01 1.04 1.24 1.25 1.36], |G_iu| lab/model [1.44 1.19 0.95 1.27 1.2 1.3], |G_xu| lab/model [1.23 0.97 0.95 1.06 1 0.98]
+ coil time constant that fits |G_iu| at 12-40 Hz (MAGNITUDE only, ka 2.43 fixed): 20.7 ms. Above the corner frequency the magnitude fixes only ka/tau, so this trades with ka
+ complex fit of G_iu at 12-40 Hz (sum of squared relative errors), free ka and tau:
+   d 0.0: ka 3.97, tau 40.6 ms, cost 0.399
+   d 0.3: ka 2.93, tau 28.0 ms, cost 0.217
+   d 0.5: ka 2.45, tau 22.6 ms, cost 0.164
+   d 0.6: ka 2.25, tau 20.5 ms, cost 0.162
+   d 1.0: ka 1.60, tau 14.3 ms, cost 0.352
+ best d 0.6 (ka 2.25, tau 20.5 ms); static ka from hover data 2.43
+
+==== B. Stand proximity: braking spike and overshoot, normal vs lowered stand (39 g) ====
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+ normal stand ("ramp" run): rest 11.85 mm, 3 set-point changes, coil-off tail 5.8 s
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+ lowered stand ("ramp 11.6" run): rest 13.13 mm, 3 set-point changes, coil-off tail 0.6 s
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+ lowered stand (sweep, item 2): rest 13.19 mm, 10 set-point changes, coil-off tail 2.2 s
+ spike threshold (1.5 x worst up-step over these 3 runs): -1.09 m/s^2 (s16 normal-stand runs: -1.22)
+ run | step [mm]     | r min [m/s^2] at [ms], x [mm] | passes 11.0 [ms] | peak x | clearance | overshoot lab / model [mm] | spike
+  1  | 11.0 -> 10.5 | -0.33 at  69 ms, x  9.89      |    NaN           | 11.04  |  0.81     | 0.61 / 0.59                | -
+  1  | 10.5 -> 11.4 | -3.12 at  24 ms, x 11.07      |     21           | 11.82  |  0.03     | 0.39 / 0.45                | YES
+  1  | 11.4 -> 10.5 | +0.15 at 117 ms, x  9.94      |    NaN           | 11.45  |  0.40     | 0.78 / 1.06                | -
+  2  | 11.0 -> 10.5 | -0.49 at 141 ms, x 10.25      |    NaN           | 11.02  |  2.10     | 0.56 / 0.59                | -
+  2  | 10.5 -> 11.6 | -2.74 at  54 ms, x 12.43      |     24           | 12.52  |  0.61     | 0.80 / 1.43                | YES
+  2  | 11.6 -> 10.5 | -0.60 at  69 ms, x  9.25      |    NaN           | 11.59  |  1.53     | 1.25 / 1.29                | -
+  3  | 11.0 -> 10.5 | -0.69 at  33 ms, x 10.63      |    NaN           | 11.17  |  2.02     | 0.71 / 0.59                | -
+  3  | 10.5 -> 10.0 | -0.55 at  57 ms, x  9.60      |    NaN           | 10.54  |  2.65     | 0.53 / 0.55                | -
+  3  | 10.0 ->  9.5 | -0.63 at  39 ms, x  9.30      |    NaN           |  9.98  |  3.21     | 0.59 / 0.51                | -
+  3  |  9.5 ->  9.0 | -0.73 at  57 ms, x  8.56      |    NaN           |  9.51  |  3.69     | 0.53 / 0.48                | -
+  3  |  9.0 ->  9.5 | -0.54 at   9 ms, x  9.14      |    NaN           | 10.11  |  3.08     | 0.57 / 0.51                | -
+  3  |  9.5 -> 10.0 | -0.83 at   9 ms, x  9.48      |    NaN           | 10.71  |  2.48     | 0.66 / 0.55                | -
+  3  | 10.0 -> 10.5 | -0.74 at  30 ms, x 10.48      |    NaN           | 10.89  |  2.30     | 0.36 / 0.60                | -
+  3  | 10.5 -> 11.0 | -0.79 at 114 ms, x 11.31      |     30           | 11.57  |  1.62     | 0.54 / 0.64                | -
+  3  | 11.0 -> 11.5 | -0.67 at 126 ms, x 11.72      |    NaN           | 12.23  |  0.96     | 0.69 / 0.70                | -
+  3  | 11.5 -> 11.0 | -0.53 at  48 ms, x 10.53      |    NaN           | 11.67  |  1.52     | 0.73 / 0.63                | -
+FAIL: the ball never came within 0.1 mm of the stand (closest 0.03 mm, on the normal-stand 0.9 mm step)
+ spikes here: x [11.07 12.43] mm, stand [11.85 13.13] mm -> distance above the stand [0.78 0.7] mm | s16 (normal stand): [0.84 0.83 0.85 0.75 0.79 0.77] mm
+PASS: STAND-TIED: on BOTH stand heights the spike sits 0.6-1.0 mm above the stand (it moved ~1.3 mm down with the stand)
+PASS: lowered stand: the down-steps that passed 11.0-11.2 mm but stayed > 0.9 mm above the stand (10.5->11.0, 11.0->11.5, peaks [11.57 12.23] mm) show NO spike (r [-0.79 -0.67])
+ overshoot lab/model on down-steps: WITH spike 0.56 (+ s16: 0.33-0.48) | WITHOUT spike [1.12 1.2 0.61 0.84 0.99]
+PASS: the overshoot mismatch goes with the spike: with a spike lab/model <= 0.56, without one median 0.99 (criterion set after the first look)
+
+==== C. Lowered stand: lift-off and 11.5 mm hold ====
+ lowered stand ("ramp 11.6" run): rest 13.13 mm, set point 11.0 mm, lift 45 ms after switch-on, closest to the magnet 8.65 mm | simulation: nominal 8.90 mm, 9 cases 8.69-9.14 mm
+PASS: lowered stand ("ramp 11.6" run): lift-off stayed > 8 mm from the magnet
+ lowered stand (sweep, item 2): rest 13.19 mm, set point 11.0 mm, lift 48 ms after switch-on, closest to the magnet 8.59 mm | simulation: nominal 8.89 mm, 9 cases 8.68-9.14 mm
+PASS: lowered stand (sweep, item 2): lift-off stayed > 8 mm from the magnet
+ lab rises [0.25 0.3] mm higher (closer to the magnet) than the nominal simulation
+FAIL: lowered-stand lift-off: the lab closest approach ([8.65 8.59] mm) lies inside the simulated 9-case range (lowest [8.69 8.68] mm)
+{Unrecognized function or variable 'tileGrid'.
+
+Error in read_scope_fig>@(h,~)tileGrid(h,delegateClassName)
+} 
+Error using read_scope_fig (line 14)
+Error while evaluating UIContainer SizeChangedFcn.
+
+ 11.5 mm hold, lowered stand (9.5 s): x std 0.115 mm, +-0.26 mm (1-99 pct), peak 4.30 Hz
+ 11.5 mm hold, 13-Nov normal stand        : x std 0.253 mm, +-0.37 mm (1-99 pct), peak 2.43 Hz
+
+Figures: figs/p13_sine_loop.png, figs/p14_stand_proximity.png
+==== s17 summary: 10 PASS / 2 FAIL ====

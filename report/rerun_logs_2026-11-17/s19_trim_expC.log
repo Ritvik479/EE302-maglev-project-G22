@@ -1,0 +1,44 @@
+==== 1. Trimming s11's 1458-point grid (stored k_low, k_high) ====
+  rule A removes 260 of 1458 points; rule B removes 260 (of which 0 only because k_high <= 2.0)
+  worst Ms: all 2.230 | rule A 2.230 | rule B 2.230 ; PM min: all 29.3 | A 31.3 | B 31.3 deg
+PASS: rule A removes 260 grid points as in FIXPLAN step 1 (got 260)
+
+==== 2. Option-2 robust-stability test, per region ====
+  39 g,  9-10 mm, none                        : 729/729 plants | max |W T| 0.9570 at 8.9 Hz | interior |delta|/W 0.81
+     [record] W lower by up to 0.0 % (at 0.1 Hz); at the peak (8.9 Hz) by 0.00 %; plant setting W there: tau 20 ms, ka 2.70, d 0.3, a21 1582 -> kept by this rule: 1
+  39 g,  9-10 mm, A: stable at kg 0.4         : 639/729 plants | max |W T| 0.9570 at 8.9 Hz | interior |delta|/W 0.81
+     [record] W lower by up to 0.0 % (at 0.1 Hz); at the peak (8.9 Hz) by 0.00 %; plant setting W there: tau 20 ms, ka 2.70, d 0.3, a21 1582 -> kept by this rule: 1
+  39 g,  9-10 mm, B: stable at kg 0.4 and 2.0 : 639/729 plants | max |W T| 0.9570 at 8.9 Hz | interior |delta|/W 0.81
+  39 g, 10-11 mm, none                        : 729/729 plants | max |W T| 0.9667 at 7.1 Hz | interior |delta|/W 0.81
+     [record] W lower by up to 0.0 % (at 0.1 Hz); at the peak (7.1 Hz) by 0.00 %; plant setting W there: tau 20 ms, ka 2.70, d 0.3, a21 1582 -> kept by this rule: 1
+  39 g, 10-11 mm, A: stable at kg 0.4         : 609/729 plants | max |W T| 0.9667 at 7.1 Hz | interior |delta|/W 0.81
+     [record] W lower by up to 0.0 % (at 0.1 Hz); at the peak (7.1 Hz) by 0.00 %; plant setting W there: tau 20 ms, ka 2.70, d 0.3, a21 1582 -> kept by this rule: 1
+  39 g, 10-11 mm, B: stable at kg 0.4 and 2.0 : 609/729 plants | max |W T| 0.9667 at 7.1 Hz | interior |delta|/W 0.81
+  42 g,  9-10 mm, none                        : 729/729 plants | max |W T| 0.9511 at 7.3 Hz | interior |delta|/W 0.81
+     [record] W lower by up to 0.0 % (at 0.1 Hz); at the peak (7.3 Hz) by 0.00 %; plant setting W there: tau 20 ms, ka 2.70, d 0.3, a21 1582 -> kept by this rule: 1
+  42 g,  9-10 mm, A: stable at kg 0.4         : 614/729 plants | max |W T| 0.9511 at 7.3 Hz | interior |delta|/W 0.81
+     [record] W lower by up to 0.0 % (at 0.1 Hz); at the peak (7.3 Hz) by 0.00 %; plant setting W there: tau 20 ms, ka 2.70, d 0.3, a21 1582 -> kept by this rule: 1
+  42 g,  9-10 mm, B: stable at kg 0.4 and 2.0 : 614/729 plants | max |W T| 0.9511 at 7.3 Hz | interior |delta|/W 0.81
+  42 g, 10-11 mm, none                        : 729/729 plants | max |W T| 0.9973 at 5.9 Hz | interior |delta|/W 0.81
+     [record] W lower by up to 0.0 % (at 0.1 Hz); at the peak (5.9 Hz) by 0.00 %; plant setting W there: tau 20 ms, ka 2.70, d 0.3, a21 1582 -> kept by this rule: 1
+  42 g, 10-11 mm, A: stable at kg 0.4         : 549/729 plants | max |W T| 0.9973 at 5.9 Hz | interior |delta|/W 0.81
+     [record] W lower by up to 0.0 % (at 0.1 Hz); at the peak (5.9 Hz) by 0.00 %; plant setting W there: tau 20 ms, ka 2.70, d 0.3, a21 1582 -> kept by this rule: 1
+  42 g, 10-11 mm, B: stable at kg 0.4 and 2.0 : 549/729 plants | max |W T| 0.9973 at 5.9 Hz | interior |delta|/W 0.81
+PASS: untrimmed run reproduces s11's stored Option-2 peaks (largest difference 0.0e+00)
+PASS: every region nominal is stable at kg 0.4 and 2.0 (it survives the trimming)
+PASS: trimmed envelope W never exceeds the untrimmed one (subset of the plants)
+PASS: W covers the random interior plants in every region and rule (worst ratio 0.81)
+
+==== 3. Summary ====
+  none                        : plants kept 2916/2916 | Option-2 max |W T| per region [0.957 0.9667 0.9511 0.9973] -> worst 0.9973
+  A: stable at kg 0.4         : plants kept 2411/2916 | Option-2 max |W T| per region [0.957 0.9667 0.9511 0.9973] -> worst 0.9973
+  B: stable at kg 0.4 and 2.0 : plants kept 2411/2916 | Option-2 max |W T| per region [0.957 0.9667 0.9511 0.9973] -> worst 0.9973
+  extra unmodelled relative error tolerated, worst region (min over band):
+    band [Hz]     | none                        | A: stable at kg 0.4         | B: stable at kg 0.4 and 2.0 |
+     0.05 -   2.0 |                         22 % |                         22 % |                         22 % |
+     2.00 -  10.0 |                          0 % |                          0 % |                          0 % |
+    10.00 -  30.0 |                          2 % |                          2 % |                          2 % |
+    30.00 - 166.0 |                         13 % |                         13 % |                         13 % |
+[record] reduction of the worst Option-2 peak: rule A 0.9973 -> 0.9973, rule B 0.9973 -> 0.9973
+
+TOTAL: 5 PASS, 0 FAIL

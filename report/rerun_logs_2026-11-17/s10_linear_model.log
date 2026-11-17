@@ -1,0 +1,112 @@
+==== 1. Force law F = c i^2 exp(-x/lam), refitted from the hover visits ====
+  42 visits (18 morning + 24 afternoon, rocking-flagged visits excluded)
+  lam = 5.905 mm  (95 % CI +-4.3 %)
+  c   = 3.294 / 3.023 N/A^2 for 39 / 42 g  (95 % CI +-7.4 / +-7.4 %; correlation with lam -1.00)
+  residual: 5.9 mA rms, max 14.4 mA
+  95 % CI of the predicted hover current, 9-11 mm: +-0.57 % (39 g) / +-0.50 % (42 g) at worst
+PASS: refit reproduces the s08 values exactly (lam, c_39, c_42)
+PASS: the +-5 % range used for lam covers its 95 % CI (+-4.3 %)
+  NOTE: c alone is poorly determined (CI +-7.4 %) because it is strongly correlated with lam (-1.00).
+        What the linear model needs is the hover current i0 at the operating gap, and that is known to
+        +-0.57 %. Section 6 therefore checks the uncertainty set against the measured currents directly.
+
+==== 2. Operating points and linear coefficients (nominal: 39 g at 10 mm) ====
+ ball | x0 [mm] | i0 [A] | u0 [-] | a21 [1/s^2] | b [m/s^2/A] | p [rad/s] (Hz) | |G_xi(0)| = b/a21 [mm/A]
+ 39 g |   9.0   | 0.733  | 0.301  |  1661.4     |  26.77      | 40.76 (6.49)   |  16.11
+ 39 g |   9.5   | 0.765  | 0.314  |  1661.4     |  25.66      | 40.76 (6.49)   |  15.44
+ 39 g |  10.0   | 0.798  | 0.328  |  1661.4     |  24.59      | 40.76 (6.49)   |  14.80
+ 39 g |  10.5   | 0.832  | 0.342  |  1661.4     |  23.57      | 40.76 (6.49)   |  14.19
+ 39 g |  11.0   | 0.868  | 0.357  |  1661.4     |  22.60      | 40.76 (6.49)   |  13.60
+ 39 g |  11.5   | 0.906  | 0.372  |  1661.4     |  21.66      | 40.76 (6.49)   |  13.04  <- provisional (rocking, 0.42 mm above the stand)
+ 42 g |   9.0   | 0.792  | 0.326  |  1661.4     |  24.76      | 40.76 (6.49)   |  14.90
+ 42 g |   9.5   | 0.827  | 0.340  |  1661.4     |  23.73      | 40.76 (6.49)   |  14.29
+ 42 g |  10.0   | 0.862  | 0.355  |  1661.4     |  22.75      | 40.76 (6.49)   |  13.69
+ 42 g |  10.5   | 0.900  | 0.370  |  1661.4     |  21.81      | 40.76 (6.49)   |  13.13
+ 42 g |  11.0   | 0.939  | 0.386  |  1661.4     |  20.90      | 40.76 (6.49)   |  12.58
+ 42 g |  11.5   | 0.979  | 0.403  |  1661.4     |  20.04      | 40.76 (6.49)   |  12.06  <- provisional (rocking, 0.42 mm above the stand)
+  Over the validated range (9-11 mm, both balls) b varies 20.90..26.77 (-15 / +9 % of nominal 24.59);
+  a21 = g/lam does not depend on the gap or the ball: an equilibrium shift changes ONLY the input gain b.
+
+==== 3. Linearization checks ====
+PASS: analytic A, B = numerical Jacobian of the nonlinear model at all 12 points (worst rel. error 5.1e-11), f = 0 there
+  +1 mA for 20 ms from hover at 10 mm: nonlinear dx = -0.0052 mm, linear -0.0052 mm, wrong-sign (+b) model +0.0052 mm
+PASS: more current -> ball rises (x falls) in the nonlinear AND the linear model, same size within 2 %
+PASS: a model with the wrong sign (+b) predicts the opposite, so this test catches a sign error
+
+==== 4. Transfer functions at the nominal point (39 g, 10 mm) ====
+  G_xi(s) = -24.59 / (s^2 - 1661.4)                    [m/A]   ball: current -> gap
+  G_iu(s) = 2.432 / (0.027 s + 1)                     [A/unit] coil: command -> current
+  G_xu(s) = G_xi G_iu, poles [-40.76 -37.04 40.76] rad/s
+  G_xu(z), ZOH T0 = 3 ms, no extra delay: zeros [-3.6339 -0.2603], poles [1.1301 0.8948 0.8849], gain -9.705e-06
+  G_xu(z) with the measured extra delay d = 0.5 sample (1.5 ms; range 0.3-0.6, s12):
+           zeros [-21.3856 -0.9726 -0.0442], poles [0 1.1301 0.8948 0.8849], gain -1.229e-06
+PASS: exactly one unstable pole, +sqrt(a21) = 40.76 rad/s (6.49 Hz); ZOH poles = exp(p T0); the fractional delay adds only a pole at z = 0
+  effect of the delay: |G| ratio [1 1 0.9974], extra phase [-0.54 -5.4 -26.98] deg at 1 / 10 / 50 Hz (pure delay: [-0.54 -5.4 -27] deg)
+PASS: the discretized delay acts as a pure delay of d T0 (phase within 0.2 deg, gain within 1 % up to 50 Hz)
+
+==== 5. Validity of the linear model ====
+  INFO: static worst corner dx = +-0.5 mm AND di = +-0.1 A (same-signed): force error 4.81 % of m g.
+        (This was a PASS/FAIL check with a 2 % limit in the first run and FAILED; it is pessimistic because
+        it assumes both excursions at their maximum at once. Replaced by the trajectory check in 5c.)
+PASS: step simulator = maglev_cascade_sim.m (max difference 0.0e+00 m)
+ run  | step [mm]    | overshoot [mm]: lab | nonlinear | linear local | linear nominal (39 g, 10 mm)
+ S39u | 11.0 -> 10.5 |                0.65 |   0.58    |    0.60      |   0.54
+ S39u | 10.5 -> 10.0 |                0.64 |   0.54    |    0.56      |   0.54
+ S39u | 10.0 ->  9.5 |                0.54 |   0.50    |    0.52      |   0.54
+ S39u |  9.5 ->  9.0 |                0.58 |   0.47    |    0.48      |   0.54
+ S39u |  9.0 ->  9.5 |                0.63 |   0.50    |    0.48      |   0.54
+ S39u |  9.5 -> 10.0 |                0.56 |   0.54    |    0.52      |   0.54
+ S39u | 10.0 -> 10.5 |                0.49 |   0.58    |    0.56      |   0.54
+ S39u | 10.5 -> 11.0 |                0.32 |   0.63    |    0.60      |   0.54
+ S42u | 11.0 -> 10.5 |                0.73 |   0.66    |    0.69      |   0.54
+ S42u | 10.5 -> 10.0 |                0.60 |   0.61    |    0.64      |   0.54
+ S42u | 10.0 ->  9.5 |                0.66 |   0.57    |    0.59      |   0.54
+ S42u |  9.5 ->  9.0 |                0.57 |   0.53    |    0.55      |   0.54
+ S42u |  9.0 ->  9.5 |                0.67 |   0.57    |    0.55      |   0.54
+ S42u |  9.5 -> 10.0 |                0.62 |   0.62    |    0.59      |   0.54
+ S42u | 10.0 -> 10.5 |                0.50 |   0.67    |    0.64      |   0.54
+ S42u | 10.5 -> 11.0 |                0.27 |   0.72    |    0.69      |   0.54
+ S42d | 11.0 -> 10.5 |                0.57 |   0.66    |    0.69      |   0.54
+ S42d | 10.5 -> 10.0 |                0.70 |   0.61    |    0.64      |   0.54
+ S42d | 10.0 ->  9.5 |                0.72 |   0.57    |    0.59      |   0.54
+ S42d |  9.5 ->  9.0 |                0.63 |   0.53    |    0.55      |   0.54
+ S42d |  9.0 ->  9.5 |                0.64 |   0.57    |    0.55      |   0.54
+ S42d |  9.5 -> 10.0 |                0.55 |   0.62    |    0.59      |   0.54
+ S42d | 10.0 -> 10.5 |                0.46 |   0.67    |    0.64      |   0.54
+ S42d | 10.5 -> 11.0 |                0.25 |   0.72    |    0.69      |   0.54
+  rms differences: linear local - nonlinear 0.026 mm | linear nominal - nonlinear 0.086 mm
+                   nonlinear - lab 0.175 mm | linear nominal - lab 0.130 mm
+  along the nonlinear step trajectories: max |dx| 1.00 mm, max |di| 112 mA, max force error 1.17 % of m g
+PASS: force error of the local linearization along all 24 simulated steps < 2 % of m g
+PASS: local linear model reproduces the nonlinear model on all 24 lab steps (overshoot rms < 0.05 mm)
+PASS: ONE linear model (39 g, 10 mm) stays within 0.10 mm rms of the nonlinear model for both balls, 9-11 mm (threshold = about half the lab-vs-model gap of 0.18 mm)
+  So the lab-vs-model overshoot gap (0.18 mm rms, worst on the 10.5 -> 11 mm down-steps) is NOT caused by
+  linearizing: the nonlinear model has it too. It is a model-vs-hardware mismatch (open item).
+
+==== 6. Uncertainty, mapped onto the linear-model coefficients ====
+ coefficient            | nominal (39 g, 10 mm) | range over the uncertainty set        | from
+ a21 = g/lam [1/s^2]    |   1661.4              | 1582.3 .. 1748.9  (-4.8 / +5.3 %)     | lam +-5 %
+ p = sqrt(a21) [Hz]     |     6.49              | 6.33 .. 6.66                         | lam +-5 %
+ b = 2g/i0 [m/s^2/A]    |    24.59              | 19.40 .. 28.44  (-21 / +16 %)       | ball, gap 9-11 mm, lam, c
+ tau [ms]               |       27              | 20 .. 35                             | measured 22-25 ms (steps, sine), widened
+ ka [A/unit]            |     2.43              | 2.2 .. 2.7                           | coil steps, hover data
+ extra delay d [samples]|      0.5              | 0.3 .. 0.6 (0.9 .. 1.8 ms)            | measured, s12 (run 3)
+ kg (gain error on u)   |        1              | 0.4 .. 2.0 (tested in the lab)       | Exp C
+  measured hover currents vs the corner band: 42 / 42 inside, smallest margin 35.9 mA
+  corner band at 10 mm (39 g): 0.748 .. 0.856 A (-6.3 / +7.3 %) vs the data: 2 x residual rms = +-1.5 %,
+  so the parametric set is about 5x wider than the measured scatter in i0 (conservative, as intended)
+PASS: the uncertainty set covers every measured hover current (both balls, 9-11 mm)
+
+  Unmodelled (unstructured) effects:
+  effect                                           | evidence                                                     | status                                     | handled by
+  stand-proximity effect (2.4 Hz limit cycle, static upward force, braking spike) | within ~0.7-0.9 mm of the stand only; gone with the stand lowered (16-Nov); mechanism open (not shadowing alone, not shown to be rotation) | one lowered-stand session                  | excluded by the range (stand >= 0.85 mm below the set point); 11.5 mm stress case in s09
+  extra loop delay (cause unknown)                 | s12: 0.32-0.55 sample from run 3; d = 0 and 1 rejected       | measured (cause not separable)             | parametric 0.3-0.6 sample
+  coil inductance changes with gap (back-EMF)      | current dips when the ball moves (coil test)                 | solid (small, inner loop rejects it)       | covered by tau 20-35 ms
+  coil gain at small u                             | dI/du 1.9 near u = 0 vs 2.4-2.6                              | solid                                      | only at lift-off; nonlinear sim
+  current-sensor zero drift                        | -0.5 .. -0.85 mA/s while levitating                          | solid                                      | disturbance; integral removes it; sim case
+  sensor noise                                     | sigma x 0.011 mm, i 0.021 A                                  | solid                                      | sim case; sets the jitter floor
+  position-sensor calibration nonlinearity         | two tables agree within 0.1 mm over 7-13 mm                  | open (hypothesis for the 11 mm step mismatch) | high-frequency part of W (s11)
+  limits: u 0..0.9, i_ref 0..2 A, integral clamp, stand | design values / rig geometry                                 | solid                                      | nonlinear sim only (inactive for small signals)
+
+Saved data/linear_model.mat, figs/p7_linear_coeffs.png, figs/p7_plant_bode.png, figs/p7_lin_vs_nl_overshoot.png
+SUMMARY: 12 PASS, 0 FAIL

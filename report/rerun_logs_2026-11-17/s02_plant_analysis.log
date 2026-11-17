@@ -1,0 +1,57 @@
+
+=== Operating point: 39.288 g ball, gap 9.0 mm ===
+x30 = 0.7751 A, u0 = 1.3592 V, a21 = 1684.67, p = 41.045 rad/s, K = 13.7508, Kp_min = 122.51 V/m
+Demo PD: Kp = 183.77 V/m (1.50 Kp_min), Kd = 0.50 V s/m
+Default loop delay (hold Ts/2 + extras) = 5.0 ms, position filter tau = 5.0 ms (filters in path: 1)
+
+=== Same demo PD, growing model fidelity (max Re of closed-loop poles) ===
+model                                      delay [ms] max Re [rad/s]   stable
+reduced second order                              0.0         -3.438      yes
+S0 third order only                               0.0         -2.654      yes
+S1 + position filter                              0.0          3.497       NO
+S2 + filter + hold delay Ts/2                     5.0          8.992       NO
+S3 + filter + hold + 1 extra sample              15.0         16.313       NO
+
+=== Self-checks ===
+[PASS] G3 poles = {+p, -p, -1/fi} (max rel. error)                              got  2.84808e-16, expected  0 (tol 1e-08)
+[PASS] ss(A,B,C) and tf G3 agree at 4 frequencies (max rel. err.)               got  2.12624e-16, expected  0 (tol 1e-08)
+[PASS] dcgain(G2) = +K/a21                                                      got  0.00816232, expected  0.00816232 (tol 1e-09)
+[PASS] |G3/G2| at w = p equals 1/sqrt(1+(p*fi)^2)                               got  0.99967, expected  0.99967 (tol 1e-09)
+[PASS] unstable pole time scale: ln2/p [s] (briefing: 16.9 ms)                  got  0.0168876, expected  0.0169 (tol 0.0001)
+[PASS] sign: gap DEcreases after a +1 V step (1=yes)                            got  1, expected  1 (tol 0)
+[PASS] default delay = Ts/2 [s]                                                 got  0.005, expected  0.005 (tol 1e-12)
+[PASS] Pade delay is all-pass: |H(j100)| = 1                                    got  1, expected  1 (tol 1e-09)
+[PASS] Pade phase = -w*tau at w = 100 rad/s [rad]                               got -0.5, expected -0.5 (tol 0.001)
+[PASS] p*tau, hold only (Ts/2)                                                  got  0.205224, expected  0.205 (tol 0.001)
+[PASS] p*tau, hold + 1 extra sample (briefing: ~0.6)                            got  0.615671, expected  0.6 (tol 0.02)
+[PASS] sampled plant: number of poles outside unit circle                       got  1, expected  1 (tol 0)
+[PASS] sampled plant: unstable pole = exp(p*Ts)                                 got  1.50749, expected  1.50749 (tol 1e-06)
+[PASS] sampled plant: has pole exp(-p*Ts) (1=yes)                               got  1, expected  1 (tol 0)
+[PASS] P-only, reduced, Kp = 0.5 Kp_min: max Re(pole) [rad/s]                   got  29.023, expected  29.023 (tol 1e-06)
+[PASS] P-only, third order, Kp = 0.5 Kp_min: unstable (1=yes)                   got  1, expected  1 (tol 0)
+[PASS] P-only, reduced, Kp = 1.5 Kp_min: max Re(pole) [rad/s]                   got -0, expected  0 (tol 1e-06)
+[PASS] P-only, third order, Kp = 1.5 Kp_min: unstable (1=yes)                   got  1, expected  1 (tol 0)
+[PASS] P-only, reduced, Kp = 3.0 Kp_min: max Re(pole) [rad/s]                   got -0, expected  0 (tol 1e-06)
+[PASS] P-only, third order, Kp = 3.0 Kp_min: unstable (1=yes)                   got  1, expected  1 (tol 0)
+[PASS] P-only, reduced, Kp = 10.0 Kp_min: max Re(pole) [rad/s]                  got -0, expected  0 (tol 1e-06)
+[PASS] P-only, third order, Kp = 10.0 Kp_min: unstable (1=yes)                  got  1, expected  1 (tol 0)
+[PASS] PD reduced [1.50 Kp_min, Kd = 0.50]: stable (1=yes)                      got  1, expected  1 (tol 0)
+[PASS] PD reduced [1.50 Kp_min, Kd = 0.50]: max Re(pole) vs formula             got -3.4377, expected -3.4377 (tol 1e-06)
+[PASS] PD reduced [1.05 Kp_min, Kd = 0.5]: stable (1=yes)                       got  1, expected  1 (tol 0)
+[PASS] PD reduced [1.05 Kp_min, Kd = 0.5]: max Re(pole) vs formula              got -3.4377, expected -3.4377 (tol 1e-06)
+[PASS] PD reduced [0.95 Kp_min, Kd = 0.5]: stable (1=yes)                       got  0, expected  0 (tol 0)
+[PASS] PD reduced [0.95 Kp_min, Kd = 0.5]: max Re(pole) vs formula              got  6.36287, expected  6.36287 (tol 1e-06)
+[PASS] PD reduced [1.5 Kp_min, Kd = -0.5]: stable (1=yes)                       got  0, expected  0 (tol 0)
+[PASS] PD reduced [1.5 Kp_min, Kd = -0.5]: max Re(pole) vs formula              got  3.4377, expected  3.4377 (tol 1e-06)
+[PASS] PD reduced [1.5 Kp_min, Kd = 0]: stable (1=yes)                          got  0, expected  0 (tol 0)
+[PASS] PD reduced [1.5 Kp_min, Kd = 0]: max Re(pole) vs formula                 got -0, expected -0 (tol 1e-06)
+[PASS] WRONG sign feedback(G*C,+1) is unstable (1=yes)                          got  1, expected  1 (tol 0)
+[PASS] feedback(G*C,-1) and feedback(Gs*C,1) same poles (max Re diff)           got  0, expected  0 (tol 1e-06)
+[PASS] [regression] PD on reduced plant: max Re(pole)                           got -3.4377, expected -3.438 (tol 0.01)
+[PASS] [regression] PD on S0 third order only: max Re(pole)                     got -2.65432, expected -2.654 (tol 0.01)
+[PASS] [regression] PD on S1 + position filter: max Re(pole)                    got  3.49662, expected  3.497 (tol 0.01)
+[PASS] [regression] PD on S2 + filter + hold delay Ts/2: max Re(pole)           got  8.99194, expected  8.992 (tol 0.01)
+[PASS] [regression] PD on S3 + filter + hold + 1 extra sample: max Re(pole)     got  16.3134, expected  16.313 (tol 0.01)
+
+OVERALL: PASS  (39/39 checks)
+Saved data/phase2_results.mat and 3 PNG files in figs/.
