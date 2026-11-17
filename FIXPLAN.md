@@ -21,7 +21,7 @@ Status legend: `[ ]` open, `[x]` done, `[~]` decided but waiting.
 | 7 | README updates (robustness numbers, new counts) | [x] 2026-11-16 |
 | 8 | One value per quantity (text) | [x] 2026-11-16 (reference table in data/README.md) |
 | 9 | Remaining MINOR stale text and figures | [x] 2026-11-16 |
-| 10 | Optional new analysis | [ ] |
+| 10 | Optional new analysis | [x] 2026-11-17 (s19, s20, s21; results in Step 10 below) |
 | — | Then write D6 (report) | [ ] |
 
 ---
@@ -285,7 +285,16 @@ Original plan:
       no usable samples near its stand. **Conclusion for AUDIT 4.8 / 6D-1: lift-offs neither confirm nor refute the
       static stand effect**; the old "lift-offs show no extra force" (s13 §5b) must not be used as evidence against it
       (s13's 11.4-11.8 mm bin also had stencils reaching the stand).
-- [ ] Position-only PD gain-grid figure (2.15).
+- [x] Position-only PD gain-grid figure (2.15). 2026-11-17, `scripts/s21_pd_gain_grid.m` (new; console +
+      `figs/p17_pd_gain_grid.png`; 6 PASS / 1 FAIL). Linear model 39 g at 10 mm (s10: λ 5.90 mm, k_a 2.43, i0 0.798 A),
+      lab PD form u = Kp e + Kr Δe on the duty u, same loop/delay discretisation as s11. Lab PD at τ 27 ms reproduces
+      AUDIT 2.15 exactly (Kp 45: max|eig| 1.004 / 1.011 at d 0 / 0.5, 5.5-5.6 Hz; Kp 40, d 0: 0.995 stable); over
+      τ 22.5-29 ms, d 0-1: Kp 45 0.993-1.020, unstable mode 5.1-6.2 Hz (lab cycle 7.3-9.3 Hz = nonlinear, stand hits).
+      Gain grid (Kp 10-300 log × Kr 0-4000, 60 × 81): project corners τ 20/27/35 ms × d 0.3/0.5/0.6 → 1.5-5.7 % stable,
+      best Ms per corner 4.8-12.4; **one PD stable at all 9 corners: 74 of 4860 gains, best worst-case Ms 10.4**
+      (refined, Kp 30.4, Kr 624) **vs the cascade 1.99 at the same corners** (2.23 over the full set). The FAIL: the
+      audit's grid numbers (best Ms 5.7-13, 1-4 % stable) are not reproduced (here 4.8-12.7, 1.1-8.8 % on its corners;
+      its grid script was not kept). Report quotes s21's numbers.
 - [x] D2 follow-up: does Exp C trimming lower the Option-2 \|WT\| peak? **No.** 2026-11-17, `scripts/s19_trim_expC.m`
       (new, console only, writes nothing; 5 PASS / 0 FAIL). Rule A (stable at kg 0.4) and rule B (stable at kg 0.4
       and 2.0) remove the same plants: 260/1458 grid points (worst Ms 2.230 unchanged, PM min 29.3° -> 31.3°) and
