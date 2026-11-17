@@ -16,6 +16,13 @@ own plant model. Please credit Group 22 if you use them. Start with `PARAMETERS.
 The sweeps were flown with a feedback controller in the loop. Use the **steady hover levels** (mean current at each
 gap; controller-independent) and the coil test. The transients between levels reflect that controller, not yours.
 
+## Screenshots (if the .fig files will not open)
+`screenshots/` has one PNG per recording (same file name, `.png`): every scope channel against time over the full
+record, position and x_ref in mm (magnet at the top of the axis), plus `group22_sensor_table.png` (the 33-point
+sensor calibration with its values). They were drawn from the data in the `.fig` files, not captured from the scope
+window. The velocity axis leaves out the driver's one-sample start-up spike at t = 0. For numbers (hover currents,
+step times) use the data via `read_scope_fig.m` rather than reading them off the images.
+
 ## Reading the .fig files
 They are Simulink scope plots saved with *Print to Figure → Save*. `openfig` usually fails on other PCs; use
 ```matlab
