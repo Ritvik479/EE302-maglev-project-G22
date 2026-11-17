@@ -323,6 +323,20 @@ that differ from an older statement somewhere in the repo (see Section Z).
 | U10 | Ramp to 11.6 mm with Linear interpolation | N | copy not made |
 | U11 | Log sheet for 13-Nov | N | set points rebuilt from the data |
 
+## V. Added in Stage E (2026-11-17), read from report/rerun_logs_2026-11-17/
+
+| ID | Quantity | Value | St | Source | Note |
+|---|---|---|---|---|---|
+| V1 | Run 4 timing | switch-on 3.6 s (3.60), set-point step 14.4 s (14.43) | M | s06 log | Fig. run4 caption |
+| V2 | Exp A time on the stand | re-lift 5 s after the drop (37.2 → 42.4 s) | D | from I1 | Issues log |
+| V3 | Small steps: spike timing (16-Nov) | 3–9 ms after crossing 11.0 mm; 24–57 ms after the step | M | s16 §2 | Position-tied, not time-tied |
+| V4 | Small steps: closest to the stand | 0.51 mm | M | s16 §1 | |
+| V5 | Stand lowered by | ~1.3 mm | M | s17 B | spike moved ~1.3 mm with it |
+| V6 | Lowered-stand spike | at x 12.43 mm (≈ 12.4), 0.70 mm above the lowered stand | M | s17 B | one of the 11 (N5) |
+| V7 | Flat-ramp run | 0.9 mm down-step came within 0.03 mm of the stand | M | s17 B FAIL | also Appendix B table |
+| V8 | Clamp options A–C | closest approach < 6 mm in at least one case (A 3.19, B 5.81, C 0 mm) | S | s11 §6 FAIL | |
+| V9 | Run-3 prediction in samples | 3.0 ms = 1 sample (G8); lab 2 samples (H2) | D | G8, H2 | |
+
 ---
 
 ## Z. Discrepancies found while building the ledger (decide before Stage C)
