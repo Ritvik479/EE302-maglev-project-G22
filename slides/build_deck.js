@@ -291,10 +291,13 @@ stat(s, 8.87, 5.7, 3.85, 1.15, "18 of 69", "came within 0.1 mm of the stand on o
 // ======================= 10. Demo =======================
 s = pres.addSlide({ masterName: "DARK", sectionTitle: "Talk" });
 s.addText("Live demo", { placeholder: "title" });
-text(s, "Ritvik Garg", { x: 0.8, y: 2.95, w: 6, h: 0.45, fontSize: 20, color: C.accent2, objectName: "presenter" });
-text(s, paras(["Lift-off from the calibration stand", "Steady hover at 11 mm", "Set-point steps 11 → 10 → 9 mm and back",
-  "Coil current and command on the live scope"], { bullet: true }),
-  { x: 0.8, y: 3.75, w: 8, h: 2.2, fontSize: 20, color: C.background1, paraSpaceAfter: 8, objectName: "demo plan" });
+text(s, "Rig: Ritvik Garg  ·  Narration: Snehal Narendra Patil", { x: 0.8, y: 2.95, w: 11, h: 0.45, fontSize: 20,
+  color: C.accent2, objectName: "presenter" });
+text(s, paras(["39 g ball, hole-up, resting on the calibration stand (about 11.9 mm)",
+  "Lift-off, then an automatic sweep 11 → 9 → 11 mm in 0.5 mm steps, 5 s per level",
+  "Watch the overshoot on each step and the coil current on the live scope",
+  "The same sweep, recorded and simulated, is on the next slide"], { bullet: true }),
+  { x: 0.8, y: 3.75, w: 11, h: 2.6, fontSize: 20, color: C.background1, paraSpaceAfter: 8, objectName: "demo plan" });
 
 // ======================= 11. Hardware vs simulation =======================
 s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "Talk" });
@@ -401,6 +404,15 @@ eq(s, "kp", String.raw`K_{p} = \frac{\omega_{n}^{2} + 2\zeta\omega_{n}\omega_{i}
 eq(s, "ki", String.raw`K_{i} = \frac{\omega_{i}\,\omega_{n}^{2}}{b} = \frac{19200}{26.16} = 733.9\ \text{A/(m}\,\text{s)}`, 0.6, 5.0, 12, 0.8, 20);
 label(s, "Minimum stabilizing gain at the nominal point", 0.6, 5.95, 8);
 eq(s, "kpmin", String.raw`K_{p} > \frac{a_{21}}{b} = \frac{1661.4}{24.59} = 67.6\ \text{A/m}`, 0.6, 6.25, 12, 0.6, 18);
+
+// ---------- presenter per slide (footer, content slides only; index = slide number - 1) ----------
+const SPEAKER = ["", "Neil", "Neil", "Neil", "Neil", "Ritvik", "Ritvik", "Ritvik", "Snehal", "", "Snehal", "Saurabh", "Saurabh", "",
+  "Neil", "Ritvik", "Snehal", "Snehal", "Ritvik"];
+if (SPEAKER.length !== pres.slides.length) throw new Error(`SPEAKER has ${SPEAKER.length} entries, deck has ${pres.slides.length}`);
+pres.slides.forEach((sl, k) => {
+  if (SPEAKER[k]) text(sl, SPEAKER[k], { x: 9.2, y: 7.0, w: 2.9, h: 0.3, fontSize: 10, color: C.accent6, align: "right",
+    objectName: "presenter tag" });
+});
 
 // ---------- write ----------
 (async () => {

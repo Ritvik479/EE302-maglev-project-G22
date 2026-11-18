@@ -1,9 +1,10 @@
 # Open build/deck_eq.pptx in PowerPoint, save the final deck (PowerPoint writes the equation fallbacks itself)
 # and export every slide as PNG for checking. Run from slides/: powershell -ExecutionPolicy Bypass -File render.ps1
+param([string]$Out = "G22_Presentation.pptx")
 $ErrorActionPreference = "Stop"
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $src = Join-Path $here "build\deck_eq.pptx"
-$dst = Join-Path $here "G22_Presentation.pptx"
+$dst = Join-Path $here $Out
 $png = Join-Path $here "build\png"
 New-Item -ItemType Directory -Force $png | Out-Null
 Get-ChildItem $png -Filter *.png | Remove-Item -Force
