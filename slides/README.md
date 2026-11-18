@@ -14,6 +14,6 @@ Rebuild (from this folder; needs Node, Python with lxml + latex2mathml, MiKTeX, 
 `assets/blockdiag.png` is the report's TikZ loop diagram: `pdflatex blockdiag.tex` then
 `pdftoppm -png -r 300 -singlefile blockdiag.pdf blockdiag` inside `assets/`.
 
-Speaker notes live in `notes.js` (one entry per slide); rerun steps 3-5 after editing.
+Speaker notes live in `notes.js` (one entry per slide); rerun steps 3-5 after editing, then `python -I make_notes_pdf.py` for `G22_Speaker_Notes.pdf` (needs LuaLaTeX and python-pptx).
 
 To change an equation, edit its LaTeX in `build_deck.js` (search `eq(s, "`) and rerun steps 3-5.
