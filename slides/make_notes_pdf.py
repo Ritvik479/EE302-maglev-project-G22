@@ -11,7 +11,7 @@ from pathlib import Path
 from pptx import Presentation
 
 HERE = Path(__file__).resolve().parent
-DECK = HERE / (sys.argv[1] if len(sys.argv) > 1 else "G22_Presentation_v3.pptx")
+DECK = HERE / (sys.argv[1] if len(sys.argv) > 1 else "G22_Presentation.pptx")
 OUTDIR = HERE / "build" / "notes_pdf"
 OUTDIR.mkdir(parents=True, exist_ok=True)
 SPECIAL = {"\\": r"\textbackslash{}", "&": r"\&", "%": r"\%", "$": r"\$", "#": r"\#", "_": r"\_",

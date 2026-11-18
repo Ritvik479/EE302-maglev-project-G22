@@ -9,4 +9,3 @@
 *.lot
 *.synctex.gz
 build.log
-!rerun_logs_2026-11-17/*.log
