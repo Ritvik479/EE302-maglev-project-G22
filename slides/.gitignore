@@ -1,0 +1,6 @@
+node_modules/
+build/
+assets/*.aux
+assets/*.log
+assets/blockdiag.pdf
+__pycache__/
