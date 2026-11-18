@@ -138,7 +138,7 @@ s.addImage({ path: A("rig_photo.jpg"), x: 7.45, y: 3.05, w: 5.3, h: 5.3 / 1.778,
 s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "Talk" });
 title(s, "The ball is open-loop unstable: any position error doubles every 17 ms");
 img(s, "rig_photo.jpg", 0.6, 1.5, 6.9, 1.778, "rig photo");
-caption(s, "INTECO MLS1EM: electromagnet, optical position sensor, hollow steel ball, calibration stand; interface box on the right",
+caption(s, "INTECO MLS1EM: electromagnet, optical position sensor, hollow ferromagnetic ball, calibration stand; interface box on the right",
   0.6, 5.42, 6.9, 0.5);
 card(s, 0.6, 6.0, 6.9, 0.8, "goal");
 text(s, [{ text: "Goal  ", options: { bold: true, color: C.text2 } },
@@ -409,7 +409,10 @@ eq(s, "kpmin", String.raw`K_{p} > \frac{a_{21}}{b} = \frac{1661.4}{24.59} = 67.6
 const SPEAKER = ["", "Neil", "Neil", "Neil", "Ritvik", "Ritvik", "Ritvik", "Ritvik", "Snehal", "", "Snehal", "Saurabh", "Saurabh", "",
   "Neil", "Ritvik", "Snehal", "Snehal", "Ritvik"];
 if (SPEAKER.length !== pres.slides.length) throw new Error(`SPEAKER has ${SPEAKER.length} entries, deck has ${pres.slides.length}`);
+const { NOTES } = require("./notes.js");
+if (NOTES.length !== pres.slides.length || NOTES.some((n) => !n)) throw new Error("notes.js must have one entry per slide");
 pres.slides.forEach((sl, k) => {
+  sl.addNotes(NOTES[k]);
   if (SPEAKER[k]) text(sl, SPEAKER[k], { x: 9.2, y: 7.0, w: 2.9, h: 0.3, fontSize: 10, color: C.accent6, align: "right",
     objectName: "presenter tag" });
 });
