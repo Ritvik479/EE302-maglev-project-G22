@@ -406,7 +406,7 @@ label(s, "Minimum stabilizing gain at the nominal point", 0.6, 5.95, 8);
 eq(s, "kpmin", String.raw`K_{p} > \frac{a_{21}}{b} = \frac{1661.4}{24.59} = 67.6\ \text{A/m}`, 0.6, 6.25, 12, 0.6, 18);
 
 // ---------- presenter per slide (footer, content slides only; index = slide number - 1) ----------
-const SPEAKER = ["", "Neil", "Neil", "Neil", "Neil", "Ritvik", "Ritvik", "Ritvik", "Snehal", "", "Snehal", "Saurabh", "Saurabh", "",
+const SPEAKER = ["", "Neil", "Neil", "Neil", "Ritvik", "Ritvik", "Ritvik", "Ritvik", "Snehal", "", "Snehal", "Saurabh", "Saurabh", "",
   "Neil", "Ritvik", "Snehal", "Snehal", "Ritvik"];
 if (SPEAKER.length !== pres.slides.length) throw new Error(`SPEAKER has ${SPEAKER.length} entries, deck has ${pres.slides.length}`);
 pres.slides.forEach((sl, k) => {
