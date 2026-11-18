@@ -3,3 +3,6 @@ scripts/slprj/
 scripts/*.slxc
 *.asv
 *.autosave
+
+# Third-party documents (INTECO manual, PS9): kept locally, not published
+manual/
